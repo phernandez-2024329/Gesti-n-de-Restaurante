@@ -14,13 +14,13 @@ const detallePedidoSchema = new Schema(
             trim: true
         },
 
-        candidad_producto: {
+        candidadproducto: {
             type: Number,
             required: [true, "La cantidad del producto es obligatoria"],
             min: [1, "La cantidad del producto debe ser mayor a 0"]
         },
 
-        precio_unitario: {
+        preciounitario: {
             type: Number,
             required: [true, "El precio unitario es obligatorio"],
             min: 0
