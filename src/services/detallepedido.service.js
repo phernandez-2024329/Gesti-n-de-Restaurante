@@ -16,7 +16,7 @@ export const createDetallePedidoService = async (data) => {
   return await detallePedido.save();
 };
 
-export const getDetallePedidosService = async () => {
+export const  getDetallePedidosService = async () => {
   return await DetallePedidoModel.find({ estado: true })
     .populate("pedido")
     .populate("producto");

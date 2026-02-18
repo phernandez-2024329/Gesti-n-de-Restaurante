@@ -23,7 +23,7 @@ route.get(
 route.get(
     "/search",
     searchUsuario
-);
+);  
 
 route.get(
     "/:id",
