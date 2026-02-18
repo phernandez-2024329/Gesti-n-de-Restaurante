@@ -1,0 +1,39 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "AuthServiceRestaurante.Application/1.0.0": {
+        "dependencies": {
+          "AuthServiceRestaurante.Domain": "1.0.0"
+        },
+        "runtime": {
+          "AuthServiceRestaurante.Application.dll": {}
+        }
+      },
+      "AuthServiceRestaurante.Domain/1.0.0": {
+        "runtime": {
+          "AuthServiceRestaurante.Domain.dll": {
+            "assemblyVersion": "1.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "AuthServiceRestaurante.Application/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "AuthServiceRestaurante.Domain/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
