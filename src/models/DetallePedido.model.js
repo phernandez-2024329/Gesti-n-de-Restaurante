@@ -3,12 +3,12 @@ import { Schema, model } from "mongoose";
 const detallePedidoSchema = new Schema(
   {
     pedido: {
-      type: Schema.Types.ObjectId,
+      type: String,
       ref: "Pedido",
       required: [true, "El pedido es obligatorio"]
     },
     producto: {
-      type: Schema.Types.ObjectId,
+      type: String,
       ref: "Producto",
       required: [true, "El producto es obligatorio"]
     },
