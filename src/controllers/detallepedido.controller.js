@@ -4,7 +4,7 @@ import {
   getDetallePedidoByIdService,
   updateDetallePedidoService,
   deleteDetallePedidoService
-} from "../services/detallePedido.service.js";
+} from "../services/detallepedido.service.js";
 
 export const createDetallePedido = async (req, res) => {
   try {
