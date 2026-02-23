@@ -1,44 +1,25 @@
-import { Router } from "express";
-import { auth } from "../middlewares/auth.js";
-
+import { Router } from 'express';
 import {
     createRestaurante,
     getRestaurantes,
     getRestauranteById,
     updateRestaurante,
     deleteRestaurante
-} from "./restaurante.controller.js";
+} from '../controllers/restaurantes.controllers.js';
 
-const route = Router();
+import { validateJWT }  from '../../middlewares/validate-JWT.js';
+import { validateRole } from '../../middlewares/validate-role.js';
 
-route.post(
-    "/",
-    auth,
-    createRestaurante
-);
+const router = Router();
 
-route.get(
-    "/",
-    auth,
-    getRestaurantes
-);
+router.post('/',    validateJWT, validateRole('ADMIN', 'GERENTE'), createRestaurante);
 
-route.get(
-    "/:id",
-    auth,
-    getRestauranteById
-);
+router.get('/',     validateJWT, getRestaurantes);
 
-route.put(
-    "/:id",
-    auth,
-    updateRestaurante
-);
+router.get('/:id',  validateJWT, getRestauranteById);
 
-route.delete(
-    "/:id",
-    auth,
-    deleteRestaurante
-);
+router.put('/:id',  validateJWT, validateRole('ADMIN', 'GERENTE'), updateRestaurante);
 
-export default route;
+router.delete('/:id', validateJWT, validateRole('ADMIN'), deleteRestaurante);
+
+export default router;
