@@ -536,19 +536,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Informatica\\.nuget\\packages\\": {}
+    "/Users/josueboror/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Gesti-n-de-Restaurante\\src\\AuthServiceRestaurante.Api\\AuthServiceRestaurante.Api.csproj",
+      "projectUniqueName": "/Users/josueboror/Visual/Proyectos/Gesti-n-de-Restaurante/src/AuthServiceRestaurante.Api/AuthServiceRestaurante.Api.csproj",
       "projectName": "AuthServiceRestaurante.Api",
-      "projectPath": "C:\\Gesti-n-de-Restaurante\\src\\AuthServiceRestaurante.Api\\AuthServiceRestaurante.Api.csproj",
-      "packagesPath": "C:\\Users\\Informatica\\.nuget\\packages\\",
-      "outputPath": "C:\\Gesti-n-de-Restaurante\\src\\AuthServiceRestaurante.Api\\obj\\",
+      "projectPath": "/Users/josueboror/Visual/Proyectos/Gesti-n-de-Restaurante/src/AuthServiceRestaurante.Api/AuthServiceRestaurante.Api.csproj",
+      "packagesPath": "/Users/josueboror/.nuget/packages/",
+      "outputPath": "/Users/josueboror/Visual/Proyectos/Gesti-n-de-Restaurante/src/AuthServiceRestaurante.Api/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Informatica\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "/Users/josueboror/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -560,11 +560,11 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "C:\\Gesti-n-de-Restaurante\\src\\AuthServiceRestaurante.Application\\AuthServiceRestaurante.Application.csproj": {
-              "projectPath": "C:\\Gesti-n-de-Restaurante\\src\\AuthServiceRestaurante.Application\\AuthServiceRestaurante.Application.csproj"
+            "/Users/josueboror/Visual/Proyectos/Gesti-n-de-Restaurante/src/AuthServiceRestaurante.Application/AuthServiceRestaurante.Application.csproj": {
+              "projectPath": "/Users/josueboror/Visual/Proyectos/Gesti-n-de-Restaurante/src/AuthServiceRestaurante.Application/AuthServiceRestaurante.Application.csproj"
             },
-            "C:\\Gesti-n-de-Restaurante\\src\\AuthServiceRestaurante.Persistence\\AuthServiceRestaurante.Persistence.csproj": {
-              "projectPath": "C:\\Gesti-n-de-Restaurante\\src\\AuthServiceRestaurante.Persistence\\AuthServiceRestaurante.Persistence.csproj"
+            "/Users/josueboror/Visual/Proyectos/Gesti-n-de-Restaurante/src/AuthServiceRestaurante.Persistence/AuthServiceRestaurante.Persistence.csproj": {
+              "projectPath": "/Users/josueboror/Visual/Proyectos/Gesti-n-de-Restaurante/src/AuthServiceRestaurante.Persistence/AuthServiceRestaurante.Persistence.csproj"
             }
           }
         }
@@ -578,7 +578,8 @@
         "enableAudit": "true",
         "auditLevel": "low",
         "auditMode": "direct"
-      }
+      },
+      "SdkAnalysisLevel": "10.0.100"
     },
     "frameworks": {
       "net8.0": {
@@ -604,6 +605,20 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
+        "downloadDependencies": [
+          {
+            "name": "Microsoft.AspNetCore.App.Ref",
+            "version": "[8.0.23, 8.0.23]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Host.osx-arm64",
+            "version": "[8.0.23, 8.0.23]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Ref",
+            "version": "[8.0.23, 8.0.23]"
+          }
+        ],
         "frameworkReferences": {
           "Microsoft.AspNetCore.App": {
             "privateAssets": "none"
@@ -612,7 +627,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.417/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.102/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
