@@ -1,8 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "8Svr5LXjSvo=",
+  "dgSpecHash": "ARBSlh0wZ20=",
   "success": true,
-  "projectFilePath": "C:\\Gesti-n-de-Restaurante\\src\\AuthServiceRestaurante.Domain\\AuthServiceRestaurante.Domain.csproj",
-  "expectedPackageFiles": [],
+  "projectFilePath": "/Users/josueboror/Visual/Proyectos/Gesti-n-de-Restaurante/src/AuthServiceRestaurante.Domain/AuthServiceRestaurante.Domain.csproj",
+  "expectedPackageFiles": [
+    "/Users/josueboror/.nuget/packages/microsoft.netcore.app.ref/8.0.23/microsoft.netcore.app.ref.8.0.23.nupkg.sha512",
+    "/Users/josueboror/.nuget/packages/microsoft.aspnetcore.app.ref/8.0.23/microsoft.aspnetcore.app.ref.8.0.23.nupkg.sha512"
+  ],
   "logs": []
 }
