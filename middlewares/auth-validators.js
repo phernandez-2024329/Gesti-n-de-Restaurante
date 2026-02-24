@@ -46,6 +46,30 @@ export const validateRegister = [
     checkValidators
 ];
 
+export const validateInformation = [
+    body('information')
+        .trim()
+        .notEmpty().withMessage('El contenido de la información es obligatorio'),
+
+    body('title')
+        .trim()
+        .notEmpty().withMessage('El título es obligatorio'),
+
+    body('type')
+        .optional()
+        .trim(),
+
+    body('statistics')
+        .optional()
+        .custom(value => typeof value === 'object').withMessage('Statistics debe ser un objeto'),
+
+    body('restaurantId')
+        .notEmpty().withMessage('El restaurantId es obligatorio')
+        .isMongoId().withMessage('restaurantId inválido'),
+
+    checkValidators
+];
+
 export const validateLogin = [
     body('email')
         .trim()
