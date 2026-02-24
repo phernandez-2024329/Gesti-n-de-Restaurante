@@ -2,6 +2,7 @@
 
 import { body } from 'express-validator';
 import { checkValidators } from './checkValidators.js';
+import { AllowedRoles } from '../src/constants/roles.js';
 
 export const validateRegister = [
     body('nombre')
@@ -34,8 +35,13 @@ export const validateRegister = [
 
     body('rol')
         .optional()
-        .isIn(['ADMIN', 'GERENTE', 'MESERO', 'CLIENTE'])
+        .isIn(AllowedRoles)
         .withMessage('Rol inválido'),
+
+    body('rol_id')
+        .optional()
+        .isIn(AllowedRoles)
+        .withMessage('Rol_id inválido'),
 
     checkValidators
 ];

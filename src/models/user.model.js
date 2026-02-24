@@ -1,5 +1,6 @@
 import { Schema, model } from 'mongoose';
 import bcrypt from 'bcryptjs';
+import { Roles, AllowedRoles } from '../constants/roles.js';
 
 const usuarioSchema = new Schema(
     {
@@ -35,10 +36,17 @@ const usuarioSchema = new Schema(
             required: [true, 'El teléfono es obligatorio'],
             match: [/^\d{8}$/, 'El teléfono debe tener 8 dígitos']
         },
+        // identificador de rol (se puede usar para send rol_id en peticiones)
         rol: {
             type: String,
-            enum: ['ADMIN', 'GERENTE', 'MESERO', 'CLIENTE'],
-            default: 'CLIENTE'
+            enum: AllowedRoles,
+            default: Roles.CLIENTE
+        },
+        // alias de identificador que acepta el frontend/postman (rol_id en el body)
+        rol_id: {
+            type: String,
+            enum: AllowedRoles,
+            default: Roles.CLIENTE
         },
         restauranteAsignado: {
             type: Schema.Types.ObjectId,
@@ -53,8 +61,15 @@ const usuarioSchema = new Schema(
     { timestamps: true }
 );
 
-// Hash automático de contraseña al guardar
+// sincroniza los campos rol/rol_id antes de guardar y cifra la contraseña
 usuarioSchema.pre('save', async function () {
+    // preferimos el valor de rol_id si se proporcionó
+    if (this.isModified('rol_id') && this.rol_id) {
+        this.rol = this.rol_id;
+    } else if (this.isModified('rol') && this.rol) {
+        this.rol_id = this.rol;
+    }
+
     if (!this.isModified('password')) return;
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
