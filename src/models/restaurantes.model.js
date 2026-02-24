@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 
-const restauranteSchema = new Schema(
+const Restaurantes = new Schema(
     {
         nombre: {
             type: String,
@@ -18,7 +18,7 @@ const restauranteSchema = new Schema(
         },
         usuario: {
             type: Schema.Types.ObjectId,
-            ref: "Usuario", // Cambiar a "Usuario" si ese es el nombre del modelo de usuario es otro modelo
+            ref: "Usuario", 
             required: true
         }
     },
@@ -27,4 +27,4 @@ const restauranteSchema = new Schema(
     }
 );
 
-export default model("Restaurante", restauranteSchema);
+export default model("Restaurante", Restaurantes);
