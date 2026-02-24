@@ -35,7 +35,9 @@ export const validateJWT = (req, res, next) => {
             id:   decoded.sub,
             jti:  decoded.jti,
             iat:  decoded.iat,
-            role: decoded.role || 'CLIENTE',
+            // the token may contain `role` or `rol_id`, map both for backwards compatibility
+            role: decoded.role || decoded.rol_id || 'CLIENTE',
+            rol_id: decoded.rol_id || decoded.role || 'CLIENTE',
         };
 
         next();

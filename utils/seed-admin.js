@@ -1,6 +1,7 @@
 'use strict';
 
 import Usuario from '../src/models/user.model.js';
+import { Roles } from '../src/constants/roles.js';
 
 export const createDefaultAdmin = async () => {
     try {
@@ -17,7 +18,8 @@ export const createDefaultAdmin = async () => {
             email:    'admin@restaurante.com',
             password: 'Admin1234',
             telefono: '00000000',
-            rol:      'ADMIN',
+            rol:      Roles.ADMIN,
+            rol_id:   Roles.ADMIN,
             estado:   true
         });
 
