@@ -7,11 +7,7 @@ services:
       POSTGRES_PASSWORD: In6avKnl!
       POSTGRES_DB: kinal_sports_users
     ports:
-<<<<<<< HEAD
       - "5436:5432"
-=======
-      - "5430:5432"
->>>>>>> ft/eddy
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped

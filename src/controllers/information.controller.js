@@ -1,5 +1,5 @@
 import Information from '../models/information.model.js';
-import Restaurante from '../models/restaurantes.model.js';
+import Restaurante from '../models/restaurant.model.js';
 import { Roles } from '../constants/roles.js';
 
 export const createInformation = async (req, res) => {
