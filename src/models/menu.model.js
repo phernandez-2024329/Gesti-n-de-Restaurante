@@ -25,20 +25,20 @@ const Menu = new Schema({
     Menu_type_plate: {
         type: String,
         required: [ true, 'el tipo de plato es obligatorio' ],
-        enum: ['Entrada', 'Plato fuerte', 'Postre',]
+        enum: ['Entrada', 'Plato_fuerte', 'Postre',]
     },
 
     Menu_type_drink: {
         type: String,
         required: [ true, 'el tipo de bebida es obligatorio' ],
         enum: ['Cerveza', 'Vinos', 'Licores', 'Cocteles', 
-            'shots', 'Bebidas sin alcohol', 'Bebidas calientes']
+            'shots', 'Bebidas_sin_alcohol', 'Bebidas_calientes']
     },
 
     Menu_Promotion: {
         type: String,
-        enum: ['Promoción Familiar', 'Promoción de Quincena', 'Promoción de Cliente frecuente', 
-            'Promoción de Temporada', 'Promoción de Aniversario'],
+        enum: ['Promoción_Familiar', 'Promoción_de_Quincena', 'Promoción_de_Cliente_frecuente', 
+            'Promoción_de_Temporada', 'Promoción_de_Aniversario'],
     },
 
     Menu_description_plate: {
