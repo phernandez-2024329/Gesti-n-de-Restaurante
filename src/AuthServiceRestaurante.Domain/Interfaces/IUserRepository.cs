@@ -1,7 +1,7 @@
 
-using AuthServiceBanco.Domain.Entities;
+using AuthServiceRestaurante.Domain.Entities;
 
-namespace AuthServiceBanco.Domain.Interfaces;
+namespace AuthServiceRestaurante.Domain.Interfaces;
 
 public interface IUserRepository
 {
