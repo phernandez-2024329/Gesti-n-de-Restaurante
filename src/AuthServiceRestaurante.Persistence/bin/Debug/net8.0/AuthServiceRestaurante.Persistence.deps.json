@@ -1,0 +1,56 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "AuthServiceRestaurante.Persistence/1.0.0": {
+        "dependencies": {
+          "AuthServiceRestaurante.Application": "1.0.0",
+          "AuthServiceRestaurante.Domain": "1.0.0"
+        },
+        "runtime": {
+          "AuthServiceRestaurante.Persistence.dll": {}
+        }
+      },
+      "AuthServiceRestaurante.Application/1.0.0": {
+        "dependencies": {
+          "AuthServiceRestaurante.Domain": "1.0.0"
+        },
+        "runtime": {
+          "AuthServiceRestaurante.Application.dll": {
+            "assemblyVersion": "1.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "AuthServiceRestaurante.Domain/1.0.0": {
+        "runtime": {
+          "AuthServiceRestaurante.Domain.dll": {
+            "assemblyVersion": "1.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "AuthServiceRestaurante.Persistence/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "AuthServiceRestaurante.Application/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "AuthServiceRestaurante.Domain/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
