@@ -9,6 +9,8 @@ import { requestLimit } from '../middlewares/request-limit.js';
 import { errorHandler } from '../middlewares/handle-errors.js';
 import userRoutes from '../src/routes/user.routes.js';
 import restauranteRoutes from '../src/routes/restaurantes.routes.js';
+import eventsRoutes from '../src/routes/events.routes.js';
+
 
 const BASE_PATH = '/GestorRestaurante/v1';
 
@@ -28,6 +30,7 @@ const middlewares = (app) => {
 const routes = (app) => {
     app.use(`${BASE_PATH}/auth`, userRoutes);
     app.use(`${BASE_PATH}/restaurantes`, restauranteRoutes);
+    app.use(`${BASE_PATH}/events`, eventsRoutes);
 
     app.get(`${BASE_PATH}/health`, (req, res) => {
         res.status(200).json({
@@ -63,7 +66,7 @@ export const initServer = async () => {
         });
 
     } catch (error) {
-        console.error(`Erro al iniciar el servidor: ${error.message}`);
+        console.error(`Error al iniciar el servidor: ${error.message}`);
         process.exit(1);
     }
 };
