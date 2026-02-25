@@ -1,5 +1,4 @@
 using System.Data;
-using AuthServiceRestaurante.Application.Services;
 using AuthServiceRestaurante.Domain.Entities;
 using AuthServiceRestaurante.Domain.Interfaces;
 using AuthServiceRestaurante.Persistence.Data;
@@ -29,7 +28,7 @@ public class UserRepository(ApplicationDbContext context) : IUserRepository
             .Include(u => u.UserPasswordReset)
             .Include(u => u.UserRoles)
                 .ThenInclude(ur => ur.Role)
-            .FirstOrDefaultAsync(u => EF.Functions.ILike(u.Email, email));
+            .FirstOrDefaultAsync(u => u.Email != null && u.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
     }
 
     public async Task<User?> GetByUsernameAsync(string username)
@@ -40,7 +39,7 @@ public class UserRepository(ApplicationDbContext context) : IUserRepository
             .Include(u => u.UserPasswordReset)
             .Include(u => u.UserRoles)
                 .ThenInclude(ur => ur.Role)
-            .FirstOrDefaultAsync(u => EF.Functions.ILike(u.Username, username));
+            .FirstOrDefaultAsync(u => u.Username != null && u.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
     }
 
     public async Task<User?> GetByEmailVerificationTokenAsync(string token)
@@ -93,13 +92,13 @@ public class UserRepository(ApplicationDbContext context) : IUserRepository
     public async Task<bool> ExistsByEmailAsync(string email)
     {
         return await context.Users
-            .AnyAsync(u => EF.Functions.ILike(u.Email, email));
+            .AnyAsync(u => u.Email != null && u.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
     }
 
     public async Task<bool> ExistsByUsernameAsync(string username)
     {
         return await context.Users
-            .AnyAsync(u => EF.Functions.ILike(u.Username, username));
+            .AnyAsync(u => u.Username != null && u.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
     }
 
     public async Task UpdateUserRoleAsync(string userId, string roleId)
@@ -112,7 +111,7 @@ public class UserRepository(ApplicationDbContext context) : IUserRepository
 
         var newUserRole = new UserRole
         {
-            Id = UuidGenerator.GenerateUserId(),
+            Id = Guid.NewGuid().ToString(),
             UserId = userId,
             RoleId = roleId,
             CreatedAt = DateTime.UtcNow,

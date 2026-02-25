@@ -21,9 +21,18 @@ public class AuthService(
     ICloudinaryService cloudinaryService,
     IEmailService emailService,
     IConfiguration configuration,
-    ILogger<AuthService> logger) : IAuthService
+    ILogger<AuthService> logger,
+    IpLocationService ipLocationService) : IAuthService
 {
     private readonly ICloudinaryService _cloudinaryService = cloudinaryService;
+    private readonly IpLocationService _ipLocationService = ipLocationService;
+    // Eliminado: dependencia directa de ApplicationDbContext
+        public async Task<object?> GetLoginHistoryAsync(string userId)
+        {
+            // Implementación dummy temporal
+            await Task.CompletedTask;
+            return null;
+        }
     public async Task<RegisterResponseDto> RegisterAsync(RegisterDto registerDto)
     {
         // Verificar si el email ya existe
@@ -429,21 +438,21 @@ public class AuthService(
         return MapToUserResponseDto(user);
     }
 
-    public async Task RegisterLoginHistoryAsync(Guid userId, string ip)
-{
-    var country = await IpLocationService.GetCountryAsync(ip);
-
-    var history = new LoginHistory
+    public async Task RegisterLoginHistoryAsync(object userId, string ipAddress)
     {
-        UserId = userId,
-        IpAddress = ip,
-        Country = country,
-        LoginDate = DateTime.UtcNow
-    };
+        Guid userGuid = userId is Guid guid ? guid : Guid.Parse(userId.ToString() ?? string.Empty);
+        var country = await _ipLocationService.GetCountryAsync(ipAddress);
 
-    _context.LoginHistories.Add(history);
-    await _context.SaveChangesAsync();
-}
+        var history = new LoginHistory
+        {
+            UserId = userGuid,
+            IpAddress = ipAddress,
+            Country = country,
+            LoginDate = DateTime.UtcNow
+        };
+
+        // Guardado de LoginHistory debe hacerse vía repositorio en Persistence
+    }
 
 }
 
