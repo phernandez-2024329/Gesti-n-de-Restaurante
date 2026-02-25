@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/Users/josueboror/Visual/Proyectos/Gesti-n-de-Restaurante/src/AuthServiceRestaurante.Domain/AuthServiceRestaurante.Domain.csproj": {}
+    "C:\\Restaurante\\Gesti-n-de-Restaurante\\src\\AuthServiceRestaurante.Domain\\AuthServiceRestaurante.Domain.csproj": {}
   },
   "projects": {
-    "/Users/josueboror/Visual/Proyectos/Gesti-n-de-Restaurante/src/AuthServiceRestaurante.Domain/AuthServiceRestaurante.Domain.csproj": {
+    "C:\\Restaurante\\Gesti-n-de-Restaurante\\src\\AuthServiceRestaurante.Domain\\AuthServiceRestaurante.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/josueboror/Visual/Proyectos/Gesti-n-de-Restaurante/src/AuthServiceRestaurante.Domain/AuthServiceRestaurante.Domain.csproj",
+        "projectUniqueName": "C:\\Restaurante\\Gesti-n-de-Restaurante\\src\\AuthServiceRestaurante.Domain\\AuthServiceRestaurante.Domain.csproj",
         "projectName": "AuthServiceRestaurante.Domain",
-        "projectPath": "/Users/josueboror/Visual/Proyectos/Gesti-n-de-Restaurante/src/AuthServiceRestaurante.Domain/AuthServiceRestaurante.Domain.csproj",
-        "packagesPath": "/Users/josueboror/.nuget/packages/",
-        "outputPath": "/Users/josueboror/Visual/Proyectos/Gesti-n-de-Restaurante/src/AuthServiceRestaurante.Domain/obj/",
+        "projectPath": "C:\\Restaurante\\Gesti-n-de-Restaurante\\src\\AuthServiceRestaurante.Domain\\AuthServiceRestaurante.Domain.csproj",
+        "packagesPath": "C:\\Users\\Informatica\\.nuget\\packages\\",
+        "outputPath": "C:\\Restaurante\\Gesti-n-de-Restaurante\\src\\AuthServiceRestaurante.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/josueboror/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\Informatica\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -37,8 +37,7 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "10.0.100"
+        }
       },
       "frameworks": {
         "net8.0": {
@@ -54,22 +53,12 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[8.0.23, 8.0.23]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[8.0.23, 8.0.23]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.102/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.417/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

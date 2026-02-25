@@ -1,5 +1,5 @@
-using AuthServiceRespuesta.Domain.Entities;
-using AuthServiceRespuesta.Domain.Interfaces;
+using AuthServiceRestaurante.Domain.Entities;
+using AuthServiceRestaurante.Domain.Interfaces;
 using AuthServiceRestaurante.Persistence.Data;
 using Microsoft.EntityFrameworkCore;
 
