@@ -1,6 +1,10 @@
 import { Schema, model } from "mongoose";
 
+<<<<<<< HEAD
 const Restaurantes = new Schema(
+=======
+const restauranteSchema = new Schema(
+>>>>>>> ft/kevin
     {
         nombre: {
             type: String,
@@ -18,7 +22,11 @@ const Restaurantes = new Schema(
         },
         usuario: {
             type: Schema.Types.ObjectId,
+<<<<<<< HEAD
             ref: "Usuario", 
+=======
+            ref: "Usuario", // Cambiar a "Usuario" si ese es el nombre del modelo de usuario es otro modelo
+>>>>>>> ft/kevin
             required: true
         }
     },
@@ -27,4 +35,8 @@ const Restaurantes = new Schema(
     }
 );
 
+<<<<<<< HEAD
 export default model("Restaurante", Restaurantes);
+=======
+export default model("Restaurante", restauranteSchema);
+>>>>>>> ft/kevin
