@@ -36,18 +36,28 @@ export const getMesaByIdService = async (id) => {
 };
 
 export const searchMesaService = async (searchTerm) => {
-    const query = {
-        estado: true,
-        $or: [
-            { Table_Number: Number(searchTerm) || -1 },
-            { Table_name: { $regex: searchTerm, $options: 'i' } },
-            { Table_Ubication: { $regex: searchTerm, $options: 'i' } }
-        ]
-    };
-    if (isNaN(Number(searchTerm))) {
-        query.$or = query.$or.filter(cond => !cond.Table_Number);
+    const numericTerm = Number(searchTerm);
+
+    if (!isNaN(numericTerm)) {
+        return await MesaModel.find({
+            estado: true,
+            Table_Number: numericTerm
+        });
     }
-    return await MesaModel.find(query);
+
+    const resultsByName = await MesaModel.find({
+        estado: true,
+        Table_name: searchTerm
+    });
+
+    if (resultsByName.length > 0) {
+        return resultsByName;
+    }
+
+    return await MesaModel.find({
+        estado: true,
+        Table_Ubication: searchTerm
+    });
 };
 
 export const updateMesaService = async (id, data) => {

@@ -27,18 +27,25 @@ export const getUsuarioByIdService = async (id) => {
         .populate("comentarios");
 };
 
-export const searchUsuarioService = async (criterio) => {
-    const { username, email, name } = criterio;
-    
-    const filtro = { estado: true };
-    
-    if (username) filtro.username = { $regex: username, $options: 'i' };
-    if (email) filtro.email = { $regex: email, $options: 'i' };
-    if (name) filtro.name = { $regex: name, $options: 'i' };
-    
-    return await UsuarioModel.find(filtro)
-        .populate("pedidos")
-        .populate("comentarios");
+export const searchUsuarioService = async (searchTerm) => {
+    const byUsername = await UsuarioModel.find({
+        estado: true,
+        username: searchTerm
+    }).populate("pedidos").populate("comentarios");
+
+    if (byUsername.length > 0) return byUsername;
+
+    const byEmail = await UsuarioModel.find({
+        estado: true,
+        email: searchTerm
+    }).populate("pedidos").populate("comentarios");
+
+    if (byEmail.length > 0) return byEmail;
+
+    return await UsuarioModel.find({
+        estado: true,
+        name: searchTerm
+    }).populate("pedidos").populate("comentarios");
 };
 
 export const updateUsuarioService = async (id, data) => {

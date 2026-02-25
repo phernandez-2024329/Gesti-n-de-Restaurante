@@ -125,20 +125,21 @@ export const getUsuarioById = async (req, res) => {
 
 export const searchUsuario = async (req, res) => {
     try {
-        const { username, email, name } = req.query;
+        const { searchTerm } = req.query;
 
-        if (!username && !email && !name) {
+        if (!searchTerm) {
             return res.status(400).json({
-                message: "Debe proporcionar al menos un criterio de búsqueda (username, email o name)"
+                message: "Debe proporcionar un término de búsqueda"
             });
         }
 
-        const criterio = {};
-        if (username) criterio.username = username;
-        if (email) criterio.email = email;
-        if (name) criterio.name = name;
+        const usuarios = await searchUsuarioService(searchTerm);
 
-        const usuarios = await searchUsuarioService(criterio);
+        if (usuarios.length === 0) {
+            return res.status(404).json({
+                message: "No se encontraron usuarios con ese término"
+            });
+        }
 
         return res.status(200).json({
             message: "Búsqueda completada",

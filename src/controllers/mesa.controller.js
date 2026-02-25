@@ -72,24 +72,34 @@ export const getMesaById = async (req, res) => {
 export const searchMesas = async (req, res) => {
     try {
         const { searchTerm } = req.query;
+
         if (!searchTerm) {
             return res.status(400).json({
                 message: "El término de búsqueda es obligatorio"
             });
         }
+
         const mesas = await searchMesaService(searchTerm);
+
+        if (mesas.length === 0) {
+            return res.status(404).json({
+                message: "No se encontraron mesas con ese término"
+            });
+        }
+
         return res.status(200).json({
             message: "Búsqueda completada",
             count: mesas.length,
             data: mesas
         });
+
     } catch (error) {
         return res.status(500).json({
             message: "Error al buscar mesas",
             error: error.message
         });
     }
-}
+};
 
 export const updateMesa = async (req, res) => {
     try {
