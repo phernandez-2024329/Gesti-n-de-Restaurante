@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\2024505\\Gesti-n-de-Restaurante\\src\\AuthServiceRestaurante.Domain\\AuthServiceRestaurante.Domain.csproj": {}
+    "C:\\2024452\\Gesti-n-de-Restaurante\\src\\AuthServiceRestaurante.Domain\\AuthServiceRestaurante.Domain.csproj": {}
   },
   "projects": {
-    "C:\\2024505\\Gesti-n-de-Restaurante\\src\\AuthServiceRestaurante.Domain\\AuthServiceRestaurante.Domain.csproj": {
+    "C:\\2024452\\Gesti-n-de-Restaurante\\src\\AuthServiceRestaurante.Domain\\AuthServiceRestaurante.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\2024505\\Gesti-n-de-Restaurante\\src\\AuthServiceRestaurante.Domain\\AuthServiceRestaurante.Domain.csproj",
+        "projectUniqueName": "C:\\2024452\\Gesti-n-de-Restaurante\\src\\AuthServiceRestaurante.Domain\\AuthServiceRestaurante.Domain.csproj",
         "projectName": "AuthServiceRestaurante.Domain",
-        "projectPath": "C:\\2024505\\Gesti-n-de-Restaurante\\src\\AuthServiceRestaurante.Domain\\AuthServiceRestaurante.Domain.csproj",
-        "packagesPath": "C:\\Users\\edy14\\.nuget\\packages\\",
-        "outputPath": "C:\\2024505\\Gesti-n-de-Restaurante\\src\\AuthServiceRestaurante.Domain\\obj\\",
+        "projectPath": "C:\\2024452\\Gesti-n-de-Restaurante\\src\\AuthServiceRestaurante.Domain\\AuthServiceRestaurante.Domain.csproj",
+        "packagesPath": "C:\\Users\\Informatica\\.nuget\\packages\\",
+        "outputPath": "C:\\2024452\\Gesti-n-de-Restaurante\\src\\AuthServiceRestaurante.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\edy14\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\Informatica\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -58,7 +58,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.418/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.416/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
