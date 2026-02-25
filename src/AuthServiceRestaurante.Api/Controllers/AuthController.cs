@@ -57,14 +57,7 @@ public class AuthController(IAuthService authService) : ControllerBase
     public async Task<ActionResult<EmailResponseDto>> VerifyEmail([FromBody] VerifyEmailDto verifyEmailDto)
     {
         var result = await authService.VerifyEmailAsync(verifyEmailDto);
-        var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
-
-        if (!string.IsNullOrEmpty(ipAddress) && result.Success)
-        {
-            await authService.RegisterLoginHistoryAsync(result.UserId, ipAddress);
-        }
         return Ok(result);
-        
     }
 
     [HttpPost("resend-verification")]
@@ -117,6 +110,8 @@ public class AuthController(IAuthService authService) : ControllerBase
     }
 
 
+    // TODO: Implement GetLoginHistoryAsync in IAuthService
+    /*
     [HttpGet("login-history")]
 [Authorize]
 public async Task<IActionResult> GetLoginHistory()
@@ -131,5 +126,5 @@ public async Task<IActionResult> GetLoginHistory()
         data = history
     });
 }
-
+*/
 }

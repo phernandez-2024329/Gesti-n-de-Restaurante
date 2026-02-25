@@ -21,9 +21,13 @@ public class AuthService(
     ICloudinaryService cloudinaryService,
     IEmailService emailService,
     IConfiguration configuration,
-    ILogger<AuthService> logger) : IAuthService
+    ILogger<AuthService> logger,
+    ILoginHistoryRepository loginHistoryRepository,
+    IpLocationService ipLocationService) : IAuthService
 {
     private readonly ICloudinaryService _cloudinaryService = cloudinaryService;
+    private readonly ILoginHistoryRepository _loginHistoryRepository = loginHistoryRepository;
+    private readonly IpLocationService _ipLocationService = ipLocationService;
     public async Task<RegisterResponseDto> RegisterAsync(RegisterDto registerDto)
     {
         // Verificar si el email ya existe
@@ -429,21 +433,35 @@ public class AuthService(
         return MapToUserResponseDto(user);
     }
 
-    public async Task RegisterLoginHistoryAsync(Guid userId, string ip)
-{
-    var country = await IpLocationService.GetCountryAsync(ip);
-
-    var history = new LoginHistory
+    public async Task RegisterLoginHistoryAsync(object userId, string ipAddress)
     {
-        UserId = userId,
-        IpAddress = ip,
-        Country = country,
-        LoginDate = DateTime.UtcNow
-    };
+        // Convert userId to Guid
+        Guid userGuid;
+        if (userId is Guid guid)
+        {
+            userGuid = guid;
+        }
+        else if (userId is string userIdString && Guid.TryParse(userIdString, out var parsedGuid))
+        {
+            userGuid = parsedGuid;
+        }
+        else
+        {
+            logger.LogWarning("Invalid userId type or format: {UserId}", userId);
+            return; // Silently return if userId is invalid
+        }
 
-    _context.LoginHistories.Add(history);
-    await _context.SaveChangesAsync();
+        var country = await _ipLocationService.GetCountryAsync(ipAddress);
+
+        var history = new LoginHistory
+        {
+            Id = Guid.NewGuid(),
+            UserId = userGuid,
+            IpAddress = ipAddress,
+            Country = country,
+            LoginDate = DateTime.UtcNow
+        };
+
+        await _loginHistoryRepository.CreateAsync(history);
+    }
 }
-
-}
-
