@@ -1,11 +1,1 @@
-{
-  "Version": 1,
-  "Hash": "hKbfZSWhlnMt0zNdfg4tP9V3WaBoHIwVu/2nBJaTt3s=",
-  "Source": "AuthServiceRestaurante.Api",
-  "BasePath": "_content/AuthServiceRestaurante.Api",
-  "Mode": "Default",
-  "ManifestType": "Build",
-  "ReferencedProjectsConfiguration": [],
-  "DiscoveryPatterns": [],
-  "Assets": []
-}
+{"Version":1,"Hash":"HK6dFbqzSBwl2aqd/EC9LeuGAuanegkAeW/xUSqSXLg=","Source":"AuthServiceRestaurante.Api","BasePath":"/","Mode":"Root","ManifestType":"Build","ReferencedProjectsConfiguration":[],"DiscoveryPatterns":[],"Assets":[],"Endpoints":[]}

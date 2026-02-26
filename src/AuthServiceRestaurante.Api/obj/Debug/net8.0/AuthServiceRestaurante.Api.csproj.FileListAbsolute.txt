@@ -125,11 +125,6 @@ C:\Restaurante\Gesti-n-de-Restaurante\src\AuthServiceRestaurante.Api\bin\Debug\n
 C:\Restaurante\Gesti-n-de-Restaurante\src\AuthServiceRestaurante.Api\bin\Debug\net8.0\AuthServiceRestaurante.Domain.pdb
 C:\Restaurante\Gesti-n-de-Restaurante\src\AuthServiceRestaurante.Api\obj\Debug\net8.0\staticwebassets.build.json
 C:\Restaurante\Gesti-n-de-Restaurante\src\AuthServiceRestaurante.Api\obj\Debug\net8.0\staticwebassets.development.json
-C:\Restaurante\Gesti-n-de-Restaurante\src\AuthServiceRestaurante.Api\obj\Debug\net8.0\staticwebassets\msbuild.AuthServiceRestaurante.Api.Microsoft.AspNetCore.StaticWebAssets.props
-C:\Restaurante\Gesti-n-de-Restaurante\src\AuthServiceRestaurante.Api\obj\Debug\net8.0\staticwebassets\msbuild.build.AuthServiceRestaurante.Api.props
-C:\Restaurante\Gesti-n-de-Restaurante\src\AuthServiceRestaurante.Api\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.AuthServiceRestaurante.Api.props
-C:\Restaurante\Gesti-n-de-Restaurante\src\AuthServiceRestaurante.Api\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.AuthServiceRestaurante.Api.props
-C:\Restaurante\Gesti-n-de-Restaurante\src\AuthServiceRestaurante.Api\obj\Debug\net8.0\staticwebassets.pack.json
 C:\Restaurante\Gesti-n-de-Restaurante\src\AuthServiceRestaurante.Api\obj\Debug\net8.0\scopedcss\bundle\AuthServiceRestaurante.Api.styles.css
 C:\Restaurante\Gesti-n-de-Restaurante\src\AuthServiceRestaurante.Api\obj\Debug\net8.0\AuthServ.FA520847.Up2Date
 C:\Restaurante\Gesti-n-de-Restaurante\src\AuthServiceRestaurante.Api\obj\Debug\net8.0\AuthServiceRestaurante.Api.dll
@@ -137,3 +132,11 @@ C:\Restaurante\Gesti-n-de-Restaurante\src\AuthServiceRestaurante.Api\obj\Debug\n
 C:\Restaurante\Gesti-n-de-Restaurante\src\AuthServiceRestaurante.Api\obj\Debug\net8.0\AuthServiceRestaurante.Api.pdb
 C:\Restaurante\Gesti-n-de-Restaurante\src\AuthServiceRestaurante.Api\obj\Debug\net8.0\AuthServiceRestaurante.Api.genruntimeconfig.cache
 C:\Restaurante\Gesti-n-de-Restaurante\src\AuthServiceRestaurante.Api\obj\Debug\net8.0\ref\AuthServiceRestaurante.Api.dll
+C:\Restaurante\Gesti-n-de-Restaurante\src\AuthServiceRestaurante.Api\bin\Debug\net8.0\AuthServiceRestaurante.Api.staticwebassets.endpoints.json
+C:\Restaurante\Gesti-n-de-Restaurante\src\AuthServiceRestaurante.Api\obj\Debug\net8.0\rpswa.dswa.cache.json
+C:\Restaurante\Gesti-n-de-Restaurante\src\AuthServiceRestaurante.Api\obj\Debug\net8.0\rjimswa.dswa.cache.json
+C:\Restaurante\Gesti-n-de-Restaurante\src\AuthServiceRestaurante.Api\obj\Debug\net8.0\rjsmrazor.dswa.cache.json
+C:\Restaurante\Gesti-n-de-Restaurante\src\AuthServiceRestaurante.Api\obj\Debug\net8.0\rjsmcshtml.dswa.cache.json
+C:\Restaurante\Gesti-n-de-Restaurante\src\AuthServiceRestaurante.Api\obj\Debug\net8.0\staticwebassets.build.json.cache
+C:\Restaurante\Gesti-n-de-Restaurante\src\AuthServiceRestaurante.Api\obj\Debug\net8.0\staticwebassets.build.endpoints.json
+C:\Restaurante\Gesti-n-de-Restaurante\src\AuthServiceRestaurante.Api\obj\Debug\net8.0\swae.build.ex.cache
