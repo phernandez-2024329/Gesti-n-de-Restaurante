@@ -8,7 +8,8 @@ import { dbConnection } from './db.js';
 import { requestLimit } from '../middlewares/request-limit.js';
 import { errorHandler } from '../middlewares/handle-errors.js';
 import userRoutes from '../src/routes/user.routes.js';
-import restauranteRoutes from '../src/routes/restaurantes.routes.js';
+import roleRoutes from '../src/routes/role.routes.js';
+import informationRoutes from '../src/routes/information.routes.js';
 
 const BASE_PATH = '/GestorRestaurante/v1';
 
@@ -27,7 +28,8 @@ const middlewares = (app) => {
 
 const routes = (app) => {
     app.use(`${BASE_PATH}/auth`, userRoutes);
-    app.use(`${BASE_PATH}/restaurantes`, restauranteRoutes);
+    app.use(`${BASE_PATH}/roles`, roleRoutes);
+    app.use(`${BASE_PATH}/information`, informationRoutes);
 
     app.get(`${BASE_PATH}/health`, (req, res) => {
         res.status(200).json({
