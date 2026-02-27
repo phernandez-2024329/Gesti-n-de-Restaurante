@@ -1,19 +1,24 @@
 import Usuario from '../models/user.model.js';
 import { generateJWT } from '../../helpers/generate-jwt.js';
+import { Roles } from '../constants/roles.js';
 
 export const registerUser = async (req, res) => {
     try {
-        const { nombre, username, email, password, telefono, rol } = req.body;
+        const { nombre, username, email, password, telefono, rol, rol_id } = req.body;
 
-        const rolAsignado = req.user?.role === 'ADMIN' ? (rol || 'CLIENTE') : 'CLIENTE';
+        // si el administrador crea el usuario, puede asignar cualquiera de los roles permitidos
+        let rolAsignado = Roles.CLIENTE;
+        if (req.user?.role === Roles.ADMIN) {
+            rolAsignado = rol_id || rol || Roles.CLIENTE;
+        }
 
-        const usuario = new Usuario({ nombre, username, email, password, telefono, rol: rolAsignado });
+        const usuario = new Usuario({ nombre, username, email, password, telefono, rol: rolAsignado, rol_id: rolAsignado });
         await usuario.save();
 
         res.status(201).json({
             success: true,
             message: 'Usuario registrado exitosamente',
-            data: { id: usuario._id, nombre: usuario.nombre, username: usuario.username, email: usuario.email, rol: usuario.rol }
+            data: { id: usuario._id, nombre: usuario.nombre, username: usuario.username, email: usuario.email, rol: usuario.rol, rol_id: usuario.rol_id }
         });
 
     } catch (error) {
@@ -43,7 +48,8 @@ export const loginUser = async (req, res) => {
             return res.status(401).json({ success: false, message: 'Credenciales inválidas' });
         }
 
-        const token = await generateJWT(usuario._id, { role: usuario.rol });
+        // emitimos rol y rol_id en el JWT para que los middlewares puedan validarlos
+        const token = await generateJWT(usuario._id, { role: usuario.rol, rol_id: usuario.rol_id });
         const expiresAt = new Date(Date.now() + 8 * 60 * 60 * 1000);
 
         res.status(200).json({
@@ -51,7 +57,7 @@ export const loginUser = async (req, res) => {
             message: 'Inicio de sesión exitoso',
             token,
             expiresAt,
-            data: { id: usuario._id, nombre: usuario.nombre, username: usuario.username, email: usuario.email, rol: usuario.rol }
+            data: { id: usuario._id, nombre: usuario.nombre, username: usuario.username, email: usuario.email, rol: usuario.rol, rol_id: usuario.rol_id }
         });
 
     } catch (error) {
@@ -97,15 +103,15 @@ export const updateUser = async (req, res) => {
             return res.status(403).json({ success: false, message: 'Sin permisos para modificar este usuario', error: 'FORBIDDEN' });
         }
 
-        if (req.user.role !== 'ADMIN') {
-            ['rol', 'estado', 'restauranteAsignado'].forEach(c => delete req.body[c]);
+        if (req.user.role !== Roles.ADMIN) {
+            ['rol', 'rol_id', 'estado', 'restauranteAsignado'].forEach(c => delete req.body[c]);
         }
 
         const usuario = await Usuario.findByIdAndUpdate(id, req.body, { new: true, runValidators: true }).select('-password -__v');
 
         if (!usuario) return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
 
-        res.status(200).json({ success: true, message: 'Usuario actualizado', data: usuario });
+        res.status(200).json({ success: true, message: 'Usuario actualizado', data: { ...usuario.toObject(), rol_id: usuario.rol_id } });
 
     } catch (error) {
         res.status(500).json({ success: false, message: 'Error al actualizar', error: error.message });

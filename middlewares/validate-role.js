@@ -9,7 +9,9 @@ export const validateRole = (...allowedRoles) => {
             });
         }
 
-        if (!allowedRoles.includes(req.user.role)) {
+        // user may carry role in "role" or "rol_id" depending on how token was generated
+        const current = req.user.role || req.user.rol_id;
+        if (!allowedRoles.includes(current)) {
             return res.status(403).json({
                 success: false,
                 message: `Acceso denegado. Roles permitidos: ${allowedRoles.join(', ')}`,

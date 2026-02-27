@@ -22,6 +22,26 @@ public static class DataSeeder
                 {
                     Id = UuidGenerator.GenerateRoleId(),
                         Name = RoleConstants.USER_ROLE
+                },
+                new()
+                {
+                    Id = UuidGenerator.GenerateRoleId(),
+                        Name = RoleConstants.ROL_CLIENTE
+                },
+                new()
+                {
+                    Id = UuidGenerator.GenerateRoleId(),
+                        Name = RoleConstants.ROL_TYPE_CLIENTE
+                },
+                new()
+                {
+                    Id = UuidGenerator.GenerateRoleId(),
+                        Name = RoleConstants.ROL_ADMINISTRADOR_PLATAFORMA
+                },
+                new()
+                {
+                    Id = UuidGenerator.GenerateRoleId(),
+                        Name = RoleConstants.ROL_ADMINISTRADOR_RESTAURANTES
                 }
             };
 

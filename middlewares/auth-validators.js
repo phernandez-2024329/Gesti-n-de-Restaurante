@@ -2,6 +2,7 @@
 
 import { body } from 'express-validator';
 import { checkValidators } from './checkValidators.js';
+import { AllowedRoles } from '../src/constants/roles.js';
 
 export const validateRegister = [
     body('nombre')
@@ -34,8 +35,37 @@ export const validateRegister = [
 
     body('rol')
         .optional()
-        .isIn(['ADMIN', 'GERENTE', 'MESERO', 'CLIENTE'])
+        .isIn(AllowedRoles)
         .withMessage('Rol inválido'),
+
+    body('rol_id')
+        .optional()
+        .isIn(AllowedRoles)
+        .withMessage('Rol_id inválido'),
+
+    checkValidators
+];
+
+export const validateInformation = [
+    body('information')
+        .trim()
+        .notEmpty().withMessage('El contenido de la información es obligatorio'),
+
+    body('title')
+        .trim()
+        .notEmpty().withMessage('El título es obligatorio'),
+
+    body('type')
+        .optional()
+        .trim(),
+
+    body('statistics')
+        .optional()
+        .custom(value => typeof value === 'object').withMessage('Statistics debe ser un objeto'),
+
+    body('restaurantId')
+        .notEmpty().withMessage('El restaurantId es obligatorio')
+        .isMongoId().withMessage('restaurantId inválido'),
 
     checkValidators
 ];

@@ -22,17 +22,14 @@ public class AuthService(
     IEmailService emailService,
     IConfiguration configuration,
     ILogger<AuthService> logger,
+
+    ILoginHistoryRepository loginHistoryRepository,
     IpLocationService ipLocationService) : IAuthService
 {
     private readonly ICloudinaryService _cloudinaryService = cloudinaryService;
+    private readonly ILoginHistoryRepository _loginHistoryRepository = loginHistoryRepository;
     private readonly IpLocationService _ipLocationService = ipLocationService;
-    // Eliminado: dependencia directa de ApplicationDbContext
-        public async Task<object?> GetLoginHistoryAsync(string userId)
-        {
-            // Implementación dummy temporal
-            await Task.CompletedTask;
-            return null;
-        }
+
     public async Task<RegisterResponseDto> RegisterAsync(RegisterDto registerDto)
     {
         // Verificar si el email ya existe
@@ -440,11 +437,29 @@ public class AuthService(
 
     public async Task RegisterLoginHistoryAsync(object userId, string ipAddress)
     {
-        Guid userGuid = userId is Guid guid ? guid : Guid.Parse(userId.ToString() ?? string.Empty);
+
+        // Convert userId to Guid
+        Guid userGuid;
+        if (userId is Guid guid)
+        {
+            userGuid = guid;
+        }
+        else if (userId is string userIdString && Guid.TryParse(userIdString, out var parsedGuid))
+        {
+            userGuid = parsedGuid;
+        }
+        else
+        {
+            logger.LogWarning("Invalid userId type or format: {UserId}", userId);
+            return; // Silently return if userId is invalid
+        }
+
         var country = await _ipLocationService.GetCountryAsync(ipAddress);
 
         var history = new LoginHistory
         {
+            Id = Guid.NewGuid(),
+
             UserId = userGuid,
             IpAddress = ipAddress,
             Country = country,
@@ -452,6 +467,19 @@ public class AuthService(
         };
 
         // Guardado de LoginHistory debe hacerse vía repositorio en Persistence
+         await _loginHistoryRepository.CreateAsync(history);
+    }
+
+    public async Task<object?> GetLoginHistoryAsync(string userId)
+    {
+        if (!Guid.TryParse(userId, out var userGuid))
+        {
+            logger.LogWarning("Invalid userId format: {UserId}", userId);
+            return null;
+        }
+
+        var loginHistories = await _loginHistoryRepository.GetByUserIdAsync(userGuid);
+        return loginHistories;
     }
 
 }

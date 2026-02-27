@@ -13,6 +13,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<UserRole> UserRoles { get; set; }
     public DbSet<UserEmail> UserEmails { get; set; }
     public DbSet<UserPasswordReset> UserPasswordResets { get; set; }
+    public DbSet<LoginHistory> LoginHistories { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
