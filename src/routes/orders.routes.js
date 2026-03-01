@@ -1,52 +1,33 @@
-import { Router } from "express";
-import { auth } from "../middlewares/auth.js";
-
+import { Router } from 'express';
+import { validateJWT } from '../../middlewares/validate-JWT.js';
 import {
-	createOrder,
-	getOrders,
-	getOrderById,
-	updateOrders,
-	deleteOrders,
-	searchOrders
-} from "../controllers/orders.controller.js";
+    createOrder,
+    getOrders,
+    getOrderById,
+    searchOrders,
+    updateOrders,
+    deleteOrders
+} from '../controllers/orders.controller.js';
 
-const route = Router();
+const router = Router();
 
-route.post(
-	"/",
-	auth,
-	createOrder
-);
+router.post('/',
+      validateJWT, createOrder);
 
-route.get(
-	"/",
-	auth,
-	getOrders
-);
+router.get('/', 
+      validateJWT, getOrders);
 
-route.get(
-	"/search",
-	auth,
-	searchOrders
-);
+router.get('/search',
+ validateJWT, searchOrders);
 
-route.get(
-	"/:id",
-	auth,
-	getOrderById
-);
+router.get('/:id',
+    validateJWT, getOrderById);
 
-route.put(
-	"/:id",
-	auth,
-	updateOrders
-);
+router.put('/:id',
+    validateJWT, updateOrders);
 
-route.delete(
-	"/:id",
-	auth,
-	deleteOrders
-);
+router.delete('/:id'
+, validateJWT, deleteOrders);
 
-export default route;
 
+export default router;
