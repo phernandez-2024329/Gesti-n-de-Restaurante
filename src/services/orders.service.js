@@ -2,7 +2,7 @@ import Orders from '../models/orders.model.js';
 
 export const createOrdersService = async (data) => {
     const {
-    Order_id,
+    Orders_id,
     Orders_domicile,
     Orders_number,
     Orders_cupon,
@@ -13,7 +13,7 @@ export const createOrdersService = async (data) => {
     User_id
     } = data;
     const newOrder = new Orders({
-        Orders_id: Order_id,
+        Orders_id: Orders_id,
         Orders_domicile: Orders_domicile,
         Orders_number: Orders_number,
         Orders_cupon: Orders_cupon,
