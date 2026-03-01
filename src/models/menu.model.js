@@ -51,4 +51,6 @@ const Menu = new Schema({
         ref: 'Restaurantes',
         required: [ true, 'el ID del restaurante es obligatorio' ]
     }
-})
+});
+
+export default model('Menu', Menu);

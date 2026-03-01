@@ -52,4 +52,6 @@ const Orders = new Schema({
         required: [true, 'El ID del usuario es obligatorio']
     }
 
-})
+});
+
+export default model('Orders', Orders);
