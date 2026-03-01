@@ -60,3 +60,5 @@ const Mesas = new Schema({
     }
  }
 )
+
+export default model('Mesa', Mesas);

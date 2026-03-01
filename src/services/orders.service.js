@@ -86,3 +86,8 @@ export const deleteOrderService = async (id) => {
     );
 }
 
+// Backwards-compatible aliases for controller naming inconsistencies
+export { createOrdersService as createOrderService };
+export { updateOrderService as updateOrdersService };
+export { deleteOrderService as deleteOrdersService };
+

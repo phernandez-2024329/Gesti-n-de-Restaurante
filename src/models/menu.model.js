@@ -52,3 +52,5 @@ const Menu = new Schema({
         required: [ true, 'el ID del restaurante es obligatorio' ]
     }
 })
+
+export default model('Menu', Menu);
