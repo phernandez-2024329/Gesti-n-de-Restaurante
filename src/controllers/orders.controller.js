@@ -1,5 +1,5 @@
 import {
-    createOrderService,
+    createOrdersService,
     getOrdersService,
     getOrderByIdService,
     searchOrdersService,
@@ -9,7 +9,7 @@ import {
 
 export const createOrder = async (req, res) => {
     try {
-        const order = await createOrderService(req.body);
+        const order = await createOrdersService(req.body);
         res.status(201).json({
             message: "Orden creada exitosamente",
             data: order
@@ -106,7 +106,7 @@ export const updateOrders = async (req, res) => {
             });
         }
 
-        const order = await updateOrdersService(id, updateData);
+        const order = await updateOrderService(id, updateData);
 
         if (!order) {
             return res.status(404).json({
@@ -143,7 +143,7 @@ export const deleteOrders = async (req, res) => {
             });
         }
 
-        const order = await deleteOrdersService(id);
+        const order = await deleteOrderService(id);
 
         if (!order) {
             return res.status(404).json({

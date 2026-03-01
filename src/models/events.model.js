@@ -44,11 +44,12 @@ const eventsSchema = new Schema(
 );
 
 // Validación lógica: fecha fin > fecha inicio
-eventsSchema.pre('save', function (next) {
+eventsSchema.pre('save', function () {
   if (this.events_date_time_finish <= this.events_date_time_start) {
-    return next(new Error('La fecha de finalización debe ser mayor que la de inicio'));
+    throw new Error(
+      'La fecha de finalización debe ser mayor que la de inicio'
+    );
   }
-  next();
 });
 
 export default model('Events', eventsSchema);

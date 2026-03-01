@@ -50,7 +50,7 @@ const usuarioSchema = new Schema(
         },
         restauranteAsignado: {
             type: Schema.Types.ObjectId,
-            ref: 'Restaurante',
+            ref: 'Restaurant',
             default: null
         },
         estado: {

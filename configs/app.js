@@ -10,6 +10,10 @@ import { errorHandler } from '../middlewares/handle-errors.js';
 import userRoutes from '../src/routes/user.routes.js';
 import restaurantRoutes from '../src/routes/restaurant.routes.js';
 import eventsRoutes from '../src/routes/events.routes.js';
+import menuRoutes from '../src/routes/menu.routes.js';
+import tableRoutes from '../src/routes/table.routes.js';
+import contactRoutes from '../src/routes/contact.routes.js';
+import orderRoutes from '../src/routes/orders.routes.js';
 
 const BASE_PATH = '/GestorRestaurante/v1';
 
@@ -30,6 +34,10 @@ const routes = (app) => {
     app.use(`${BASE_PATH}/auth`, userRoutes);
     app.use(`${BASE_PATH}/restaurant`, restaurantRoutes);
     app.use(`${BASE_PATH}/events`, eventsRoutes);
+    app.use(`${BASE_PATH}/menu`, menuRoutes);
+    app.use(`${BASE_PATH}/table`, tableRoutes);
+    app.use(`${BASE_PATH}/contact`, contactRoutes);
+    app.use(`${BASE_PATH}/order`, orderRoutes);
 
     app.get(`${BASE_PATH}/health`, (req, res) => {
         res.status(200).json({
