@@ -21,8 +21,20 @@ const createEvent = async (req, res) => {
 };
 
 const getEvents = async (req, res) => {
-  const events = await Events.find({ estado: true });
-  res.json(events);
+  try {
+    const events = await Events.find({ estado: true });
+    res.status(200).json({
+      success: true,
+      message: 'Eventos obtenidos exitosamente',
+      data: events
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error al obtener eventos',
+      error: error.message
+    });
+  }
 };
 
 const updateEvent = async (req, res) => {

@@ -14,8 +14,13 @@ import menuRoutes from '../src/routes/menu.routes.js';
 import tableRoutes from '../src/routes/table.routes.js';
 import contactRoutes from '../src/routes/contact.routes.js';
 import orderRoutes from '../src/routes/orders.routes.js';
+import reservationRoutes from '../src/routes/reservation.routes.js';
 
 const BASE_PATH = '/GestorRestaurante/v1';
+import reportRoutes from '../src/routes/report.routes.js';
+import inventoryRoutes from '../src/routes/inventory.routes.js';
+import couponRoutes from '../src/routes/coupon.routes.js';
+import reviewRoutes from '../src/routes/review.routes.js';
 
 const middlewares = (app) => {
     app.use(express.urlencoded({ extended: false, limit: '10mb' }));
@@ -35,9 +40,14 @@ const routes = (app) => {
     app.use(`${BASE_PATH}/restaurant`, restaurantRoutes);
     app.use(`${BASE_PATH}/events`, eventsRoutes);
     app.use(`${BASE_PATH}/menu`, menuRoutes);
+    app.use(`${BASE_PATH}/coupon`, couponRoutes);
+    app.use(`${BASE_PATH}/review`, reviewRoutes);
     app.use(`${BASE_PATH}/table`, tableRoutes);
     app.use(`${BASE_PATH}/contact`, contactRoutes);
     app.use(`${BASE_PATH}/order`, orderRoutes);
+    app.use(`${BASE_PATH}/reservation`, reservationRoutes);
+    app.use(`${BASE_PATH}/reports`, reportRoutes);
+    app.use(`${BASE_PATH}/inventory`, inventoryRoutes);
 
     app.get(`${BASE_PATH}/health`, (req, res) => {
         res.status(200).json({
