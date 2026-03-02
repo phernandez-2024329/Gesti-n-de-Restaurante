@@ -1,7 +1,31 @@
+// Endpoint para verificación de email
+export const verifyEmail = async (req, res) => {
+    try {
+        const { token } = req.query;
+        if (!token) {
+            return res.status(400).json({ success: false, message: 'Token de verificación faltante' });
+        }
+        const usuario = await Usuario.findOne({ emailVerificationToken: token, emailVerificationExpires: { $gt: new Date() } });
+        if (!usuario) {
+            return res.status(400).json({ success: false, message: 'Token inválido o expirado' });
+        }
+        usuario.emailVerified = true;
+        usuario.emailVerificationToken = null;
+        usuario.emailVerificationExpires = null;
+        await usuario.save();
+        res.status(200).json({ success: true, message: 'Correo verificado correctamente. Ya puedes iniciar sesión.' });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Error al verificar correo', error: error.message });
+    }
+};
+
 import Usuario from '../models/user.model.js';
 import { generateJWT } from '../../helpers/generate-jwt.js';
 import { Roles } from '../constants/roles.js';
+import { sendMail } from '../../helpers/sendMail.js';
+import crypto from 'crypto';
 
+// Registro de usuario
 export const registerUser = async (req, res) => {
     try {
         const { nombre, username, email, password, telefono, rol, rol_id } = req.body;
@@ -12,12 +36,45 @@ export const registerUser = async (req, res) => {
             rolAsignado = rol_id || rol || Roles.CLIENTE;
         }
 
-        const usuario = new Usuario({ nombre, username, email, password, telefono, rol: rolAsignado, rol_id: rolAsignado });
+        // Generar token de verificación
+        const emailVerificationToken = crypto.randomBytes(32).toString('hex');
+        const emailVerificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h
+
+        const usuario = new Usuario({
+            nombre,
+            username,
+            email,
+            password,
+            telefono,
+            rol: rolAsignado,
+            rol_id: rolAsignado,
+            emailVerificationToken,
+            emailVerificationExpires,
+            emailVerified: false
+        });
         await usuario.save();
+
+        // Enviar correo de verificación
+        try {
+            const verifyUrl = `http://localhost:3006/GestorRestaurante/v1/auth/verify-email?token=${emailVerificationToken}`;
+            await sendMail(
+                email,
+                'Verifica tu correo - Gestión de Restaurantes',
+                `<h2>¡Hola ${nombre || username}!</h2>
+                <p>Gracias por registrarte en <b>Gestión de Restaurantes</b>.</p>
+                <p>Por favor, haz clic en el siguiente enlace para verificar tu correo electrónico:</p>
+                <a href="${verifyUrl}" style="background:#007bff;color:white;padding:10px 20px;text-decoration:none;border-radius:5px;">Verificar correo</a>
+                <p>O copia y pega este enlace en tu navegador:</p>
+                <p>${verifyUrl}</p>
+                <p>Este enlace expirará en 24 horas.</p>`
+            );
+        } catch (mailError) {
+            console.error('Error enviando correo de verificación:', mailError.message);
+        }
 
         res.status(201).json({
             success: true,
-            message: 'Usuario registrado exitosamente',
+            message: 'Usuario registrado exitosamente. Revisa tu correo para verificar tu cuenta.',
             data: { id: usuario._id, nombre: usuario.nombre, username: usuario.username, email: usuario.email, rol: usuario.rol, rol_id: usuario.rol_id }
         });
 
