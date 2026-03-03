@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import multer from 'multer';
 import {
   createRestaurant,
   getRestaurants,
@@ -7,14 +8,23 @@ import {
   deleteRestaurant
 } from '../controllers/restaurant.controller.js';
 
+
 import { validateJWT } from '../../middlewares/validate-JWT.js';
 import { validateRole } from '../../middlewares/validate-role.js';
 import { Roles } from '../constants/roles.js';
 
+const upload = multer({ dest: 'uploads/' });
+
 const router = Router();
 
 // Crear restaurante (ADMIN o GERENTE)
-router.post('/', validateJWT, validateRole(Roles.ADMIN, Roles.GERENTE), createRestaurant);
+router.post(
+  '/',
+  upload.single('restaurant_images'),
+  validateJWT,
+  validateRole(Roles.ADMIN, Roles.GERENTE),
+  createRestaurant
+);
 
 // Listar restaurantes
 router.get('/', validateJWT, getRestaurants);
