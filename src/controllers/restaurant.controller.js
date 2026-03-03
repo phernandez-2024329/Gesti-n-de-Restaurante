@@ -1,9 +1,18 @@
 import Restaurant from '../models/restaurant.model.js';
 import Table from '../models/table.model.js';
 import { Types } from 'mongoose';
+import { uploadToCloudinary } from '../../helpers/cloudinary.js';
+import fs from 'fs';
 
 export const createRestaurant = async (req, res) => {
   try {
+    let imageUrl = '';
+    if (req.file) {
+      const result = await uploadToCloudinary(req.file.path);
+      imageUrl = result.secure_url;
+      fs.unlinkSync(req.file.path); // Borra el archivo temporal
+    }
+
     const {
       restaurant_name,
       restaurant_type,
@@ -12,10 +21,16 @@ export const createRestaurant = async (req, res) => {
       restaurant_time_start,
       restaurant_time_close,
       restaurant_mean_price,
-      restaurant_images,
       contact_id,
       table_id
-    } = req.body;
+    } = req.body || {};
+
+    if (!restaurant_name) {
+      return res.status(400).json({
+        success: false,
+        message: 'El campo restaurant_name es requerido'
+      });
+    }
 
     // Generar IDs aleatorios si no se proporcionan
     const finalContactId = contact_id || new Types.ObjectId();
@@ -29,7 +44,7 @@ export const createRestaurant = async (req, res) => {
       restaurant_time_start,
       restaurant_time_close,
       restaurant_mean_price,
-      restaurant_images,
+      restaurant_images: imageUrl ? [imageUrl] : [],
       contact_id: finalContactId,
       table_id: finalTableId
     });
@@ -71,7 +86,7 @@ export const createRestaurant = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: 'Restaurante creado con mesas automáticas',
+      message: 'Restaurante creado con imagen',
       restaurant
     });
 
@@ -79,7 +94,8 @@ export const createRestaurant = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error al crear restaurante',
-      error: error.message
+      error: error.message,
+      stack: error.stack
     });
   }
 };

@@ -130,9 +130,16 @@ public class EmailService(IConfiguration configuration, ILogger<EmailService> lo
                 await client.AuthenticateAsync(username, password);
 
                 // Crear mensaje con MimeKit
+                // Validar destinatario para evitar advertencia CS8604
+                if (string.IsNullOrWhiteSpace(to))
+                {
+                    logger.LogError("Recipient email is null or empty");
+                    throw new ArgumentException("Recipient email is null or empty", nameof(to));
+                }
+
                 var message = new MimeMessage();
-                message.From.Add(new MailboxAddress(fromName, fromEmail));
-                message.To.Add(new MailboxAddress("", to));
+                message.From.Add(new MailboxAddress(fromName ?? string.Empty, fromEmail!));
+                message.To.Add(new MailboxAddress(string.Empty, to!));
                 message.Subject = subject;
                 message.Body = new TextPart("html") { Text = body };
 
