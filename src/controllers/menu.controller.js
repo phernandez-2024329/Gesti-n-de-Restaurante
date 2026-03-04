@@ -61,27 +61,23 @@ export const getMenuById = async (req, res) => {
 export const searchMenu = async (req, res) => {
     try {
         const { searchTerm } = req.query;
-
         if (!searchTerm) {
             return res.status(400).json({
                 message: "El término de búsqueda es obligatorio"
             });
         }
-
-        const menus = await searchMenuService(searchTerm);
-
+        const regex = new RegExp(searchTerm, 'i');
+        const menus = await Menu.find({ Menu_Plate: regex });
         if (menus.length === 0) {
             return res.status(404).json({
                 message: "No se encontraron menús con ese término"
             });
         }
-
         return res.status(200).json({
             message: "Menús encontrados exitosamente",
             count: menus.length,
             data: menus
         });
-
     } catch (error) {
         return res.status(500).json({
             message: "Error al buscar los menús",

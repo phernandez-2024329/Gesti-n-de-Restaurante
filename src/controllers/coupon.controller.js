@@ -40,6 +40,20 @@ export const updateCoupon = async (req, res) => {
   }
 };
 
+
+export const getCouponById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const coupon = await Coupon.findById(id);
+    if (!coupon || coupon.active === false) {
+      return res.status(404).json({ success: false, message: 'Cupón no encontrado' });
+    }
+    res.status(200).json({ success: true, message: 'Cupón obtenido', data: coupon });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error al obtener cupón', error: error.message });
+  }
+};
+
 export const deactivateCoupon = async (req, res) => {
   try {
     const { id } = req.params;
