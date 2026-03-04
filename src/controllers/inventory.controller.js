@@ -40,6 +40,20 @@ export const updateInventory = async (req, res) => {
   }
 };
 
+
+export const getInventoryById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const item = await Inventory.findById(id);
+    if (!item || item.estado === false) {
+      return res.status(404).json({ success: false, message: 'Artículo no encontrado' });
+    }
+    res.status(200).json({ success: true, message: 'Artículo obtenido', data: item });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error al obtener inventario', error: error.message });
+  }
+};
+
 export const deleteInventory = async (req, res) => {
   try {
     const { id } = req.params;
