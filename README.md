@@ -1,7 +1,7 @@
 ## Endpoints Principales
  
 ### Autenticación para Admin
-- **Registrar usuario**
+- **Registrar Admin**
   - POST /GestorRestaurante/v1/auth/register
   - Headers: Content-Type: application/json
   {
