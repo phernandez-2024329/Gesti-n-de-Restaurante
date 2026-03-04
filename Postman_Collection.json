@@ -7,7 +7,7 @@
   "variable": [
     {
       "key": "base_url",
-      "value": "http://localhost:3000/GestorRestaurante/v1",
+      "value": "http://localhost:3006/GestorRestaurante/v1",
       "type": "string"
     },
     {
@@ -192,6 +192,28 @@
               "raw": "{{base_url}}/auth/users",
               "host": ["{{base_url}}"],
               "path": ["auth", "users"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "x-token",
+                "value": "{{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/users/{{userId}}",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "users", "{{userId}}"]
             }
           },
           "response": []
@@ -465,6 +487,28 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "Delete Restaurant",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "x-token",
+                "value": "{{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/restaurant/{{restaurantId}}",
+              "host": ["{{base_url}}"],
+              "path": ["restaurant", "{{restaurantId}}"]
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -582,6 +626,28 @@
               "mode": "raw",
               "raw": "{\n  \"capacidad\": 6,\n  \"ubicacion\": \"Zona principal actualizada\"\n}"
             },
+            "url": {
+              "raw": "{{base_url}}/table/{{tableId}}",
+              "host": ["{{base_url}}"],
+              "path": ["table", "{{tableId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Table",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "x-token",
+                "value": "{{token}}"
+              }
+            ],
             "url": {
               "raw": "{{base_url}}/table/{{tableId}}",
               "host": ["{{base_url}}"],
@@ -740,6 +806,28 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "Delete Menu",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "x-token",
+                "value": "{{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/menu/{{menuId}}",
+              "host": ["{{base_url}}"],
+              "path": ["menu", "{{menuId}}"]
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -834,6 +922,28 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "Delete Order",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "x-token",
+                "value": "{{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/order/{{orderId}}",
+              "host": ["{{base_url}}"],
+              "path": ["order", "{{orderId}}"]
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -888,6 +998,28 @@
               "raw": "{{base_url}}/events",
               "host": ["{{base_url}}"],
               "path": ["events"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Event",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "x-token",
+                "value": "{{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/events/{{eventId}}",
+              "host": ["{{base_url}}"],
+              "path": ["events", "{{eventId}}"]
             }
           },
           "response": []
