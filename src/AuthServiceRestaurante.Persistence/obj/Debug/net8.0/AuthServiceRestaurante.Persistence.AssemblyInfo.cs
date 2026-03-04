@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AuthServiceRestaurante.Persistence")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+648a131decb8c6a7d57e27e87c5897dec439fb0d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0f132ddc9d50982e183309aeeed7fc0af26ed967")]
 [assembly: System.Reflection.AssemblyProductAttribute("AuthServiceRestaurante.Persistence")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AuthServiceRestaurante.Persistence")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
