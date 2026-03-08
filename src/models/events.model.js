@@ -32,7 +32,7 @@ const eventsSchema = new Schema(
     },
     restaurant_id: {
       type: Schema.Types.ObjectId,
-      ref: 'Restaurante',
+      ref: 'Restaurant',
       required: [true, 'El restaurante es obligatorio']
     },
     estado: {
