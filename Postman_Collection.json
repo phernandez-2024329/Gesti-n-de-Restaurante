@@ -46,7 +46,12 @@
       "type": "string"
     },
     {
-      "key": "tableId",
+      "key": "eventId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "reservationId",
       "value": "",
       "type": "string"
     }
@@ -197,6 +202,36 @@
           "response": []
         },
         {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "x-token",
+                "value": "{{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Usuario Actualizado\",\n  \"telefono\": \"87654321\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/users/{{userId}}",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "users", "{{userId}}"]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "Delete User",
           "request": {
             "method": "DELETE",
@@ -330,7 +365,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"table_name\": \"Mesa A\",\n  \"table_number\": 1,\n  \"table_ubication\": \"Zona principal\",\n  \"table_capacity\": 4,\n  \"table_time_available\": \"10:00\",\n  \"table_state\": \"disponible\"\n}"
+              "raw": "{\n  \"table_name\": \"Mesa A\",\n  \"table_number\": 1,\n  \"table_ubication\": \"Zona principal\",\n  \"table_capacity\": 4,\n  \"table_time_available\": \"10:00\",\n  \"table_state\": \"Disponible\",\n  \"restaurant_id\": \"{{restaurantId}}\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/table",
@@ -516,152 +551,6 @@
       "name": "6. ROLES",
       "item": [
         {
-          "name": "Create Table",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "if (pm.response.code === 201 || pm.response.code === 200) {",
-                  "  var jsonData = pm.response.json();",
-                  "  if (jsonData.data) {",
-                  "    pm.environment.set('tableId', jsonData.data._id || jsonData.data.id);",
-                  "  }",
-                  "}"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
-                "key": "x-token",
-                "value": "{{token}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"numero_mesa\": 1,\n  \"capacidad\": 4,\n  \"ubicacion\": \"Zona principal\",\n  \"restaurantId\": \"{{restaurantId}}\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/table",
-              "host": ["{{base_url}}"],
-              "path": ["table"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Get All Tables",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
-                "key": "x-token",
-                "value": "{{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/table",
-              "host": ["{{base_url}}"],
-              "path": ["table"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Get Table by ID",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
-                "key": "x-token",
-                "value": "{{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/table/{{tableId}}",
-              "host": ["{{base_url}}"],
-              "path": ["table", "{{tableId}}"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Update Table",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
-                "key": "x-token",
-                "value": "{{token}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"capacidad\": 6,\n  \"ubicacion\": \"Zona principal actualizada\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/table/{{tableId}}",
-              "host": ["{{base_url}}"],
-              "path": ["table", "{{tableId}}"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Delete Table",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
-                "key": "x-token",
-                "value": "{{token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/table/{{tableId}}",
-              "host": ["{{base_url}}"],
-              "path": ["table", "{{tableId}}"]
-            }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "7. MENU",
-      "item": [
-        {
           "name": "Get All Roles",
           "request": {
             "method": "GET",
@@ -686,7 +575,7 @@
       ]
     },
     {
-      "name": "8. ORDERS",
+      "name": "7. MENU",
       "item": [
         {
           "name": "Create Menu",
@@ -723,7 +612,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Ensalada César\",\n  \"descripcion\": \"Ensalada fresca con pollo y aderezo César\",\n  \"precio\": 12.99,\n  \"categoria\": \"Ensaladas\",\n  \"restaurantId\": \"{{restaurantId}}\"\n}"
+              "raw": "{\n  \"Menu_id\": 1,\n  \"Menu_Plate\": \"Ensalada César\",\n  \"Menu_Price\": 12.99,\n  \"Menu_Drink\": \"Agua\",\n  \"Menu_type_plate\": \"Entrada\",\n  \"Menu_type_drink\": \"Bebidas_sin_alcohol\",\n  \"Menu_description_plate\": \"Ensalada fresca con pollo y aderezo César\",\n  \"Restaurant_id\": \"{{restaurantId}}\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/menu",
@@ -832,7 +721,7 @@
       ]
     },
     {
-      "name": "9. EVENTS",
+      "name": "8. ORDERS",
       "item": [
         {
           "name": "Create Order",
@@ -869,7 +758,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"mesa_id\": \"{{tableId}}\",\n  \"items\": [\n    {\n      \"menu_id\": \"{{menuId}}\",\n      \"cantidad\": 2,\n      \"especificaciones\": \"Sin cebolla\"\n    }\n  ],\n  \"total\": 29.98,\n  \"estado\": \"Pendiente\"\n}"
+              "raw": "{\n  \"Orders_domicile\": \"Calle Principal 123\",\n  \"Orders_number\": \"ORD-001\",\n  \"Orders_facture\": \"FACT-001\",\n  \"Orders_facture_descripcion\": \"Pedido mesa 5\",\n  \"Restaurant_id\": \"{{restaurantId}}\",\n  \"Menu_id\": \"{{menuId}}\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/order",
@@ -902,6 +791,31 @@
           "response": []
         },
         {
+          "name": "Search Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "x-token",
+                "value": "{{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/order/search?searchTerm=ORD-001",
+              "host": ["{{base_url}}"],
+              "path": ["order", "search"],
+              "query": [
+                { "key": "searchTerm", "value": "ORD-001" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "Get Order by ID",
           "request": {
             "method": "GET",
@@ -915,6 +829,36 @@
                 "value": "{{token}}"
               }
             ],
+            "url": {
+              "raw": "{{base_url}}/order/{{orderId}}",
+              "host": ["{{base_url}}"],
+              "path": ["order", "{{orderId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Order",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "x-token",
+                "value": "{{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"Orders_status\": \"listo\"\n}"
+            },
             "url": {
               "raw": "{{base_url}}/order/{{orderId}}",
               "host": ["{{base_url}}"],
@@ -948,10 +892,25 @@
       ]
     },
     {
-      "name": "8. EVENTS",
+      "name": "9. EVENTS",
       "item": [
         {
           "name": "Create Event",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "  var jsonData = pm.response.json();",
+                  "  if (jsonData.data && jsonData.data._id) {",
+                  "    pm.environment.set('eventId', jsonData.data._id);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -970,7 +929,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Cena Especial\",\n  \"descripcion\": \"Cena con degustación de vinos\",\n  \"fecha\": \"2026-03-15\",\n  \"hora\": \"19:00\",\n  \"capacidad\": 30,\n  \"restaurantId\": \"{{restaurantId}}\"\n}"
+              "raw": "{\n  \"events_name\": \"Cena Especial\",\n  \"events_type\": \"Degustación\",\n  \"events_date_time_start\": \"2026-03-15T19:00:00.000Z\",\n  \"events_date_time_finish\": \"2026-03-15T23:00:00.000Z\",\n  \"events_tematic\": \"Vinos\",\n  \"events_history\": \"Cena con degustación\",\n  \"restaurant_id\": \"{{restaurantId}}\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/events",
@@ -1003,6 +962,58 @@
           "response": []
         },
         {
+          "name": "Get Event by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "x-token",
+                "value": "{{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/events/{{eventId}}",
+              "host": ["{{base_url}}"],
+              "path": ["events", "{{eventId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Event",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "x-token",
+                "value": "{{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"events_name\": \"Cena Especial Actualizada\",\n  \"events_tematic\": \"Vinos y tapas\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/events/{{eventId}}",
+              "host": ["{{base_url}}"],
+              "path": ["events", "{{eventId}}"]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "Delete Event",
           "request": {
             "method": "DELETE",
@@ -1020,6 +1031,169 @@
               "raw": "{{base_url}}/events/{{eventId}}",
               "host": ["{{base_url}}"],
               "path": ["events", "{{eventId}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "10. RESERVATIONS",
+      "item": [
+        {
+          "name": "Create Reservation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "  var jsonData = pm.response.json();",
+                  "  if (jsonData.reservation && jsonData.reservation._id) {",
+                  "    pm.environment.set('reservationId', jsonData.reservation._id);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"restaurant_id\": \"{{restaurantId}}\",\n  \"table_id\": \"{{tableId}}\",\n  \"reservation_type\": \"mesa\",\n  \"reservation_date\": \"2026-03-20\",\n  \"reservation_time\": \"20:00\",\n  \"reservation_price\": 15,\n  \"user_id\": \"{{userId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/reservation",
+              "host": ["{{base_url}}"],
+              "path": ["reservation"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Reservations",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reservation",
+              "host": ["{{base_url}}"],
+              "path": ["reservation"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Reservation by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reservation/{{reservationId}}",
+              "host": ["{{base_url}}"],
+              "path": ["reservation", "{{reservationId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Reservation",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reservation_state\": \"confirmada\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/reservation/{{reservationId}}",
+              "host": ["{{base_url}}"],
+              "path": ["reservation", "{{reservationId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Reservation",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reservation/{{reservationId}}",
+              "host": ["{{base_url}}"],
+              "path": ["reservation", "{{reservationId}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "11. REPORTS",
+      "item": [
+        {
+          "name": "Demanda Restaurantes",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reports/demanda-restaurantes",
+              "host": ["{{base_url}}"],
+              "path": ["reports", "demanda-restaurantes"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Top Platos",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reports/top-platos",
+              "host": ["{{base_url}}"],
+              "path": ["reports", "top-platos"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Desempeno Restaurante",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reports/desempeno-restaurante/{{restaurantId}}",
+              "host": ["{{base_url}}"],
+              "path": ["reports", "desempeno-restaurante", "{{restaurantId}}"]
             }
           },
           "response": []
