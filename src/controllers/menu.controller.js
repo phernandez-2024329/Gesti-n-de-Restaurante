@@ -66,9 +66,8 @@ export const searchMenu = async (req, res) => {
                 message: "El término de búsqueda es obligatorio"
             });
         }
-        const regex = new RegExp(searchTerm, 'i');
-        const menus = await Menu.find({ Menu_Plate: regex });
-        if (menus.length === 0) {
+        const menus = await searchMenuService(searchTerm);
+        if (!menus || menus.length === 0) {
             return res.status(404).json({
                 message: "No se encontraron menús con ese término"
             });

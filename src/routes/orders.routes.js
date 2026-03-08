@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { auth } from "../../middlewares/auth.js";
-
+import { validateCreateOrder } from "../../middlewares/route-validators.js";
 import {
 	createOrder,
 	getOrders,
@@ -15,6 +15,7 @@ const route = Router();
 route.post(
 	"/",
 	auth,
+	validateCreateOrder,
 	createOrder
 );
 

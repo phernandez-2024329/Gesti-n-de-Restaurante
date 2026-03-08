@@ -61,7 +61,7 @@ export const getTables = async (req, res) => {
     if (restaurant_id) filter.restaurant_id = restaurant_id;
 
     const tables = await Table.find(filter)
-      .populate('restaurant_id', 'nombre')
+      .populate('restaurant_id', 'restaurant_name restaurant_direction')
       .populate('reserva_id');
 
     // Agregar información legible de disponibilidad
@@ -91,7 +91,7 @@ export const getTableById = async (req, res) => {
     const { id } = req.params;
 
     const table = await Table.findById(id)
-      .populate('restaurant_id', 'nombre')
+      .populate('restaurant_id', 'restaurant_name restaurant_direction')
       .populate('reserva_id');
 
     if (!table || !table.estado) {

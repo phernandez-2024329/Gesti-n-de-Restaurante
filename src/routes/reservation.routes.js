@@ -9,12 +9,13 @@ import {
 
 import { validateJWT } from '../../middlewares/validate-JWT.js';
 import { validateRole } from '../../middlewares/validate-role.js';
+import { validateCreateReservation } from '../../middlewares/route-validators.js';
 import { Roles } from '../constants/roles.js';
 
 const router = Router();
 
 // Crear reservación (ADMIN o GERENTE)
-router.post('/', validateJWT, validateRole(Roles.ADMIN, Roles.GERENTE), createReservation);
+router.post('/', validateJWT, validateRole(Roles.ADMIN, Roles.GERENTE), validateCreateReservation, createReservation);
 
 // Listar reservaciones
 router.get('/', validateJWT, getReservations);

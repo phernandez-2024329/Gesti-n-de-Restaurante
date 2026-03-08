@@ -9,12 +9,22 @@ import {
 
 export const createOrder = async (req, res) => {
     try {
-        const order = await createOrdersService(req.body);
+        const data = { ...req.body };
+        if (!data.User_id && req.user?.id) {
+            data.User_id = req.user.id;
+        }
+        const order = await createOrdersService(data);
         res.status(201).json({
             message: "Orden creada exitosamente",
             data: order
         });
     } catch (error) {
+        if (error.code === 'INCOMPLETE_ORDER') {
+            return res.status(400).json({
+                message: "Pedido incompleto",
+                error: error.message
+            });
+        }
         res.status(500).json({
             message: "Error al crear la orden",
             error: error.message

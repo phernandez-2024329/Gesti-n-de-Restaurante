@@ -3,18 +3,86 @@ import Reservation from '../models/reservation.model.js';
 export const createReservation = async (req, res) => {
   try {
     const {
+      restaurant_id,
+      table_id,
+      reservation_type,
+      reservation_date,
+      reservation_time,
       reservation_price,
-      reservation_state,
       reservation_surcharge,
       reservation_history,
       user_id
     } = req.body;
 
+    if (!restaurant_id || !reservation_type || !reservation_date || !reservation_time || !reservation_price || !user_id) {
+      return res.status(400).json({
+        success: false,
+        message: 'Faltan campos obligatorios: restaurant_id, reservation_type, reservation_date, reservation_time, reservation_price, user_id'
+      });
+    }
+
+    if (reservation_type === 'mesa' && !table_id) {
+      return res.status(400).json({
+        success: false,
+        message: 'Para reservación en mesa se requiere table_id'
+      });
+    }
+
+    const reservationDate = new Date(reservation_date);
+    if (isNaN(reservationDate.getTime())) {
+      return res.status(400).json({
+        success: false,
+        message: 'reservation_date inválida'
+      });
+    }
+
+    const dayStart = new Date(reservationDate);
+    dayStart.setHours(0, 0, 0, 0);
+    const dayEnd = new Date(reservationDate);
+    dayEnd.setHours(23, 59, 59, 999);
+
+    if (reservation_type === 'mesa' && table_id) {
+      const duplicateTable = await Reservation.findOne({
+        estado: true,
+        reservation_state: { $nin: ['cancelada'] },
+        table_id,
+        restaurant_id,
+        reservation_date: { $gte: dayStart, $lte: dayEnd },
+        reservation_time
+      });
+      if (duplicateTable) {
+        return res.status(400).json({
+          success: false,
+          message: 'La mesa ya está reservada para esa fecha y hora (evitar reservas duplicadas)'
+        });
+      }
+    }
+
+    const duplicateUser = await Reservation.findOne({
+      estado: true,
+      reservation_state: { $nin: ['cancelada'] },
+      user_id,
+      restaurant_id,
+      reservation_date: { $gte: dayStart, $lte: dayEnd },
+      reservation_time
+    });
+    if (duplicateUser) {
+      return res.status(400).json({
+        success: false,
+        message: 'Ya tienes una reservación en este restaurante para la misma fecha y hora'
+      });
+    }
+
     const reservation = new Reservation({
+      restaurant_id,
+      table_id: reservation_type === 'mesa' ? table_id : null,
+      reservation_type,
+      reservation_date: new Date(reservation_date),
+      reservation_time,
       reservation_price,
-      reservation_state,
-      reservation_surcharge,
-      reservation_history,
+      reservation_state: 'pendiente',
+      reservation_surcharge: reservation_surcharge ?? 0,
+      reservation_history: reservation_history ?? '',
       user_id
     });
 
@@ -40,7 +108,9 @@ export const getReservations = async (req, res) => {
     const filter = { estado: true };
 
     const reservations = await Reservation.find(filter)
-      .populate('user_id', 'nombre email');
+      .populate('user_id', 'nombre email')
+      .populate('restaurant_id', 'restaurant_name restaurant_direction')
+      .populate('table_id', 'table_name table_number table_capacity');
 
     res.status(200).json({
       success: true,
@@ -62,7 +132,9 @@ export const getReservationById = async (req, res) => {
     const { id } = req.params;
 
     const reservation = await Reservation.findById(id)
-      .populate('user_id', 'nombre email');
+      .populate('user_id', 'nombre email')
+      .populate('restaurant_id', 'restaurant_name restaurant_direction')
+      .populate('table_id', 'table_name table_number table_capacity');
 
     if (!reservation || !reservation.estado) {
       return res.status(404).json({

@@ -9,12 +9,13 @@ import {
 
 import { validateJWT } from '../../middlewares/validate-JWT.js';
 import { validateRole } from '../../middlewares/validate-role.js';
+import { validateCreateTable } from '../../middlewares/route-validators.js';
 import { Roles } from '../constants/roles.js';
 
 const router = Router();
 
 // Crear mesa (ADMIN o GERENTE)
-router.post('/', validateJWT, validateRole(Roles.ADMIN, Roles.GERENTE), createTable);
+router.post('/', validateJWT, validateRole(Roles.ADMIN, Roles.GERENTE), validateCreateTable, createTable);
 
 // Listar mesas (?restaurant_id=...)
 router.get('/', validateJWT, getTables);

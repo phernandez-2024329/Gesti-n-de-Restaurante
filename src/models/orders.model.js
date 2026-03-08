@@ -16,12 +16,13 @@ const Orders = new Schema({
         type: String,
         required: [true, 'El número de la orden es obligatorio']
     },
-    
+
     Orders_cupon: {
         type: String,
-        enum: ['Cupon_30_Quetzales', 'Cupon_20%_Descuento', 'Dos_Por_Uno', 
-            'Envio_Gratis', 'Primera_Compra', 'Descuento_10%', 'Cupon_50_Quetzales', 
-            'Cupon_15%_Descuento', 'Cupon_15%_Descuento'],
+        enum: ['Cupon_30_Quetzales', 'Cupon_20%_Descuento', 'Dos_Por_Uno',
+            'Envio_Gratis', 'Primera_Compra', 'Descuento_10%', 'Cupon_50_Quetzales',
+            'Cupon_15%_Descuento', null],
+        default: null
     },
 
     Orders_facture: {
@@ -34,9 +35,15 @@ const Orders = new Schema({
         required: [true, 'La descripción de la factura es obligatoria']
     },
 
+    Orders_status: {
+        type: String,
+        enum: ['en_preparacion', 'listo', 'entregado', 'cancelado'],
+        default: 'en_preparacion'
+    },
+
     Restaurant_id: {
         type: Schema.Types.ObjectId,
-        ref: 'Restaurantes',
+        ref: 'Restaurant',
         required: [true, 'El ID del restaurante es obligatorio']
     },
 
@@ -48,10 +55,14 @@ const Orders = new Schema({
 
     User_id: {
         type: Schema.Types.ObjectId,
-        ref: 'Usuarios',
+        ref: 'Usuario',
         required: [true, 'El ID del usuario es obligatorio']
-    }
+    },
 
-});
+    estado: {
+        type: Boolean,
+        default: true
+    }
+}, { timestamps: true });
 
 export default model('Orders', Orders);

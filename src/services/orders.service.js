@@ -1,4 +1,5 @@
 import Orders from '../models/orders.model.js';
+import crypto from 'crypto';
 
 export const createOrdersService = async (data) => {
     const {
@@ -12,11 +13,20 @@ export const createOrdersService = async (data) => {
     Menu_id,
     User_id
     } = data;
+
+    if (!Orders_domicile || !Orders_number || !Orders_facture || !Orders_facture_descripcion || !Restaurant_id || !Menu_id || !User_id) {
+        const err = new Error('Pedido incompleto: faltan campos obligatorios (dirección, número orden, factura, descripción, restaurante, menú o usuario).');
+        err.code = 'INCOMPLETE_ORDER';
+        throw err;
+    }
+
+    const finalOrderId = Orders_id || `ORD-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;
+
     const newOrder = new Orders({
-        Orders_id: Orders_id,
+        Orders_id: finalOrderId,
         Orders_domicile: Orders_domicile,
         Orders_number: Orders_number,
-        Orders_cupon: Orders_cupon,
+        Orders_cupon: Orders_cupon || null,
         Orders_facture: Orders_facture,
         Orders_facture_descripcion: Orders_facture_descripcion,
         Restaurant_id: Restaurant_id,

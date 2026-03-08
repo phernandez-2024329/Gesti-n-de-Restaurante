@@ -37,6 +37,7 @@ const tableSchema = new Schema(
     },
     reserva_id: {
       type: Schema.Types.ObjectId,
+      ref: 'Reservation',
       default: null
     },
     estado: {
