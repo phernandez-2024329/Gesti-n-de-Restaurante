@@ -136,7 +136,7 @@ export const updateTable = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const updated = await Table.findByIdAndUpdate(id, req.body, { new: true });
+    const updated = await Table.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
 
     if (!updated) {
       return res.status(404).json({
