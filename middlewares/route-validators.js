@@ -108,3 +108,27 @@ export const validateCreateOrder = [
     body('User_id').optional().isMongoId().withMessage('User_id inválido'),
     checkValidators
 ];
+
+// --- Reseñas (Reviews) ---
+export const validateCreateReview = [
+    body('user_id').notEmpty().withMessage('user_id es obligatorio').isMongoId().withMessage('user_id inválido'),
+    body('restaurant_id').notEmpty().withMessage('restaurant_id es obligatorio').isMongoId().withMessage('restaurant_id inválido'),
+    body('rating')
+        .notEmpty().withMessage('rating es obligatorio')
+        .isInt({ min: 1, max: 5 }).withMessage('rating debe ser entre 1 y 5')
+        .toInt(),
+    body('comment').optional().trim().isLength({ max: 500 }).withMessage('comment máximo 500 caracteres'),
+    checkValidators
+];
+
+export const validateUpdateReview = [
+    param('id').isMongoId().withMessage('ID de reseña inválido'),
+    body('rating').optional().isInt({ min: 1, max: 5 }).withMessage('rating debe ser entre 1 y 5').toInt(),
+    body('comment').optional().trim().isLength({ max: 500 }).withMessage('comment máximo 500 caracteres'),
+    checkValidators
+];
+
+export const validateReviewIdParam = [
+    param('id').isMongoId().withMessage('ID de reseña inválido'),
+    checkValidators
+];
