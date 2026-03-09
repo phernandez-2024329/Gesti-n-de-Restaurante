@@ -175,7 +175,7 @@ export const updateReservation = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const updated = await Reservation.findByIdAndUpdate(id, req.body, { new: true });
+    const updated = await Reservation.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
 
     if (!updated) {
       return res.status(404).json({

@@ -81,18 +81,18 @@ export const searchOrdersService = async (searchTerm) => {
 };
 
 export const updateOrderService = async (id, data) => {
-   return await Orders.findByIdAndUpdate(
-    {_id: id, estado: true},
+   return await Orders.findOneAndUpdate(
+    { _id: id, estado: true },
     data,
-    { new: true }
+    { new: true, runValidators: true }
    );
 };
 
 export const deleteOrderService = async (id) => {
-    return await Orders.findByIdAndUpdate(
-        {_id: id, estado: true},
+    return await Orders.findOneAndUpdate(
+        { _id: id, estado: true },
         { estado: false },
         { new: true }
     );
-}
+};
 
