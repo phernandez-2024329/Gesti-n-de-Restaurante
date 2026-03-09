@@ -49,8 +49,36 @@ export const validateCreateReservation = [
     body('reservation_time').trim().notEmpty().withMessage('reservation_time es obligatoria'),
     body('reservation_price').notEmpty().withMessage('reservation_price es obligatorio').isFloat({ min: 0 }).withMessage('reservation_price debe ser >= 0'),
     body('user_id').notEmpty().withMessage('user_id es obligatorio').isMongoId().withMessage('user_id inválido'),
-    body('table_id').optional().isMongoId().withMessage('table_id inválido'),
+    body('table_id')
+        .optional()
+        .isMongoId().withMessage('table_id inválido')
+        .custom((value, { req }) => {
+            if (req.body.reservation_type === 'mesa' && !value) {
+                throw new Error('Para reservación tipo mesa se requiere table_id');
+            }
+            return true;
+        }),
     body('reservation_surcharge').optional().isFloat({ min: 0 }).withMessage('reservation_surcharge debe ser >= 0'),
+    checkValidators
+];
+
+export const validateUpdateReservation = [
+    param('id').isMongoId().withMessage('ID de reservación inválido'),
+    body('restaurant_id').optional().isMongoId().withMessage('restaurant_id inválido'),
+    body('table_id').optional({ values: 'null' }).isMongoId().withMessage('table_id inválido'),
+    body('reservation_type').optional().isIn(['mesa', 'domicilio', 'para_llevar']).withMessage('reservation_type debe ser mesa, domicilio o para_llevar'),
+    body('reservation_date').optional().isISO8601().withMessage('reservation_date debe ser fecha válida'),
+    body('reservation_time').optional().trim().notEmpty().withMessage('reservation_time no puede estar vacía'),
+    body('reservation_price').optional().isFloat({ min: 0 }).withMessage('reservation_price debe ser >= 0'),
+    body('reservation_state').optional().isIn(['pendiente', 'confirmada', 'cancelada', 'completada']).withMessage('reservation_state inválido'),
+    body('reservation_surcharge').optional().isFloat({ min: 0 }).withMessage('reservation_surcharge debe ser >= 0'),
+    body('reservation_history').optional().trim(),
+    body('user_id').optional().isMongoId().withMessage('user_id inválido'),
+    checkValidators
+];
+
+export const validateReservationIdParam = [
+    param('id').isMongoId().withMessage('ID de reservación inválido'),
     checkValidators
 ];
 

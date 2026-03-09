@@ -113,11 +113,16 @@ export const createReservation = async (req, res) => {
 export const getReservations = async (req, res) => {
   try {
     const filter = { estado: true };
+    const { restaurant_id, user_id } = req.query;
+
+    if (restaurant_id) filter.restaurant_id = restaurant_id;
+    if (user_id) filter.user_id = user_id;
 
     const reservations = await Reservation.find(filter)
       .populate('user_id', 'nombre email')
       .populate('restaurant_id', 'restaurant_name restaurant_direction')
-      .populate('table_id', 'table_name table_number table_capacity');
+      .populate('table_id', 'table_name table_number table_capacity')
+      .sort({ reservation_date: 1, reservation_time: 1 });
 
     res.status(200).json({
       success: true,
@@ -126,6 +131,13 @@ export const getReservations = async (req, res) => {
     });
 
   } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({
+        success: false,
+        message: 'Parámetro de búsqueda inválido (restaurant_id o user_id)',
+        error: 'INVALID_ID'
+      });
+    }
     res.status(500).json({
       success: false,
       message: 'Error al obtener reservaciones',
@@ -252,18 +264,25 @@ export const deleteReservation = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const reservation = await Reservation.findByIdAndUpdate(
-      id,
-      { estado: false },
-      { new: true }
-    );
-
-    if (!reservation) {
+    const existing = await Reservation.findById(id);
+    if (!existing) {
       return res.status(404).json({
         success: false,
         message: 'Reservación no encontrada'
       });
     }
+    if (!existing.estado) {
+      return res.status(404).json({
+        success: false,
+        message: 'Reservación ya fue eliminada'
+      });
+    }
+
+    const reservation = await Reservation.findByIdAndUpdate(
+      id,
+      { estado: false },
+      { new: true }
+    );
 
     res.status(200).json({
       success: true,
