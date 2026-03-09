@@ -47,6 +47,13 @@ const getEventById = async (req, res) => {
     }
     res.status(200).json({ success: true, message: 'Evento obtenido exitosamente', data: event });
   } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de evento no válido',
+        error: 'INVALID_ID'
+      });
+    }
     res.status(500).json({ success: false, message: 'Error al obtener evento', error: error.message });
   }
 };
@@ -61,6 +68,13 @@ const updateEvent = async (req, res) => {
     }
     res.status(200).json({ success: true, message: 'Evento actualizado', data: updated });
   } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de evento no válido',
+        error: 'INVALID_ID'
+      });
+    }
     res.status(500).json({ success: false, message: 'Error al actualizar evento', error: error.message });
   }
 };
@@ -74,6 +88,13 @@ const deleteEvent = async (req, res) => {
     }
     res.status(200).json({ success: true, message: 'Evento eliminado', data: deleted });
   } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de evento no válido',
+        error: 'INVALID_ID'
+      });
+    }
     res.status(500).json({ success: false, message: 'Error al eliminar evento', error: error.message });
   }
 };

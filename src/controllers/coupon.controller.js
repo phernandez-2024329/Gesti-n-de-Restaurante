@@ -36,6 +36,9 @@ export const updateCoupon = async (req, res) => {
     }
     res.status(200).json({ success: true, message: 'Cupón actualizado', data: updated });
   } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({ success: false, message: 'ID de cupón no válido', error: 'INVALID_ID' });
+    }
     res.status(500).json({ success: false, message: 'Error al actualizar cupón', error: error.message });
   }
 };
@@ -50,6 +53,9 @@ export const getCouponById = async (req, res) => {
     }
     res.status(200).json({ success: true, message: 'Cupón obtenido', data: coupon });
   } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({ success: false, message: 'ID de cupón no válido', error: 'INVALID_ID' });
+    }
     res.status(500).json({ success: false, message: 'Error al obtener cupón', error: error.message });
   }
 };
@@ -63,6 +69,9 @@ export const deactivateCoupon = async (req, res) => {
     }
     res.status(200).json({ success: true, message: 'Cupón desactivado', data: deactivated });
   } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({ success: false, message: 'ID de cupón no válido', error: 'INVALID_ID' });
+    }
     res.status(500).json({ success: false, message: 'Error al desactivar cupón', error: error.message });
   }
 };

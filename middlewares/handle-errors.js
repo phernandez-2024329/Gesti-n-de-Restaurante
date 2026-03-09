@@ -30,6 +30,14 @@ export const errorHandler = (err, req, res, next) => {
         return res.status(401).json({ success: false, message: 'Token expirado', error: 'TOKEN_EXPIRED' });
     }
 
+    if (err.code === 'LIMIT_FILE_SIZE' || (err.name && err.name === 'MulterError')) {
+        return res.status(400).json({
+            success: false,
+            message: err.message || 'El archivo es demasiado grande o el formato no es válido',
+            error: 'FILE_ERROR',
+        });
+    }
+
     res.status(500).json({
         success: false,
         message: 'Error interno del servidor',

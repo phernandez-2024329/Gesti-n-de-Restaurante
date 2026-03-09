@@ -144,6 +144,13 @@ export const getRestaurantById = async (req, res) => {
     });
 
   } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de restaurante no válido',
+        error: 'INVALID_ID'
+      });
+    }
     res.status(500).json({
       success: false,
       message: 'Error al obtener restaurante',
@@ -172,6 +179,13 @@ export const updateRestaurant = async (req, res) => {
     });
 
   } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de restaurante no válido',
+        error: 'INVALID_ID'
+      });
+    }
     res.status(500).json({
       success: false,
       message: 'Error al actualizar restaurante',
@@ -204,6 +218,13 @@ export const deleteRestaurant = async (req, res) => {
     });
 
   } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de restaurante no válido',
+        error: 'INVALID_ID'
+      });
+    }
     res.status(500).json({
       success: false,
       message: 'Error al eliminar restaurante',

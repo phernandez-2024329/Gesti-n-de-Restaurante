@@ -21,11 +21,13 @@ export const createOrder = async (req, res) => {
     } catch (error) {
         if (error.code === 'INCOMPLETE_ORDER') {
             return res.status(400).json({
+                success: false,
                 message: "Pedido incompleto",
                 error: error.message
             });
         }
         res.status(500).json({
+            success: false,
             message: "Error al crear la orden",
             error: error.message
         });
@@ -41,6 +43,7 @@ export const getOrders = async (req, res) => {
         });
     } catch (error) {
         res.status(500).json({
+            success: false,
             message: "Error al obtener las órdenes",
             error: error.message
         });
@@ -52,6 +55,7 @@ export const getOrderById = async (req, res) => {
         const order = await getOrderByIdService(req.params.id);
         if (!order) {
             return res.status(404).json({
+                success: false,
                 message: "Orden no encontrada"
             });
         }
@@ -61,6 +65,7 @@ export const getOrderById = async (req, res) => {
         });
     } catch (error) {
         res.status(500).json({
+            success: false,
             message: "Error al obtener la orden",
             error: error.message
         });
@@ -73,6 +78,7 @@ export const searchOrders = async (req, res) => {
 
         if (!searchTerm) {
             return res.status(400).json({
+                success: false,
                 message: "El término de búsqueda es obligatorio"
             });
         }
@@ -81,6 +87,7 @@ export const searchOrders = async (req, res) => {
 
         if (orders.length === 0) {
             return res.status(404).json({
+                success: false,
                 message: "No se encontraron órdenes con el término proporcionado"
             });
         }
@@ -93,6 +100,7 @@ export const searchOrders = async (req, res) => {
 
     } catch (error) {
         return res.status(500).json({
+            success: false,
             message: "Error al procesar la búsqueda de órdenes",
             error: error.message
         });
@@ -106,12 +114,14 @@ export const updateOrders = async (req, res) => {
 
         if (!id) {
             return res.status(400).json({
+                success: false,
                 message: "El ID de la orden es obligatorio"
             });
         }
 
         if (Object.keys(updateData).length === 0) {
             return res.status(400).json({
+                success: false,
                 message: "No se proporcionaron datos para actualizar"
             });
         }
@@ -120,6 +130,7 @@ export const updateOrders = async (req, res) => {
 
         if (!order) {
             return res.status(404).json({
+                success: false,
                 message: "Orden no encontrada"
             });
         }
@@ -132,11 +143,14 @@ export const updateOrders = async (req, res) => {
     } catch (error) {
         if (error.name === 'CastError') {
             return res.status(400).json({
-                message: "ID de orden no válido"
+                success: false,
+                message: "ID de orden no válido",
+                error: "INVALID_ID"
             });
         }
 
         return res.status(500).json({
+            success: false,
             message: "Error al actualizar la orden",
             error: error.message
         });
@@ -149,6 +163,7 @@ export const deleteOrders = async (req, res) => {
 
         if (!id) {
             return res.status(400).json({
+                success: false,
                 message: "El ID de la orden es obligatorio"
             });
         }
@@ -157,6 +172,7 @@ export const deleteOrders = async (req, res) => {
 
         if (!order) {
             return res.status(404).json({
+                success: false,
                 message: "Orden no encontrada"
             });
         }
@@ -169,11 +185,14 @@ export const deleteOrders = async (req, res) => {
     } catch (error) {
         if (error.name === 'CastError') {
             return res.status(400).json({
-                message: "ID de orden no válido"
+                success: false,
+                message: "ID de orden no válido",
+                error: "INVALID_ID"
             });
         }
 
         return res.status(500).json({
+            success: false,
             message: "Error al eliminar la orden",
             error: error.message
         });

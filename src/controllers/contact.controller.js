@@ -75,6 +75,13 @@ export const getContactById = async (req, res) => {
     });
 
   } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de contacto no válido',
+        error: 'INVALID_ID'
+      });
+    }
     res.status(500).json({
       success: false,
       message: 'Error al obtener contacto',
@@ -103,6 +110,13 @@ export const updateContact = async (req, res) => {
     });
 
   } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de contacto no válido',
+        error: 'INVALID_ID'
+      });
+    }
     res.status(500).json({
       success: false,
       message: 'Error al actualizar contacto',
@@ -135,6 +149,13 @@ export const deleteContact = async (req, res) => {
     });
 
   } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de contacto no válido',
+        error: 'INVALID_ID'
+      });
+    }
     res.status(500).json({
       success: false,
       message: 'Error al eliminar contacto',

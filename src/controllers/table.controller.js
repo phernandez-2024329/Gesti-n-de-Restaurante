@@ -45,6 +45,13 @@ export const createTable = async (req, res) => {
     });
 
   } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de restaurante o datos inválidos',
+        error: 'INVALID_ID'
+      });
+    }
     res.status(500).json({
       success: false,
       message: 'Error al crear mesa',
@@ -67,7 +74,7 @@ export const getTables = async (req, res) => {
     // Agregar información legible de disponibilidad
     const tablesConDisponibilidad = tables.map(table => {
       const tableObj = table.toObject();
-      tableObj.disponibilidad = table.table_state === 'Disponible' ? '✅ Libre' : `❌ ${table.table_state}`;
+      tableObj.disponibilidad = table.table_state === 'Disponible' ? ' Libre' : `No Libre ${table.table_state}`;
       return tableObj;
     });
 
@@ -110,6 +117,13 @@ export const getTableById = async (req, res) => {
     });
 
   } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de mesa no válido',
+        error: 'INVALID_ID'
+      });
+    }
     res.status(500).json({
       success: false,
       message: 'Error al obtener mesa',
@@ -141,6 +155,13 @@ export const updateTable = async (req, res) => {
     });
 
   } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de mesa no válido',
+        error: 'INVALID_ID'
+      });
+    }
     res.status(500).json({
       success: false,
       message: 'Error al actualizar mesa',
@@ -176,6 +197,13 @@ export const deleteTable = async (req, res) => {
     });
 
   } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de mesa no válido',
+        error: 'INVALID_ID'
+      });
+    }
     res.status(500).json({
       success: false,
       message: 'Error al eliminar mesa',

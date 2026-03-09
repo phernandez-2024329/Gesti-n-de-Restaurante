@@ -39,6 +39,9 @@ export const updateReview = async (req, res) => {
     }
     res.status(200).json({ success: true, message: 'Reseña actualizada', data: updated });
   } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({ success: false, message: 'ID de reseña no válido', error: 'INVALID_ID' });
+    }
     res.status(500).json({ success: false, message: 'Error al actualizar reseña', error: error.message });
   }
 };
@@ -52,6 +55,9 @@ export const deactivateReview = async (req, res) => {
     }
     res.status(200).json({ success: true, message: 'Reseña desactivada', data: deactivated });
   } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({ success: false, message: 'ID de reseña no válido', error: 'INVALID_ID' });
+    }
     res.status(500).json({ success: false, message: 'Error al desactivar reseña', error: error.message });
   }
 };

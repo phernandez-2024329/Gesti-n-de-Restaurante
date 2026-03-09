@@ -17,6 +17,7 @@ export const createMenu = async (req, res) => {
 
     } catch (error) {
         res.status(500).json({
+            success: false,
             message: "Error al crear el menú",
             error: error.message
         });
@@ -32,6 +33,7 @@ export const getMenus = async (req, res) => {
         });
     } catch (error) {
         res.status(500).json({
+            success: false,
             message: "Error al obtener los menús",
             error: error.message
         });
@@ -43,6 +45,7 @@ export const getMenuById = async (req, res) => {
         const menu = await getMenuByIdService(req.params.id);
         if (!menu) {
             return res.status(404).json({
+                success: false,
                 message: "Menú no encontrado"
             });
         }
@@ -51,7 +54,15 @@ export const getMenuById = async (req, res) => {
             data: menu
         });
     } catch (error) {
+        if (error.name === 'CastError') {
+            return res.status(400).json({
+                success: false,
+                message: "ID de menú no válido",
+                error: "INVALID_ID"
+            });
+        }
         res.status(500).json({
+            success: false,
             message: "Error al obtener el menú",
             error: error.message
         });
@@ -63,12 +74,14 @@ export const searchMenu = async (req, res) => {
         const { searchTerm } = req.query;
         if (!searchTerm) {
             return res.status(400).json({
+                success: false,
                 message: "El término de búsqueda es obligatorio"
             });
         }
         const menus = await searchMenuService(searchTerm);
         if (!menus || menus.length === 0) {
             return res.status(404).json({
+                success: false,
                 message: "No se encontraron menús con ese término"
             });
         }
@@ -79,6 +92,7 @@ export const searchMenu = async (req, res) => {
         });
     } catch (error) {
         return res.status(500).json({
+            success: false,
             message: "Error al buscar los menús",
             error: error.message
         });
@@ -92,12 +106,14 @@ export const updateMenu = async (req, res) => {
 
         if (!id) {
             return res.status(400).json({
+                success: false,
                 message: "El ID del menú es obligatorio"
             });
         }
 
         if (Object.keys(updateData).length === 0) {
             return res.status(400).json({
+                success: false,
                 message: "No se proporcionaron datos para actualizar"
             });
         }
@@ -106,6 +122,7 @@ export const updateMenu = async (req, res) => {
 
         if (!menu) {
             return res.status(404).json({
+                success: false,
                 message: "Menú no encontrado"
             });
         }
@@ -118,11 +135,14 @@ export const updateMenu = async (req, res) => {
     } catch (error) {
         if (error.name === 'CastError') {
             return res.status(400).json({
-                message: "ID de menú no válido"
+                success: false,
+                message: "ID de menú no válido",
+                error: "INVALID_ID"
             });
         }
 
         return res.status(500).json({
+            success: false,
             message: "Error al actualizar el menú",
             error: error.message
         });
@@ -143,6 +163,7 @@ export const deleteMenu = async (req, res) => {
 
         if (!menu) {
             return res.status(404).json({
+                success: false,
                 message: "Menú no encontrado"
             });
         }
@@ -155,11 +176,14 @@ export const deleteMenu = async (req, res) => {
     } catch (error) {
         if (error.name === 'CastError') {
             return res.status(400).json({
-                message: "ID de menú no válido"
+                success: false,
+                message: "ID de menú no válido",
+                error: "INVALID_ID"
             });
         }
 
         return res.status(500).json({
+            success: false,
             message: "Error al eliminar el menú",
             error: error.message
         });

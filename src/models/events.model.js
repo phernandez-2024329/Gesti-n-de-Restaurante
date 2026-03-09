@@ -30,6 +30,12 @@ const eventsSchema = new Schema(
       type: String,
       trim: true
     },
+    events_services: {
+      music: { type: String, trim: true },
+      decoration: { type: String, trim: true },
+      special_menu: { type: String, trim: true },
+      extra_staff: { type: String, trim: true }
+    },
     restaurant_id: {
       type: Schema.Types.ObjectId,
       ref: 'Restaurant',
