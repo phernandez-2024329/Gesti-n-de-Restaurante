@@ -54,6 +54,26 @@
       "key": "reservationId",
       "value": "",
       "type": "string"
+    },
+    {
+      "key": "reviewId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "couponId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "inventoryId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "informationId",
+      "value": "",
+      "type": "string"
     }
   ],
   "item": [
@@ -78,6 +98,22 @@
     {
       "name": "2. AUTHENTICATION",
       "item": [
+        {
+          "name": "Verify Email",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/verify-email?token=TU_TOKEN_DE_VERIFICACION",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "verify-email"],
+              "query": [
+                { "key": "token", "value": "TU_TOKEN_DE_VERIFICACION" }
+              ]
+            }
+          },
+          "response": []
+        },
         {
           "name": "Register User",
           "event": [
@@ -147,7 +183,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"Password123!\"\n}"
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"Password123\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/auth/login",
@@ -324,6 +360,59 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "Get Contact by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/contact/{{contactId}}",
+              "host": ["{{base_url}}"],
+              "path": ["contact", "{{contactId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Contact",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contact_name\": \"Juan García Actualizado\",\n  \"contact_phone_number\": \"99998888\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/contact/{{contactId}}",
+              "host": ["{{base_url}}"],
+              "path": ["contact", "{{contactId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Contact",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/contact/{{contactId}}",
+              "host": ["{{base_url}}"],
+              "path": ["contact", "{{contactId}}"]
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -393,6 +482,59 @@
               "raw": "{{base_url}}/table",
               "host": ["{{base_url}}"],
               "path": ["table"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Table by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/table/{{tableId}}",
+              "host": ["{{base_url}}"],
+              "path": ["table", "{{tableId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Table",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"table_name\": \"Mesa Premium\",\n  \"table_capacity\": 10,\n  \"table_state\": \"Ocupada\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/table/{{tableId}}",
+              "host": ["{{base_url}}"],
+              "path": ["table", "{{tableId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Table",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/table/{{tableId}}",
+              "host": ["{{base_url}}"],
+              "path": ["table", "{{tableId}}"]
             }
           },
           "response": []
@@ -645,6 +787,31 @@
           "response": []
         },
         {
+          "name": "Search Menu",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "x-token",
+                "value": "{{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/menu/search?searchTerm=Ensalada",
+              "host": ["{{base_url}}"],
+              "path": ["menu", "search"],
+              "query": [
+                { "key": "searchTerm", "value": "Ensalada" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "Get Menu by ID",
           "request": {
             "method": "GET",
@@ -686,7 +853,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"precio\": 14.99,\n  \"descripcion\": \"Ensalada fresca con pollo premium y aderezo César\"\n}"
+              "raw": "{\n  \"Menu_Plate\": \"Ensalada César Premium\",\n  \"Menu_Price\": 14.99,\n  \"Menu_description_plate\": \"Ensalada fresca con pollo premium y aderezo César\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/menu/{{menuId}}",
@@ -1195,6 +1362,446 @@
               "host": ["{{base_url}}"],
               "path": ["reports", "desempeno-restaurante", "{{restaurantId}}"]
             }
+          },
+          "response": []
+        },
+        {
+          "name": "Ingresos",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reports/ingresos",
+              "host": ["{{base_url}}"],
+              "path": ["reports", "ingresos"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Horas Pico",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reports/horas-pico",
+              "host": ["{{base_url}}"],
+              "path": ["reports", "horas-pico"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reservaciones",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reports/reservaciones",
+              "host": ["{{base_url}}"],
+              "path": ["reports", "reservaciones"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Ocupacion Restaurante",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reports/ocupacion/{{restaurantId}}",
+              "host": ["{{base_url}}"],
+              "path": ["reports", "ocupacion", "{{restaurantId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Clientes Frecuentes",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reports/clientes-frecuentes/{{restaurantId}}",
+              "host": ["{{base_url}}"],
+              "path": ["reports", "clientes-frecuentes", "{{restaurantId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pedidos Recurrentes",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reports/pedidos-recurrentes/{{restaurantId}}",
+              "host": ["{{base_url}}"],
+              "path": ["reports", "pedidos-recurrentes", "{{restaurantId}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "12. REVIEW",
+      "item": [
+        {
+          "name": "Create Review",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "  var jsonData = pm.response.json();",
+                  "  if (jsonData.data && jsonData.data._id) pm.environment.set('reviewId', jsonData.data._id);",
+                  "  else if (jsonData.review && jsonData.review._id) pm.environment.set('reviewId', jsonData.review._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"{{userId}}\",\n  \"restaurant_id\": \"{{restaurantId}}\",\n  \"rating\": 5,\n  \"comment\": \"Excelente comida y atención\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/review", "host": ["{{base_url}}"], "path": ["review"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Reviews",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/review", "host": ["{{base_url}}"], "path": ["review"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Review",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 4,\n  \"comment\": \"Muy bueno, repetiré\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/review/{{reviewId}}", "host": ["{{base_url}}"], "path": ["review", "{{reviewId}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Review",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/review/{{reviewId}}", "host": ["{{base_url}}"], "path": ["review", "{{reviewId}}"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "13. COUPON",
+      "item": [
+        {
+          "name": "Create Coupon",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "  var jsonData = pm.response.json();",
+                  "  if (jsonData.data && jsonData.data._id) pm.environment.set('couponId', jsonData.data._id);",
+                  "  else if (jsonData.coupon && jsonData.coupon._id) pm.environment.set('couponId', jsonData.coupon._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"DESCUENTO20\",\n  \"discount_type\": \"percentage\",\n  \"discount_value\": 20,\n  \"max_uses\": 100,\n  \"max_uses_per_user\": 5,\n  \"expiration_date\": \"2026-12-31\",\n  \"min_order_amount\": 50,\n  \"restaurant_ids\": [\"{{restaurantId}}\"]\n}"
+            },
+            "url": { "raw": "{{base_url}}/coupon", "host": ["{{base_url}}"], "path": ["coupon"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Coupons",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/coupon", "host": ["{{base_url}}"], "path": ["coupon"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Coupon by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/coupon/{{couponId}}", "host": ["{{base_url}}"], "path": ["coupon", "{{couponId}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Coupon",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"discount_value\": 25,\n  \"max_uses\": 200\n}"
+            },
+            "url": { "raw": "{{base_url}}/coupon/{{couponId}}", "host": ["{{base_url}}"], "path": ["coupon", "{{couponId}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Coupon",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/coupon/{{couponId}}", "host": ["{{base_url}}"], "path": ["coupon", "{{couponId}}"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "14. INVENTORY",
+      "item": [
+        {
+          "name": "Create Inventory",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "  var jsonData = pm.response.json();",
+                  "  if (jsonData.data && jsonData.data._id) pm.environment.set('inventoryId', jsonData.data._id);",
+                  "  else if (jsonData.inventory && jsonData.inventory._id) pm.environment.set('inventoryId', jsonData.inventory._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"item_name\": \"Queso Parmesano\",\n  \"category\": \"Lácteos\",\n  \"quantity\": 10,\n  \"unit\": \"kg\",\n  \"price\": 5.00,\n  \"provider\": \"Proveedor S.A.\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/inventory", "host": ["{{base_url}}"], "path": ["inventory"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Inventory",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/inventory", "host": ["{{base_url}}"], "path": ["inventory"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Inventory by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/inventory/{{inventoryId}}", "host": ["{{base_url}}"], "path": ["inventory", "{{inventoryId}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Inventory",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity\": 20,\n  \"price\": 6.00\n}"
+            },
+            "url": { "raw": "{{base_url}}/inventory/{{inventoryId}}", "host": ["{{base_url}}"], "path": ["inventory", "{{inventoryId}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Inventory",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/inventory/{{inventoryId}}", "host": ["{{base_url}}"], "path": ["inventory", "{{inventoryId}}"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "15. INFORMATION",
+      "item": [
+        {
+          "name": "Create Information",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "  var jsonData = pm.response.json();",
+                  "  if (jsonData.information && jsonData.information._id) pm.environment.set('informationId', jsonData.information._id);",
+                  "  else if (jsonData.data && jsonData.data._id) pm.environment.set('informationId', jsonData.data._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"information\": \"Horario especial en festivos: 12:00 - 00:00\",\n  \"title\": \"Horarios festivos\",\n  \"restaurantId\": \"{{restaurantId}}\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/information", "host": ["{{base_url}}"], "path": ["information"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Information",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/information", "host": ["{{base_url}}"], "path": ["information"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Information by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/information/{{informationId}}", "host": ["{{base_url}}"], "path": ["information", "{{informationId}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Information",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Horarios festivos actualizados\",\n  \"information\": \"Nuevo texto\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/information/{{informationId}}", "host": ["{{base_url}}"], "path": ["information", "{{informationId}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Information",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "x-token", "value": "{{token}}" }
+            ],
+            "url": { "raw": "{{base_url}}/information/{{informationId}}", "host": ["{{base_url}}"], "path": ["information", "{{informationId}}"] }
           },
           "response": []
         }
