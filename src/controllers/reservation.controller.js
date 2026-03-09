@@ -138,12 +138,12 @@ export const getReservationById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const reservation = await Reservation.findById(id)
+    const reservation = await Reservation.findOne({ _id: id, estado: true })
       .populate('user_id', 'nombre email')
       .populate('restaurant_id', 'restaurant_name restaurant_direction')
       .populate('table_id', 'table_name table_number table_capacity');
 
-    if (!reservation || !reservation.estado) {
+    if (!reservation) {
       return res.status(404).json({
         success: false,
         message: 'Reservación no encontrada'
@@ -171,23 +171,58 @@ export const getReservationById = async (req, res) => {
   }
 };
 
+// Campos permitidos para actualizar (no se permite _id, estado, timestamps)
+const RESERVATION_UPDATE_FIELDS = [
+  'restaurant_id', 'table_id', 'reservation_type', 'reservation_date', 'reservation_time',
+  'reservation_price', 'reservation_state', 'reservation_surcharge', 'reservation_history', 'user_id'
+];
+
 export const updateReservation = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const updated = await Reservation.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
+    const body = { ...req.body };
+    const updateData = {};
+    for (const key of RESERVATION_UPDATE_FIELDS) {
+      if (body[key] !== undefined) {
+        if (key === 'reservation_date' && typeof body[key] === 'string') {
+          const d = new Date(body[key]);
+          if (!isNaN(d.getTime())) updateData[key] = d;
+          else updateData[key] = body[key];
+        } else {
+          updateData[key] = body[key];
+        }
+      }
+    }
 
-    if (!updated) {
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'No se enviaron campos válidos para actualizar'
+      });
+    }
+
+    const updated = await Reservation.findByIdAndUpdate(id, updateData, {
+      new: true,
+      runValidators: true
+    });
+
+    if (!updated || !updated.estado) {
       return res.status(404).json({
         success: false,
         message: 'Reservación no encontrada'
       });
     }
 
+    const reservation = await Reservation.findById(updated._id)
+      .populate('user_id', 'nombre email')
+      .populate('restaurant_id', 'restaurant_name restaurant_direction')
+      .populate('table_id', 'table_name table_number table_capacity');
+
     res.status(200).json({
       success: true,
       message: 'Reservación actualizada',
-      reservation: updated
+      reservation
     });
 
   } catch (error) {
@@ -196,6 +231,13 @@ export const updateReservation = async (req, res) => {
         success: false,
         message: 'ID de reservación no válido',
         error: 'INVALID_ID'
+      });
+    }
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({
+        success: false,
+        message: 'Error de validación',
+        errors: Object.values(error.errors).map((e) => ({ field: e.path, message: e.message }))
       });
     }
     res.status(500).json({
