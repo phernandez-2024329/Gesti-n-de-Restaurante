@@ -56,9 +56,15 @@ export const validateCreateReservation = [
 
 export const validateCreateTable = [
     body('table_name').trim().notEmpty().withMessage('El nombre de la mesa es obligatorio'),
-    body('table_number').notEmpty().withMessage('El número de mesa es obligatorio').isInt({ min: 1 }).withMessage('table_number debe ser entero positivo'),
+    body('table_number')
+        .notEmpty().withMessage('El número de mesa es obligatorio')
+        .isInt({ min: 1 }).withMessage('table_number debe ser entero positivo')
+        .toInt(),
     body('table_ubication').trim().notEmpty().withMessage('La ubicación es obligatoria'),
-    body('table_capacity').notEmpty().withMessage('La capacidad es obligatoria').isInt({ min: 1 }).withMessage('table_capacity debe ser al menos 1'),
+    body('table_capacity')
+        .notEmpty().withMessage('La capacidad es obligatoria')
+        .isInt({ min: 1 }).withMessage('table_capacity debe ser al menos 1')
+        .toInt(),
     body('restaurant_id').notEmpty().withMessage('restaurant_id es obligatorio').isMongoId().withMessage('restaurant_id inválido'),
     body('table_state').optional().isIn(['Disponible', 'Ocupada', 'Reservada']).withMessage('table_state inválido'),
     checkValidators

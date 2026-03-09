@@ -15,7 +15,7 @@ import { Roles } from '../constants/roles.js';
 const router = Router();
 
 // Crear reservación (ADMIN o GERENTE)
-router.post('/', validateJWT, validateRole(Roles.ADMIN, Roles.GERENTE), validateCreateReservation, createReservation);
+router.post('/', validateJWT, validateRole(Roles.ADMIN, Roles.GERENTE), ...validateCreateReservation, createReservation);
 
 // Listar reservaciones
 router.get('/', validateJWT, getReservations);

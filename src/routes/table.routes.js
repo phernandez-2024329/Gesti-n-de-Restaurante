@@ -15,7 +15,7 @@ import { Roles } from '../constants/roles.js';
 const router = Router();
 
 // Crear mesa (ADMIN o GERENTE)
-router.post('/', validateJWT, validateRole(Roles.ADMIN, Roles.GERENTE), validateCreateTable, createTable);
+router.post('/', validateJWT, validateRole(Roles.ADMIN, Roles.GERENTE), ...validateCreateTable, createTable);
 
 // Listar mesas (?restaurant_id=...)
 router.get('/', validateJWT, getTables);
