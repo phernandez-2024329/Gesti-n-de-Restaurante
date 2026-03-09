@@ -17,7 +17,7 @@
 |----------------|-------------|--------|
 | Restaurante: dirección, horario, categoría, precios promedio, fotos, contacto | `restaurant.model.js`: restaurant_direction, restaurant_time_start/close, restaurant_type_gastronomic, restaurant_mean_price, restaurant_images, contact_id | Cubierto. Validadores añadidos en `validateCreateRestaurant` (route-validators.js) para crear/actualizar. |
 | Mesas: capacidad, ubicación, horarios disponibilidad | `table.model.js`: table_capacity, table_ubication, table_time_available, table_state | Cubierto. Validación de creación en `validateCreateTable`. |
-| Menú: platos, descripción, ingredientes, precios, disponibilidad, tipo | `menu.model.js`: Menu_Plate, Menu_description_plate, Menu_Price, Menu_type_plate, Menu_type_drink, etc. | Cubierto. Falta campo explícito "disponibilidad" e "ingredientes" si se desea alinear 100% con el PDF. |
+| Menú: platos, descripción, ingredientes, precios, disponibilidad, tipo | `menu.model.js`: Menu_Plate, Menu_description_plate, Menu_Price, **Menu_ingredients**, **Menu_available**, Menu_type_plate (incluye Bebida), Menu_type_drink, Menu_Promotion | **Completo**. Campos ingredientes y disponibilidad añadidos. |
 
 ### 3. Reservaciones (PDF punto 2a)
 
@@ -40,7 +40,7 @@
 | Requisito | Estado |
 |-----------|--------|
 | Programación y administración de eventos | `events.model.js` y rutas en `/events` con auth y roles ADMIN/GERENTE. |
-| Recursos/servicios adicionales (música, decoración, menú especial, personal) | No modelado como campos; el PDF lo sugiere. Se puede extender el esquema con un objeto o subdocumento `event_services`. |
+| Recursos/servicios adicionales (música, decoración, menú especial, personal) | **Implementado**: `events.model.js` incluye **events_services** { music, decoration, special_menu, extra_staff }. |
 
 ### 6. Informes y estadísticas (PDF punto 4)
 
@@ -55,7 +55,7 @@
 
 - **Clientes**: registro con validación de email y contraseña, verificación de correo, búsqueda/reservas, menús, historial (reservaciones/pedidos), reseñas (review), perfil editable, cupones (coupon). Roles y JWT coherentes con los endpoints.
 - **Administradores de plataforma**: gestión de usuarios, CRUD restaurantes, reportes protegidos por rol, roles en `constants/roles.js`.
-- **Administradores de restaurante (GERENTE)**: reservaciones, mesas, menú, eventos; reportes por restaurante. Falta explícitamente: generación de facturas/comprobantes y control de inventario básico (existen rutas `inventory` y modelos).
+- **Administradores de restaurante (GERENTE)**: reservaciones, mesas, menú, eventos; reportes por restaurante; inventario (`/inventory`). Pendiente: generación de facturas/comprobantes descargables y modelo de personal de servicio (ver VERIFICACION_PDF_COMPLETA.md).
 
 ### 8. Coherencia de endpoints (BASE_PATH: `/GestorRestaurante/v1`)
 
@@ -95,10 +95,12 @@
 ## Recomendaciones adicionales (según PDF y buen funcionamiento)
 
 1. **Reportes**: Sustituir datos mock en `report.controller.js` por agregaciones sobre Orders, Reservation, Menu y Review para demanda, top platos, horas pico, ingresos, ocupación, clientes frecuentes y pedidos recurrentes.
-2. **Menú**: Añadir campos `disponibilidad` (boolean) e `ingredientes` (array o string) si se desea alinear con la descripción del PDF.
-3. **Eventos**: Añadir en el modelo campos para recursos/servicios (música, decoración, menú especial, personal adicional) como objeto o subdocumento.
+2. **Menú** (alineado con PDF): Campos `Menu_available` (disponibilidad) y `Menu_ingredients` (array) en `menu.model.js`.
+3. **Eventos** (alineado con PDF): Campo `events_services` { music, decoration, special_menu, extra_staff } en `events.model.js`.
 4. **Notificaciones/alertas**: El PDF menciona notificaciones para confirmar reservaciones y estado de pedidos; actualmente no hay flujo de notificaciones (email/push); considerar integrar con el `EmailService` o similar.
 5. **Facturas/comprobantes**: El PDF pide “generación de facturas y comprobantes al finalizar el consumo”; el modelo de Orders tiene datos de factura; falta endpoint o flujo explícito de “generar comprobante” (PDF/descarga).
 6. **Exportación de informes**: El PDF pide “reportes exportables en distintos formatos (PDF, Excel)”; añadir endpoints o opción de query para exportar (ej. con librerías como pdfkit o exceljs).
+
+7. **Checklist detallado**: Ver **VERIFICACION_PDF_COMPLETA.md** para el listado punto por punto del PDF con estado (Completo / Parcial / Pendiente) y ubicación en código.
 
 Con los cambios aplicados, el proyecto queda alineado con las validaciones y la coherencia de datos e endpoints indicados en el PDF, y con mejor manejo de errores y prevención de reservas duplicadas y pedidos incompletos.

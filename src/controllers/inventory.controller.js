@@ -36,6 +36,9 @@ export const updateInventory = async (req, res) => {
     }
     res.status(200).json({ success: true, message: 'Artículo actualizado', data: updated });
   } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({ success: false, message: 'ID de artículo no válido', error: 'INVALID_ID' });
+    }
     res.status(500).json({ success: false, message: 'Error al actualizar inventario', error: error.message });
   }
 };
@@ -50,6 +53,9 @@ export const getInventoryById = async (req, res) => {
     }
     res.status(200).json({ success: true, message: 'Artículo obtenido', data: item });
   } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({ success: false, message: 'ID de artículo no válido', error: 'INVALID_ID' });
+    }
     res.status(500).json({ success: false, message: 'Error al obtener inventario', error: error.message });
   }
 };
@@ -63,6 +69,9 @@ export const deleteInventory = async (req, res) => {
     }
     res.status(200).json({ success: true, message: 'Artículo eliminado', data: deleted });
   } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({ success: false, message: 'ID de artículo no válido', error: 'INVALID_ID' });
+    }
     res.status(500).json({ success: false, message: 'Error al eliminar inventario', error: error.message });
   }
 };

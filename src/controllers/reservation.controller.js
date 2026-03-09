@@ -95,6 +95,13 @@ export const createReservation = async (req, res) => {
     });
 
   } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de reservación no válido',
+        error: 'INVALID_ID'
+      });
+    }
     res.status(500).json({
       success: false,
       message: 'Error al crear reservación',
@@ -149,6 +156,13 @@ export const getReservationById = async (req, res) => {
     });
 
   } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de reservación no válido',
+        error: 'INVALID_ID'
+      });
+    }
     res.status(500).json({
       success: false,
       message: 'Error al obtener reservación',
@@ -177,6 +191,13 @@ export const updateReservation = async (req, res) => {
     });
 
   } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de reservación no válido',
+        error: 'INVALID_ID'
+      });
+    }
     res.status(500).json({
       success: false,
       message: 'Error al actualizar reservación',
@@ -209,6 +230,13 @@ export const deleteReservation = async (req, res) => {
     });
 
   } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de reservación no válido',
+        error: 'INVALID_ID'
+      });
+    }
     res.status(500).json({
       success: false,
       message: 'Error al eliminar reservación',
