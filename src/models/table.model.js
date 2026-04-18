@@ -32,7 +32,7 @@ const tableSchema = new Schema(
     },
     restaurant_id: {
       type: Schema.Types.ObjectId,
-      ref: 'Restaurante',
+      ref: 'Restaurant',
       required: [true, 'El id del restaurante es obligatorio']
     },
     reserva_id: {

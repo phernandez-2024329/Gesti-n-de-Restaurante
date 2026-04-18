@@ -23,7 +23,7 @@ const informationSchema = new Schema(
         },
         restaurantId: {
             type: Schema.Types.ObjectId,
-            ref: 'Restaurante',
+            ref: 'Restaurant',
             required: [true, 'El id del restaurante es obligatorio']
         },
         estado: {

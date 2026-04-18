@@ -1,9 +1,18 @@
 import Restaurant from '../models/restaurant.model.js';
-import Contact from '../models/contact.model.js';
 import Table from '../models/table.model.js';
+import { Types } from 'mongoose';
+import { uploadToCloudinary } from '../../helpers/cloudinary.js';
+import fs from 'fs';
 
 export const createRestaurant = async (req, res) => {
   try {
+    let imageUrl = '';
+    if (req.file) {
+      const result = await uploadToCloudinary(req.file.path);
+      imageUrl = result.secure_url;
+      fs.unlinkSync(req.file.path); // Borra el archivo temporal
+    }
+
     const {
       restaurant_name,
       restaurant_type,
@@ -12,26 +21,20 @@ export const createRestaurant = async (req, res) => {
       restaurant_time_start,
       restaurant_time_close,
       restaurant_mean_price,
-      restaurant_images,
       contact_id,
       table_id
-    } = req.body;
+    } = req.body || {};
 
-    const contact = await Contact.findById(contact_id);
-    if (!contact || !contact.estado) {
-      return res.status(404).json({
+    if (!restaurant_name) {
+      return res.status(400).json({
         success: false,
-        message: 'Contacto no encontrado'
+        message: 'El campo restaurant_name es requerido'
       });
     }
 
-    const table = await Table.findById(table_id);
-    if (!table || !table.estado) {
-      return res.status(404).json({
-        success: false,
-        message: 'Mesa no encontrada'
-      });
-    }
+    // Generar IDs aleatorios si no se proporcionan
+    const finalContactId = contact_id || new Types.ObjectId();
+    const finalTableId = table_id || new Types.ObjectId();
 
     const restaurant = new Restaurant({
       restaurant_name,
@@ -41,16 +44,49 @@ export const createRestaurant = async (req, res) => {
       restaurant_time_start,
       restaurant_time_close,
       restaurant_mean_price,
-      restaurant_images,
-      contact_id,
-      table_id
+      restaurant_images: imageUrl ? [imageUrl] : [],
+      contact_id: finalContactId,
+      table_id: finalTableId
     });
 
     await restaurant.save();
 
+    // Crear mesas por defecto automáticamente
+    const defaultTables = [
+      {
+        table_name: 'Mesa 1',
+        table_number: 1,
+        table_ubication: 'Zona principal',
+        table_capacity: 4,
+        table_time_available: restaurant_time_start || '10:00',
+        table_state: 'Disponible',
+        restaurant_id: restaurant._id
+      },
+      {
+        table_name: 'Mesa 2',
+        table_number: 2,
+        table_ubication: 'Zona principal',
+        table_capacity: 4,
+        table_time_available: restaurant_time_start || '10:00',
+        table_state: 'Disponible',
+        restaurant_id: restaurant._id
+      },
+      {
+        table_name: 'Mesa 3',
+        table_number: 3,
+        table_ubication: 'Zona terraza',
+        table_capacity: 6,
+        table_time_available: restaurant_time_start || '10:00',
+        table_state: 'Disponible',
+        restaurant_id: restaurant._id
+      }
+    ];
+
+    await Table.insertMany(defaultTables);
+
     res.status(201).json({
       success: true,
-      message: 'Restaurante creado',
+      message: 'Restaurante creado con imagen',
       restaurant
     });
 
@@ -58,7 +94,8 @@ export const createRestaurant = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error al crear restaurante',
-      error: error.message
+      error: error.message,
+      stack: error.stack
     });
   }
 };
@@ -107,6 +144,13 @@ export const getRestaurantById = async (req, res) => {
     });
 
   } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de restaurante no válido',
+        error: 'INVALID_ID'
+      });
+    }
     res.status(500).json({
       success: false,
       message: 'Error al obtener restaurante',
@@ -135,6 +179,13 @@ export const updateRestaurant = async (req, res) => {
     });
 
   } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de restaurante no válido',
+        error: 'INVALID_ID'
+      });
+    }
     res.status(500).json({
       success: false,
       message: 'Error al actualizar restaurante',
@@ -167,6 +218,13 @@ export const deleteRestaurant = async (req, res) => {
     });
 
   } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de restaurante no válido',
+        error: 'INVALID_ID'
+      });
+    }
     res.status(500).json({
       success: false,
       message: 'Error al eliminar restaurante',

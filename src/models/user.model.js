@@ -50,12 +50,24 @@ const usuarioSchema = new Schema(
         },
         restauranteAsignado: {
             type: Schema.Types.ObjectId,
-            ref: 'Restaurante',
+            ref: 'Restaurant',
             default: null
         },
         estado: {
             type: Boolean,
             default: true
+        },
+        emailVerified: {
+            type: Boolean,
+            default: false
+        },
+        emailVerificationToken: {
+            type: String,
+            default: null
+        },
+        emailVerificationExpires: {
+            type: Date,
+            default: null
         }
     },
     { timestamps: true }

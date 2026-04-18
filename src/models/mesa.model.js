@@ -58,7 +58,6 @@ const Mesas = new Schema({
         ref: 'Reservas',
         required: [true, 'El ID de la reserva es obligatorio']
     }
- }
-)
+});
 
-export default model('Mesa', Mesas);
+export default model('Mesas', Mesas);
