@@ -23,6 +23,8 @@ import couponRoutes from '../src/routes/coupon.routes.js';
 import reviewRoutes from '../src/routes/review.routes.js';
 import roleRoutes from '../src/routes/role.routes.js';
 import informationRoutes from '../src/routes/information.routes.js';
+import detallePedidoRoutes from '../src/routes/detallepedido.routes.js';
+import { registerSwagger } from '../docs/swagger.js';
 
 const middlewares = (app) => {
     app.use(express.urlencoded({ extended: false, limit: '10mb' }));
@@ -52,6 +54,8 @@ const routes = (app) => {
     app.use(`${BASE_PATH}/inventory`, inventoryRoutes);
     app.use(`${BASE_PATH}/role`, roleRoutes);
     app.use(`${BASE_PATH}/information`, informationRoutes);
+    app.use(`${BASE_PATH}/detalle-pedido`, detallePedidoRoutes);
+    registerSwagger(app, BASE_PATH);
 
     app.get(`${BASE_PATH}/health`, (req, res) => {
         res.status(200).json({
