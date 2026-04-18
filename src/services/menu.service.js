@@ -28,17 +28,11 @@ export const createMenuService = async (data) => {
 };
 
 export const getMenusService = () => {
-    return Menu.find({ estado: true });
+    return Menu.find();
 };
 
 export const getMenuByIdService = async (id) => {
-    const menu = await Menu.findById(id);
-
-    if (!menu || !menu.estado) {
-        return null;
-    }
-
-    return menu;
+    return await Menu.findById(id);
 };
 
 export const searchMenuService = async (searchTerm) => {
@@ -46,50 +40,41 @@ export const searchMenuService = async (searchTerm) => {
 
     if (!isNaN(numericTerm)) {
         return await Menu.find({
-            estado: true,
             Menu_Price: numericTerm
         });
     }
 
     const byPlate = await Menu.find({
-        estado: true,
         Menu_Plate: searchTerm
     });
 
     if (byPlate.length > 0) return byPlate;
 
     const byDrink = await Menu.find({
-        estado: true,
         Menu_Drink: searchTerm
     });
 
     if (byDrink.length > 0) return byDrink;
 
     const byTypePlate = await Menu.find({
-        estado: true,
         Menu_type_plate: searchTerm
     });
 
     if (byTypePlate.length > 0) return byTypePlate;
 
     return await Menu.find({
-        estado: true,
         Menu_type_drink: searchTerm
     });
 };
 
 export const updateMenuService = async (id, data) => {
-    return await Menu.findOneAndUpdate(
-        { _id: id, estado: true },
+    return await Menu.findByIdAndUpdate(
+        id,
         data,
         { new: true }
     );
 };
 
 export const deleteMenuService = async (id) => {
-    return await Menu.findOneAndUpdate(
-        { _id: id, estado: true },
-        { estado: false },
-        { new: true }
-    );
+    return await Menu.findByIdAndDelete(id);
 };

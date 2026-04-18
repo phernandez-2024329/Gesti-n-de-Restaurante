@@ -1,5 +1,5 @@
 import Table from '../models/table.model.js';
-import Restaurante from '../models/restaurantes.model.js';
+import Restaurant from '../models/restaurant.model.js';
 
 export const createTable = async (req, res) => {
   try {
@@ -14,7 +14,7 @@ export const createTable = async (req, res) => {
       reserva_id
     } = req.body;
 
-    const restaurante = await Restaurante.findById(restaurant_id);
+    const restaurante = await Restaurant.findById(restaurant_id);
     if (!restaurante || !restaurante.estado) {
       return res.status(404).json({
         success: false,
@@ -35,13 +35,23 @@ export const createTable = async (req, res) => {
 
     await table.save();
 
+    const tableObj = table.toObject();
+    tableObj.disponibilidad = table.table_state === 'Disponible' ? '✅ Libre' : `❌ ${table.table_state}`;
+
     res.status(201).json({
       success: true,
       message: 'Mesa creada',
-      table
+      table: tableObj
     });
 
   } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de restaurante o datos inválidos',
+        error: 'INVALID_ID'
+      });
+    }
     res.status(500).json({
       success: false,
       message: 'Error al crear mesa',
@@ -58,13 +68,20 @@ export const getTables = async (req, res) => {
     if (restaurant_id) filter.restaurant_id = restaurant_id;
 
     const tables = await Table.find(filter)
-      .populate('restaurant_id', 'nombre')
+      .populate('restaurant_id', 'restaurant_name restaurant_direction')
       .populate('reserva_id');
+
+    // Agregar información legible de disponibilidad
+    const tablesConDisponibilidad = tables.map(table => {
+      const tableObj = table.toObject();
+      tableObj.disponibilidad = table.table_state === 'Disponible' ? ' Libre' : `No Libre ${table.table_state}`;
+      return tableObj;
+    });
 
     res.status(200).json({
       success: true,
       total: tables.length,
-      tables
+      tables: tablesConDisponibilidad
     });
 
   } catch (error) {
@@ -81,7 +98,7 @@ export const getTableById = async (req, res) => {
     const { id } = req.params;
 
     const table = await Table.findById(id)
-      .populate('restaurant_id', 'nombre')
+      .populate('restaurant_id', 'restaurant_name restaurant_direction')
       .populate('reserva_id');
 
     if (!table || !table.estado) {
@@ -91,12 +108,22 @@ export const getTableById = async (req, res) => {
       });
     }
 
+    const tableObj = table.toObject();
+    tableObj.disponibilidad = table.table_state === 'Disponible' ? '✅ Libre' : `❌ ${table.table_state}`;
+
     res.status(200).json({
       success: true,
-      table
+      table: tableObj
     });
 
   } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de mesa no válido',
+        error: 'INVALID_ID'
+      });
+    }
     res.status(500).json({
       success: false,
       message: 'Error al obtener mesa',
@@ -109,7 +136,7 @@ export const updateTable = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const updated = await Table.findByIdAndUpdate(id, req.body, { new: true });
+    const updated = await Table.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
 
     if (!updated) {
       return res.status(404).json({
@@ -118,13 +145,23 @@ export const updateTable = async (req, res) => {
       });
     }
 
+    const tableObj = updated.toObject();
+    tableObj.disponibilidad = updated.table_state === 'Disponible' ? '✅ Libre' : `❌ ${updated.table_state}`;
+
     res.status(200).json({
       success: true,
       message: 'Mesa actualizada',
-      table: updated
+      table: tableObj
     });
 
   } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de mesa no válido',
+        error: 'INVALID_ID'
+      });
+    }
     res.status(500).json({
       success: false,
       message: 'Error al actualizar mesa',
@@ -150,13 +187,23 @@ export const deleteTable = async (req, res) => {
       });
     }
 
+    const tableObj = table.toObject();
+    tableObj.disponibilidad = table.table_state === 'Disponible' ? '✅ Libre' : `❌ ${table.table_state}`;
+
     res.status(200).json({
       success: true,
       message: 'Mesa eliminada',
-      table
+      table: tableObj
     });
 
   } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de mesa no válido',
+        error: 'INVALID_ID'
+      });
+    }
     res.status(500).json({
       success: false,
       message: 'Error al eliminar mesa',

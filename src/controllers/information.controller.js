@@ -25,6 +25,13 @@ export const createInformation = async (req, res) => {
         res.status(201).json({ success: true, message: 'Informacion creada', information: info });
 
     } catch (error) {
+        if (error.name === 'CastError') {
+            return res.status(400).json({
+                success: false,
+                message: 'ID de información o restaurante no válido',
+                error: 'INVALID_ID'
+            });
+        }
         res.status(500).json({ success: false, message: 'Error al crear informacion', error: error.message });
     }
 };
@@ -56,6 +63,13 @@ export const getInformationById = async (req, res) => {
         res.status(200).json({ success: true, information: item });
 
     } catch (error) {
+        if (error.name === 'CastError') {
+            return res.status(400).json({
+                success: false,
+                message: 'ID de información no válido',
+                error: 'INVALID_ID'
+            });
+        }
         res.status(500).json({ success: false, message: 'Error al obtener informacion', error: error.message });
     }
 };
@@ -70,6 +84,13 @@ export const updateInformation = async (req, res) => {
         res.status(200).json({ success: true, message: 'Informacion actualizada', information: updated });
 
     } catch (error) {
+        if (error.name === 'CastError') {
+            return res.status(400).json({
+                success: false,
+                message: 'ID de información no válido',
+                error: 'INVALID_ID'
+            });
+        }
         res.status(500).json({ success: false, message: 'Error al actualizar informacion', error: error.message });
     }
 };
@@ -81,9 +102,16 @@ export const deleteInformation = async (req, res) => {
         const item = await Information.findByIdAndUpdate(id, { estado: false }, { new: true });
         if (!item) return res.status(404).json({ success: false, message: 'Informacion no encontrada' });
 
-        res.status(200).json({ success: true, message: 'Information eliminada', information: item });
+        res.status(200).json({ success: true, message: 'Información eliminada', information: item });
 
     } catch (error) {
+        if (error.name === 'CastError') {
+            return res.status(400).json({
+                success: false,
+                message: 'ID de información no válido',
+                error: 'INVALID_ID'
+            });
+        }
         res.status(500).json({ success: false, message: 'Error al eliminar informacion', error: error.message });
     }
 };

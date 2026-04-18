@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import multer from 'multer';
 import {
   createRestaurant,
   getRestaurants,
@@ -9,12 +10,22 @@ import {
 
 import { validateJWT } from '../../middlewares/validate-JWT.js';
 import { validateRole } from '../../middlewares/validate-role.js';
+import { validateCreateRestaurant, validateUpdateRestaurant } from '../../middlewares/route-validators.js';
 import { Roles } from '../constants/roles.js';
+
+const upload = multer({ dest: 'uploads/' });
 
 const router = Router();
 
 // Crear restaurante (ADMIN o GERENTE)
-router.post('/', validateJWT, validateRole(Roles.ADMIN, Roles.GERENTE), createRestaurant);
+router.post(
+  '/',
+  upload.single('restaurant_images'),
+  validateJWT,
+  validateRole(Roles.ADMIN, Roles.GERENTE),
+  validateCreateRestaurant,
+  createRestaurant
+);
 
 // Listar restaurantes
 router.get('/', validateJWT, getRestaurants);
@@ -23,7 +34,7 @@ router.get('/', validateJWT, getRestaurants);
 router.get('/:id', validateJWT, getRestaurantById);
 
 // Actualizar (ADMIN o GERENTE)
-router.put('/:id', validateJWT, validateRole(Roles.ADMIN, Roles.GERENTE), updateRestaurant);
+router.put('/:id', validateJWT, validateRole(Roles.ADMIN, Roles.GERENTE), validateUpdateRestaurant, updateRestaurant);
 
 // Eliminar (ADMIN)
 router.delete('/:id', validateJWT, validateRole(Roles.ADMIN), deleteRestaurant);
