@@ -109,6 +109,34 @@ export const validateCreateOrder = [
     checkValidators
 ];
 
+// --- Detalle de pedido ---
+export const validateCreateDetallePedido = [
+    body('pedido').trim().notEmpty().withMessage('pedido es obligatorio'),
+    body('producto').trim().notEmpty().withMessage('producto es obligatorio'),
+    body('candidadproducto')
+        .notEmpty().withMessage('candidadproducto es obligatoria')
+        .isInt({ min: 1 }).withMessage('candidadproducto debe ser entero >= 1')
+        .toInt(),
+    body('preciounitario')
+        .notEmpty().withMessage('preciounitario es obligatorio')
+        .isFloat({ min: 0 }).withMessage('preciounitario debe ser >= 0'),
+    checkValidators
+];
+
+export const validateUpdateDetallePedido = [
+    param('id').isMongoId().withMessage('ID de detalle inválido'),
+    body('pedido').optional().trim().notEmpty(),
+    body('producto').optional().trim().notEmpty(),
+    body('candidadproducto').optional().isInt({ min: 1 }).toInt(),
+    body('preciounitario').optional().isFloat({ min: 0 }),
+    checkValidators
+];
+
+export const validateDetallePedidoIdParam = [
+    param('id').isMongoId().withMessage('ID de detalle inválido'),
+    checkValidators
+];
+
 // --- Reseñas (Reviews) ---
 export const validateCreateReview = [
     body('user_id').notEmpty().withMessage('user_id es obligatorio').isMongoId().withMessage('user_id inválido'),
