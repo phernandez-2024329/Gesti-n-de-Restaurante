@@ -1,3 +1,4 @@
+import { registerSwagger } from '../docs/swagger.js';
 'use strict';
 
 import express from 'express';
@@ -77,6 +78,8 @@ export const initServer = async () => {
     try {
         await dbConnection();
         middlewares(app);
+        // Registrar Swagger antes de las rutas
+        registerSwagger(app, BASE_PATH);
         routes(app);
         app.use(errorHandler);
 
