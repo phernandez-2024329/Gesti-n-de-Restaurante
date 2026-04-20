@@ -25,6 +25,14 @@ const TAGS = [
     name: 'Eventos',
     description: 'Gestion de eventos del restaurante',
   },
+  {
+    name: 'Pedidos',
+    description: 'Pedidos / ordenes (endpoint real: /order)',
+  },
+  {
+    name: 'DetallePedido',
+    description: 'Lineas de detalle de pedido (endpoint real: /detalle-pedido)',
+  },
 ];
 
 const AUTH_SECURITY = [{ bearerAuth: [] }, { xTokenAuth: [] }];
@@ -1001,6 +1009,369 @@ const EVENTS_PATHS = {
 };
 
 
+
+const ORDER_PATHS = {
+  [`${BASE_PATH}/order`]: {
+    post: {
+      tags: ['Pedidos'],
+      operationId: 'createOrder',
+      summary: 'Crear pedido',
+      description:
+        'Crea un pedido. Requiere JWT. Si no envia User_id, el backend puede usar el usuario del token.',
+      security: AUTH_SECURITY,
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/OrderCreateInput' },
+            examples: {
+              ejemplo: {
+                value: {
+                  Orders_domicile: 'Zona 10, Ciudad',
+                  Orders_number: 'ORD-1001',
+                  Orders_facture: 'FAC-001',
+                  Orders_facture_descripcion: 'Pasta + bebida',
+                  Orders_cupon: 'Envio_Gratis',
+                  Restaurant_id: '67f6f2cf2a1e6b17f34ef001',
+                  Menu_id: '67f6f2cf2a1e6b17f34ef201',
+                  User_id: '67f6f2cf2a1e6b17f34ef301',
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        201: {
+          description: 'Pedido creado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/OrderMutationResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/BadRequest' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+    get: {
+      tags: ['Pedidos'],
+      operationId: 'listOrders',
+      summary: 'Listar pedidos activos',
+      description: 'Lista pedidos con estado=true.',
+      security: AUTH_SECURITY,
+      responses: {
+        200: {
+          description: 'Lista de pedidos',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/OrderListResponse' },
+            },
+          },
+        },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+  },
+
+  [`${BASE_PATH}/order/search`]: {
+    get: {
+      tags: ['Pedidos'],
+      operationId: 'searchOrders',
+      summary: 'Buscar pedidos',
+      description:
+        'Busca por numero de orden (numerico), domicilio, cupon o factura. Requiere query searchTerm.',
+      security: AUTH_SECURITY,
+      parameters: [
+        {
+          in: 'query',
+          name: 'searchTerm',
+          required: true,
+          schema: { type: 'string', example: 'ORD-1001' },
+        },
+      ],
+      responses: {
+        200: {
+          description: 'Resultados',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/OrderSearchResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/BadRequest' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        404: {
+          description: 'Sin resultados',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
+            },
+          },
+        },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+  },
+
+  [`${BASE_PATH}/order/{id}`]: {
+    get: {
+      tags: ['Pedidos'],
+      operationId: 'getOrderById',
+      summary: 'Obtener pedido por ID',
+      security: AUTH_SECURITY,
+      parameters: [{ $ref: '#/components/parameters/IdPathParam' }],
+      responses: {
+        200: {
+          description: 'Pedido encontrado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/OrderGetResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/InvalidId' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        404: {
+          description: 'No encontrado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
+            },
+          },
+        },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+    put: {
+      tags: ['Pedidos'],
+      operationId: 'updateOrderById',
+      summary: 'Actualizar pedido',
+      description: 'Actualiza uno o mas campos del pedido.',
+      security: AUTH_SECURITY,
+      parameters: [{ $ref: '#/components/parameters/IdPathParam' }],
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/OrderUpdateInput' },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: 'Actualizado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/OrderMutationResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/BadRequest' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        404: {
+          description: 'No encontrado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
+            },
+          },
+        },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+    delete: {
+      tags: ['Pedidos'],
+      operationId: 'deleteOrderById',
+      summary: 'Eliminar pedido (logico)',
+      description: 'Marca estado=false.',
+      security: AUTH_SECURITY,
+      parameters: [{ $ref: '#/components/parameters/IdPathParam' }],
+      responses: {
+        200: {
+          description: 'Eliminado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/OrderMutationResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/InvalidId' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        404: {
+          description: 'No encontrado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
+            },
+          },
+        },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+  },
+};
+
+const DETALLE_PEDIDO_PATHS = {
+  [`${BASE_PATH}/detalle-pedido`]: {
+    post: {
+      tags: ['DetallePedido'],
+      operationId: 'createDetallePedido',
+      summary: 'Crear detalle de pedido',
+      description:
+        'Registra una linea de detalle (producto, cantidad, precio). total = candidadproducto * preciounitario.',
+      security: AUTH_SECURITY,
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/DetallePedidoCreateInput' },
+            examples: {
+              ejemplo: {
+                value: {
+                  pedido: '67f6f2cf2a1e6b17f34ef401',
+                  producto: '67f6f2cf2a1e6b17f34ef501',
+                  candidadproducto: 2,
+                  preciounitario: 25.5,
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        201: {
+          description: 'Creado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/DetallePedidoMutationResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/BadRequest' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+    get: {
+      tags: ['DetallePedido'],
+      operationId: 'listDetallePedido',
+      summary: 'Listar detalles activos',
+      security: AUTH_SECURITY,
+      responses: {
+        200: {
+          description: 'Lista',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/DetallePedidoListResponse' },
+            },
+          },
+        },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+  },
+
+  [`${BASE_PATH}/detalle-pedido/{id}`]: {
+    get: {
+      tags: ['DetallePedido'],
+      operationId: 'getDetallePedidoById',
+      summary: 'Obtener detalle por ID',
+      security: AUTH_SECURITY,
+      parameters: [{ $ref: '#/components/parameters/IdPathParam' }],
+      responses: {
+        200: {
+          description: 'Encontrado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/DetallePedidoGetResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/InvalidId' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        404: {
+          description: 'No encontrado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
+            },
+          },
+        },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+    put: {
+      tags: ['DetallePedido'],
+      operationId: 'updateDetallePedidoById',
+      summary: 'Actualizar detalle',
+      security: AUTH_SECURITY,
+      parameters: [{ $ref: '#/components/parameters/IdPathParam' }],
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/DetallePedidoUpdateInput' },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: 'Actualizado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/DetallePedidoMutationResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/BadRequest' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        404: {
+          description: 'No encontrado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
+            },
+          },
+        },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+    delete: {
+      tags: ['DetallePedido'],
+      operationId: 'deleteDetallePedidoById',
+      summary: 'Eliminar detalle (logico)',
+      security: AUTH_SECURITY,
+      parameters: [{ $ref: '#/components/parameters/IdPathParam' }],
+      responses: {
+        200: {
+          description: 'Eliminado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/DetallePedidoDeleteResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/InvalidId' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        404: {
+          description: 'No encontrado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
+            },
+          },
+        },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+  },
+};
+
+
 const COMPONENTS = {
   securitySchemes: {
     bearerAuth: {
@@ -1676,14 +2047,196 @@ const COMPONENTS = {
       },
     },
 
+    Order: {
+      type: 'object',
+      properties: {
+        _id: { $ref: '#/components/schemas/MongoId' },
+        Orders_id: { type: 'string', example: 'ORD-1700000000000-a1b2c3d4' },
+        Orders_domicile: { type: 'string' },
+        Orders_number: { type: 'string' },
+        Orders_cupon: {
+          type: 'string',
+          nullable: true,
+          enum: [
+            'Cupon_30_Quetzales',
+            'Cupon_20%_Descuento',
+            'Dos_Por_Uno',
+            'Envio_Gratis',
+            'Primera_Compra',
+            'Descuento_10%',
+            'Cupon_50_Quetzales',
+            'Cupon_15%_Descuento',
+            null,
+          ],
+        },
+        Orders_facture: { type: 'string' },
+        Orders_facture_descripcion: { type: 'string' },
+        Orders_status: {
+          type: 'string',
+          enum: ['en_preparacion', 'listo', 'entregado', 'cancelado'],
+        },
+        Restaurant_id: { $ref: '#/components/schemas/MongoId' },
+        Menu_id: { $ref: '#/components/schemas/MongoId' },
+        User_id: { $ref: '#/components/schemas/MongoId' },
+        estado: { type: 'boolean' },
+        createdAt: { type: 'string', format: 'date-time' },
+        updatedAt: { type: 'string', format: 'date-time' },
+      },
+    },
+    OrderCreateInput: {
+      type: 'object',
+      required: [
+        'Orders_domicile',
+        'Orders_number',
+        'Orders_facture',
+        'Orders_facture_descripcion',
+        'Restaurant_id',
+        'Menu_id',
+      ],
+      properties: {
+        Orders_domicile: { type: 'string' },
+        Orders_number: { type: 'string' },
+        Orders_facture: { type: 'string' },
+        Orders_facture_descripcion: { type: 'string' },
+        Orders_cupon: {
+          type: 'string',
+          enum: [
+            'Cupon_30_Quetzales',
+            'Cupon_20%_Descuento',
+            'Dos_Por_Uno',
+            'Envio_Gratis',
+            'Primera_Compra',
+            'Descuento_10%',
+            'Cupon_50_Quetzales',
+            'Cupon_15%_Descuento',
+          ],
+        },
+        Orders_id: { type: 'string', description: 'Opcional; el servidor puede generar uno' },
+        Restaurant_id: { $ref: '#/components/schemas/MongoId' },
+        Menu_id: { $ref: '#/components/schemas/MongoId' },
+        User_id: { $ref: '#/components/schemas/MongoId', description: 'Opcional; puede tomarse del JWT' },
+      },
+    },
+    OrderUpdateInput: {
+      type: 'object',
+      minProperties: 1,
+      properties: {
+        Orders_domicile: { type: 'string' },
+        Orders_number: { type: 'string' },
+        Orders_facture: { type: 'string' },
+        Orders_facture_descripcion: { type: 'string' },
+        Orders_cupon: { type: 'string', nullable: true },
+        Orders_status: {
+          type: 'string',
+          enum: ['en_preparacion', 'listo', 'entregado', 'cancelado'],
+        },
+        Restaurant_id: { $ref: '#/components/schemas/MongoId' },
+        Menu_id: { $ref: '#/components/schemas/MongoId' },
+        User_id: { $ref: '#/components/schemas/MongoId' },
+      },
+    },
+    OrderMutationResponse: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Orden creada exitosamente' },
+        data: { $ref: '#/components/schemas/Order' },
+      },
+    },
+    OrderGetResponse: {
+      type: 'object',
+      properties: {
+        message: { type: 'string' },
+        data: { $ref: '#/components/schemas/Order' },
+      },
+    },
+    OrderListResponse: {
+      type: 'object',
+      properties: {
+        message: { type: 'string' },
+        data: { type: 'array', items: { $ref: '#/components/schemas/Order' } },
+      },
+    },
+    OrderSearchResponse: {
+      type: 'object',
+      properties: {
+        message: { type: 'string' },
+        count: { type: 'integer' },
+        data: { type: 'array', items: { $ref: '#/components/schemas/Order' } },
+      },
+    },
+
+    DetallePedido: {
+      type: 'object',
+      properties: {
+        _id: { $ref: '#/components/schemas/MongoId' },
+        pedido: { type: 'string', description: 'Referencia al pedido' },
+        producto: { type: 'string' },
+        candidadproducto: { type: 'integer', minimum: 1 },
+        preciounitario: { type: 'number', minimum: 0 },
+        total: { type: 'number' },
+        estado: { type: 'boolean' },
+        createdAt: { type: 'string', format: 'date-time' },
+        updatedAt: { type: 'string', format: 'date-time' },
+      },
+    },
+    DetallePedidoCreateInput: {
+      type: 'object',
+      required: ['pedido', 'producto', 'candidadproducto', 'preciounitario'],
+      properties: {
+        pedido: { type: 'string' },
+        producto: { type: 'string' },
+        candidadproducto: { type: 'integer', minimum: 1 },
+        preciounitario: { type: 'number', minimum: 0 },
+      },
+    },
+    DetallePedidoUpdateInput: {
+      type: 'object',
+      minProperties: 1,
+      properties: {
+        pedido: { type: 'string' },
+        producto: { type: 'string' },
+        candidadproducto: { type: 'integer', minimum: 1 },
+        preciounitario: { type: 'number', minimum: 0 },
+      },
+    },
+    DetallePedidoMutationResponse: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+        message: { type: 'string' },
+        detallePedido: { $ref: '#/components/schemas/DetallePedido' },
+      },
+    },
+    DetallePedidoGetResponse: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean' },
+        detallePedido: { $ref: '#/components/schemas/DetallePedido' },
+      },
+    },
+    DetallePedidoListResponse: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean' },
+        detallePedidos: { type: 'array', items: { $ref: '#/components/schemas/DetallePedido' } },
+      },
+    },
+    DetallePedidoDeleteResponse: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+        message: { type: 'string', example: 'Detalle de pedido eliminado correctamente' },
+      },
+    },
   },
+
 };
 
 const swaggerSpec = {
   openapi: '3.0.3',
   info: {
-    title: 'GestorRestaurante API - Mesa, Menu, Resena, Reporte y Eventos',
-    description: 'Documentacion de Mesa, Menu, Resena, Reporte y Eventos.',
+    title: 'GestorRestaurante API - Mesa, Menu, Resena, Reporte, Eventos, Pedidos y DetallePedido',
+    description: 'Documentacion de Mesa, Menu, Resena, Reporte, Eventos, Pedidos y DetallePedido.',
     version: '1.0.0',
   },
   servers: [{ url: 'http://localhost:3000', description: 'Local' }],
@@ -1694,6 +2247,8 @@ const swaggerSpec = {
     ...REVIEW_PATHS,
     ...REPORT_PATHS,
     ...EVENTS_PATHS,
+    ...ORDER_PATHS,
+    ...DETALLE_PEDIDO_PATHS,
   },
   components: COMPONENTS,
 };
@@ -1714,4 +2269,7 @@ export const registerSwagger = (app, basePath = BASE_PATH) => {
 };
 
 export default swaggerSpec;
+
+
+
 

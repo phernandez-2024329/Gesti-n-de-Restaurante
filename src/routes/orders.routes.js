@@ -15,7 +15,7 @@ const route = Router();
 route.post(
 	"/",
 	auth,
-	validateCreateOrder,
+	...validateCreateOrder,
 	createOrder
 );
 
