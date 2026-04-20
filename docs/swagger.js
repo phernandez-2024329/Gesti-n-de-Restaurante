@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 
 import swaggerUi from 'swagger-ui-express';
 
@@ -12,6 +12,18 @@ const TAGS = [
   {
     name: 'Menu',
     description: 'Gestion de menu del restaurante',
+  },
+  {
+    name: 'Resena',
+    description: 'Gestion de resenas de usuarios',
+  },
+  {
+    name: 'Reporte',
+    description: 'Gestion de reportes del restaurante',
+  },
+  {
+    name: 'Eventos',
+    description: 'Gestion de eventos del restaurante',
   },
 ];
 
@@ -90,6 +102,7 @@ const COMMON_RESPONSES = {
     },
   },
 };
+
 
 const TABLE_PATHS = {
   [`${BASE_PATH}/table`]: {
@@ -492,6 +505,502 @@ const MENU_PATHS = {
   },
 };
 
+
+const REVIEW_PATHS = {
+  [`${BASE_PATH}/review`]: {
+    post: {
+      tags: ['Resena'],
+      operationId: 'createReview',
+      summary: 'Crear resena',
+      description: 'Crea una resena nueva para un restaurante.',
+      security: AUTH_SECURITY,
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/ReviewCreateInput' },
+            examples: {
+              ejemplo: {
+                value: {
+                  user_id: '67f6f2cf2a1e6b17f34ef002',
+                  restaurant_id: '67f6f2cf2a1e6b17f34ef001',
+                  rating: 5,
+                  comment: 'Excelente servicio y comida',
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        201: {
+          description: 'Resena creada',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ReviewMutationResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/BadRequest' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+    get: {
+      tags: ['Resena'],
+      operationId: 'listReviews',
+      summary: 'Listar resenas',
+      description: 'Lista resenas activas. Permite filtrar por restaurant_id.',
+      security: AUTH_SECURITY,
+      parameters: [
+        {
+          in: 'query',
+          name: 'restaurant_id',
+          required: false,
+          description: 'ID del restaurante para filtrar resenas.',
+          schema: { $ref: '#/components/schemas/MongoId' },
+        },
+      ],
+      responses: {
+        200: {
+          description: 'Resenas obtenidas',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ReviewListResponse' },
+            },
+          },
+        },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+  },
+  [`${BASE_PATH}/review/{id}`]: {
+    get: {
+      tags: ['Resena'],
+      operationId: 'getReviewById',
+      summary: 'Obtener resena por ID',
+      description: 'Obtiene una resena activa por su ID.',
+      security: AUTH_SECURITY,
+      parameters: [{ $ref: '#/components/parameters/IdPathParam' }],
+      responses: {
+        200: {
+          description: 'Resena encontrada',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ReviewGetResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/InvalidId' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        404: {
+          description: 'Resena no encontrada',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
+            },
+          },
+        },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+    put: {
+      tags: ['Resena'],
+      operationId: 'updateReviewById',
+      summary: 'Actualizar resena por ID',
+      description: 'Actualiza uno o varios campos de una resena.',
+      security: AUTH_SECURITY,
+      parameters: [{ $ref: '#/components/parameters/IdPathParam' }],
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/ReviewUpdateInput' },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: 'Resena actualizada',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ReviewMutationResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/InvalidId' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        404: {
+          description: 'Resena no encontrada',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
+            },
+          },
+        },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+    delete: {
+      tags: ['Resena'],
+      operationId: 'deleteReviewById',
+      summary: 'Eliminar resena (borrado logico)',
+      description: 'Marca la resena como inactiva.',
+      security: AUTH_SECURITY,
+      parameters: [{ $ref: '#/components/parameters/IdPathParam' }],
+      responses: {
+        200: {
+          description: 'Resena eliminada',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ReviewMutationResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/InvalidId' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        404: {
+          description: 'Resena no encontrada',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
+            },
+          },
+        },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+  },
+};
+
+const REPORT_PATHS = {
+  [`${BASE_PATH}/report`]: {
+    post: {
+      tags: ['Reporte'],
+      operationId: 'createReport',
+      summary: 'Crear reporte',
+      description: 'Crea un reporte nuevo.',
+      security: AUTH_SECURITY,
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/ReportCreateInput' },
+            examples: {
+              ejemplo: {
+                value: {
+                  type: 'Ventas',
+                  data: 'Datos del reporte',
+                  restaurant_id: '67f6f2cf2a1e6b17f34ef001',
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        201: {
+          description: 'Reporte creado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ReportMutationResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/BadRequest' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+    get: {
+      tags: ['Reporte'],
+      operationId: 'listReports',
+      summary: 'Listar reportes',
+      description: 'Lista reportes.',
+      security: AUTH_SECURITY,
+      responses: {
+        200: {
+          description: 'Reportes obtenidos',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ReportListResponse' },
+            },
+          },
+        },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+  },
+  [`${BASE_PATH}/report/{id}`]: {
+    get: {
+      tags: ['Reporte'],
+      operationId: 'getReportById',
+      summary: 'Obtener reporte por ID',
+      description: 'Obtiene un reporte por su ID.',
+      security: AUTH_SECURITY,
+      parameters: [{ $ref: '#/components/parameters/IdPathParam' }],
+      responses: {
+        200: {
+          description: 'Reporte encontrado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ReportGetResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/InvalidId' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        404: {
+          description: 'Reporte no encontrado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
+            },
+          },
+        },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+    put: {
+      tags: ['Reporte'],
+      operationId: 'updateReportById',
+      summary: 'Actualizar reporte por ID',
+      description: 'Actualiza uno o varios campos del reporte.',
+      security: AUTH_SECURITY,
+      parameters: [{ $ref: '#/components/parameters/IdPathParam' }],
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/ReportUpdateInput' },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: 'Reporte actualizado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ReportMutationResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/InvalidId' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        404: {
+          description: 'Reporte no encontrado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
+            },
+          },
+        },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+    delete: {
+      tags: ['Reporte'],
+      operationId: 'deleteReportById',
+      summary: 'Eliminar reporte',
+      description: 'Elimina un reporte.',
+      security: AUTH_SECURITY,
+      parameters: [{ $ref: '#/components/parameters/IdPathParam' }],
+      responses: {
+        200: {
+          description: 'Reporte eliminado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ReportMutationResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/InvalidId' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        404: {
+          description: 'Reporte no encontrado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
+            },
+          },
+        },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+  },
+};
+
+const EVENTS_PATHS = {
+  [`${BASE_PATH}/events`]: {
+    post: {
+      tags: ['Eventos'],
+      operationId: 'createEvent',
+      summary: 'Crear evento',
+      description: 'Crea un evento nuevo.',
+      security: AUTH_SECURITY,
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/EventCreateInput' },
+            examples: {
+              ejemplo: {
+                value: {
+                  events_name: 'Fiesta de Cumpleanos',
+                  events_type: 'Privado',
+                  events_date_time_start: '2024-12-01T18:00:00Z',
+                  events_date_time_finish: '2024-12-01T22:00:00Z',
+                  events_tematic: 'Cumpleanos',
+                  events_history: 'Descripcion del evento',
+                  events_services: {
+                    music: 'DJ',
+                    decoration: 'Tematica',
+                    special_menu: 'Pastel',
+                    extra_staff: 'Meseros',
+                  },
+                  restaurant_id: '67f6f2cf2a1e6b17f34ef001',
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        201: {
+          description: 'Evento creado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/EventMutationResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/BadRequest' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+    get: {
+      tags: ['Eventos'],
+      operationId: 'listEvents',
+      summary: 'Listar eventos',
+      description: 'Lista eventos activos.',
+      security: AUTH_SECURITY,
+      responses: {
+        200: {
+          description: 'Eventos obtenidos',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/EventListResponse' },
+            },
+          },
+        },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+  },
+  [`${BASE_PATH}/events/{id}`]: {
+    get: {
+      tags: ['Eventos'],
+      operationId: 'getEventById',
+      summary: 'Obtener evento por ID',
+      description: 'Obtiene un evento por su ID.',
+      security: AUTH_SECURITY,
+      parameters: [{ $ref: '#/components/parameters/IdPathParam' }],
+      responses: {
+        200: {
+          description: 'Evento encontrado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/EventGetResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/InvalidId' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        404: {
+          description: 'Evento no encontrado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
+            },
+          },
+        },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+    put: {
+      tags: ['Eventos'],
+      operationId: 'updateEventById',
+      summary: 'Actualizar evento por ID',
+      description: 'Actualiza uno o varios campos del evento.',
+      security: AUTH_SECURITY,
+      parameters: [{ $ref: '#/components/parameters/IdPathParam' }],
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/EventUpdateInput' },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: 'Evento actualizado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/EventMutationResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/InvalidId' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        404: {
+          description: 'Evento no encontrado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
+            },
+          },
+        },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+    delete: {
+      tags: ['Eventos'],
+      operationId: 'deleteEventById',
+      summary: 'Eliminar evento (borrado logico)',
+      description: 'Marca el evento como inactivo.',
+      security: AUTH_SECURITY,
+      parameters: [{ $ref: '#/components/parameters/IdPathParam' }],
+      responses: {
+        200: {
+          description: 'Evento eliminado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/EventMutationResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/InvalidId' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        404: {
+          description: 'Evento no encontrado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
+            },
+          },
+        },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+  },
+};
+
+
 const COMPONENTS = {
   securitySchemes: {
     bearerAuth: {
@@ -553,6 +1062,7 @@ const COMPONENTS = {
         },
       ],
     },
+
 
     Table: {
       type: 'object',
@@ -906,15 +1416,274 @@ const COMPONENTS = {
         ],
       },
     },
+
+    Review: {
+      type: 'object',
+      properties: {
+        _id: { $ref: '#/components/schemas/MongoId' },
+        user_id: { $ref: '#/components/schemas/MongoId' },
+        restaurant_id: { $ref: '#/components/schemas/MongoId' },
+        rating: { type: 'number', minimum: 1, maximum: 5 },
+        comment: { type: 'string', maxlength: 500 },
+        created_at: { type: 'string', format: 'date-time' },
+        active: { type: 'boolean', default: true },
+      },
+    },
+    ReviewCreateInput: {
+      type: 'object',
+      required: ['user_id', 'restaurant_id', 'rating'],
+      properties: {
+        user_id: { $ref: '#/components/schemas/MongoId' },
+        restaurant_id: { $ref: '#/components/schemas/MongoId' },
+        rating: { type: 'number', minimum: 1, maximum: 5 },
+        comment: { type: 'string', maxlength: 500 },
+      },
+    },
+    ReviewUpdateInput: {
+      type: 'object',
+      minProperties: 1,
+      properties: {
+        rating: { type: 'number', minimum: 1, maximum: 5 },
+        comment: { type: 'string', maxlength: 500 },
+        active: { type: 'boolean' },
+      },
+      example: {
+        rating: 4,
+        comment: 'Buena experiencia',
+      },
+    },
+    ReviewMutationResponse: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+        message: { type: 'string', example: 'Resena creada' },
+        review: { $ref: '#/components/schemas/Review' },
+      },
+      example: {
+        success: true,
+        message: 'Resena creada',
+        review: {
+          _id: '67f6f2cf2a1e6b17f34ef111',
+          user_id: '67f6f2cf2a1e6b17f34ef002',
+          restaurant_id: '67f6f2cf2a1e6b17f34ef001',
+          rating: 5,
+          comment: 'Excelente servicio y comida',
+          created_at: '2024-01-01T00:00:00Z',
+          active: true,
+        },
+      },
+    },
+    ReviewGetResponse: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+        review: { $ref: '#/components/schemas/Review' },
+      },
+      example: {
+        success: true,
+        review: {
+          _id: '67f6f2cf2a1e6b17f34ef111',
+          user_id: '67f6f2cf2a1e6b17f34ef002',
+          restaurant_id: '67f6f2cf2a1e6b17f34ef001',
+          rating: 5,
+          comment: 'Excelente servicio y comida',
+          created_at: '2024-01-01T00:00:00Z',
+          active: true,
+        },
+      },
+    },
+    ReviewListResponse: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+        total: { type: 'integer', example: 2 },
+        reviews: {
+          type: 'array',
+          items: { $ref: '#/components/schemas/Review' },
+        },
+      },
+      example: {
+        success: true,
+        total: 1,
+        reviews: [
+          {
+            _id: '67f6f2cf2a1e6b17f34ef111',
+            user_id: '67f6f2cf2a1e6b17f34ef002',
+            restaurant_id: '67f6f2cf2a1e6b17f34ef001',
+            rating: 5,
+            comment: 'Excelente servicio y comida',
+            created_at: '2024-01-01T00:00:00Z',
+            active: true,
+          },
+        ],
+      },
+    },
+
+    Report: {
+      type: 'object',
+      properties: {
+        _id: { $ref: '#/components/schemas/MongoId' },
+        type: { type: 'string' },
+        data: { type: 'string' },
+        date: { type: 'string', format: 'date-time' },
+        restaurant_id: { $ref: '#/components/schemas/MongoId' },
+      },
+    },
+    ReportCreateInput: {
+      type: 'object',
+      required: ['type', 'data', 'restaurant_id'],
+      properties: {
+        type: { type: 'string' },
+        data: { type: 'string' },
+        restaurant_id: { $ref: '#/components/schemas/MongoId' },
+      },
+    },
+    ReportUpdateInput: {
+      type: 'object',
+      minProperties: 1,
+      properties: {
+        type: { type: 'string' },
+        data: { type: 'string' },
+        date: { type: 'string', format: 'date-time' },
+      },
+      example: {
+        data: 'Datos actualizados',
+      },
+    },
+    ReportMutationResponse: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+        message: { type: 'string', example: 'Reporte creado' },
+        report: { $ref: '#/components/schemas/Report' },
+      },
+    },
+    ReportGetResponse: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+        report: { $ref: '#/components/schemas/Report' },
+      },
+    },
+    ReportListResponse: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+        total: { type: 'integer', example: 2 },
+        reports: {
+          type: 'array',
+          items: { $ref: '#/components/schemas/Report' },
+        },
+      },
+    },
+
+    Event: {
+      type: 'object',
+      properties: {
+        _id: { $ref: '#/components/schemas/MongoId' },
+        events_name: { type: 'string' },
+        events_type: { type: 'string' },
+        events_date_time_start: { type: 'string', format: 'date-time' },
+        events_date_time_finish: { type: 'string', format: 'date-time' },
+        events_tematic: { type: 'string' },
+        events_history: { type: 'string' },
+        events_services: {
+          type: 'object',
+          properties: {
+            music: { type: 'string' },
+            decoration: { type: 'string' },
+            special_menu: { type: 'string' },
+            extra_staff: { type: 'string' },
+          },
+        },
+        restaurant_id: { $ref: '#/components/schemas/MongoId' },
+        estado: { type: 'boolean', default: true },
+        createdAt: { type: 'string', format: 'date-time' },
+        updatedAt: { type: 'string', format: 'date-time' },
+      },
+    },
+    EventCreateInput: {
+      type: 'object',
+      required: ['events_name', 'events_type', 'events_date_time_start', 'events_date_time_finish', 'events_tematic', 'restaurant_id'],
+      properties: {
+        events_name: { type: 'string', minLength: 3 },
+        events_type: { type: 'string' },
+        events_date_time_start: { type: 'string', format: 'date-time' },
+        events_date_time_finish: { type: 'string', format: 'date-time' },
+        events_tematic: { type: 'string' },
+        events_history: { type: 'string' },
+        events_services: {
+          type: 'object',
+          properties: {
+            music: { type: 'string' },
+            decoration: { type: 'string' },
+            special_menu: { type: 'string' },
+            extra_staff: { type: 'string' },
+          },
+        },
+        restaurant_id: { $ref: '#/components/schemas/MongoId' },
+      },
+    },
+    EventUpdateInput: {
+      type: 'object',
+      minProperties: 1,
+      properties: {
+        events_name: { type: 'string' },
+        events_type: { type: 'string' },
+        events_date_time_start: { type: 'string', format: 'date-time' },
+        events_date_time_finish: { type: 'string', format: 'date-time' },
+        events_tematic: { type: 'string' },
+        events_history: { type: 'string' },
+        events_services: {
+          type: 'object',
+          properties: {
+            music: { type: 'string' },
+            decoration: { type: 'string' },
+            special_menu: { type: 'string' },
+            extra_staff: { type: 'string' },
+          },
+        },
+        estado: { type: 'boolean' },
+      },
+      example: {
+        events_name: 'Fiesta Actualizada',
+      },
+    },
+    EventMutationResponse: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+        message: { type: 'string', example: 'Evento creado' },
+        event: { $ref: '#/components/schemas/Event' },
+      },
+    },
+    EventGetResponse: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+        event: { $ref: '#/components/schemas/Event' },
+      },
+    },
+    EventListResponse: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+        total: { type: 'integer', example: 2 },
+        events: {
+          type: 'array',
+          items: { $ref: '#/components/schemas/Event' },
+        },
+      },
+    },
+
   },
 };
 
 const swaggerSpec = {
   openapi: '3.0.3',
   info: {
-    title: 'GestorRestaurante API - Mesa y Menu',
-    description:
-      'Documentacion de Mesa y Menu. Incluye todos los endpoints reales montados para estos modulos.',
+    title: 'GestorRestaurante API - Mesa, Menu, Resena, Reporte y Eventos',
+    description: 'Documentacion de Mesa, Menu, Resena, Reporte y Eventos.',
     version: '1.0.0',
   },
   servers: [{ url: 'http://localhost:3000', description: 'Local' }],
@@ -922,6 +1691,9 @@ const swaggerSpec = {
   paths: {
     ...TABLE_PATHS,
     ...MENU_PATHS,
+    ...REVIEW_PATHS,
+    ...REPORT_PATHS,
+    ...EVENTS_PATHS,
   },
   components: COMPONENTS,
 };
@@ -942,3 +1714,4 @@ export const registerSwagger = (app, basePath = BASE_PATH) => {
 };
 
 export default swaggerSpec;
+

@@ -80,6 +80,7 @@ export const initServer = async () => {
         await dbConnection();
         middlewares(app);
         routes(app);
+        registerSwagger(app);
         app.use(errorHandler);
 
         app.listen(PORT, () => {
