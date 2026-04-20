@@ -1,0 +1,89 @@
+Listado de endpoints del proyecto
+
+GET {{base_url}}/health
+GET {{base_url}}/auth/verify-email?token=TU_TOKEN_DE_VERIFICACION
+POST {{base_url}}/auth/register
+POST {{base_url}}/auth/login
+GET {{base_url}}/auth/profile
+GET {{base_url}}/auth/users
+PUT {{base_url}}/auth/users/{{userId}}
+DELETE {{base_url}}/auth/users/{{userId}}
+
+POST {{base_url}}/contact
+GET {{base_url}}/contact
+GET {{base_url}}/contact/{{contactId}}
+PUT {{base_url}}/contact/{{contactId}}
+DELETE {{base_url}}/contact/{{contactId}}
+
+POST {{base_url}}/table
+GET {{base_url}}/table
+GET {{base_url}}/table/{{tableId}}
+PUT {{base_url}}/table/{{tableId}}
+DELETE {{base_url}}/table/{{tableId}}
+
+POST {{base_url}}/restaurant
+GET {{base_url}}/restaurant
+GET {{base_url}}/restaurant/{{restaurantId}}
+PUT {{base_url}}/restaurant/{{restaurantId}}
+DELETE {{base_url}}/restaurant/{{restaurantId}}
+
+GET {{base_url}}/role
+
+POST {{base_url}}/menu
+GET {{base_url}}/menu
+GET {{base_url}}/menu/search?searchTerm=Ensalada
+GET {{base_url}}/menu/{{menuId}}
+PUT {{base_url}}/menu/{{menuId}}
+DELETE {{base_url}}/menu/{{menuId}}
+
+POST {{base_url}}/order
+GET {{base_url}}/order
+GET {{base_url}}/order/search?searchTerm=ORD-001
+GET {{base_url}}/order/{{orderId}}
+PUT {{base_url}}/order/{{orderId}}
+DELETE {{base_url}}/order/{{orderId}}
+
+POST {{base_url}}/events
+GET {{base_url}}/events
+GET {{base_url}}/events/{{eventId}}
+PUT {{base_url}}/events/{{eventId}}
+DELETE {{base_url}}/events/{{eventId}}
+
+POST {{base_url}}/reservation
+GET {{base_url}}/reservation
+GET {{base_url}}/reservation/{{reservationId}}
+PUT {{base_url}}/reservation/{{reservationId}}
+DELETE {{base_url}}/reservation/{{reservationId}}
+
+GET {{base_url}}/reports/demanda-restaurantes
+GET {{base_url}}/reports/top-platos
+GET {{base_url}}/reports/desempeno-restaurante/{{restaurantId}}
+GET {{base_url}}/reports/ingresos
+GET {{base_url}}/reports/horas-pico
+GET {{base_url}}/reports/reservaciones
+GET {{base_url}}/reports/ocupacion/{{restaurantId}}
+GET {{base_url}}/reports/clientes-frecuentes/{{restaurantId}}
+GET {{base_url}}/reports/pedidos-recurrentes/{{restaurantId}}
+
+POST {{base_url}}/review
+GET {{base_url}}/review
+PUT {{base_url}}/review/{{reviewId}}
+DELETE {{base_url}}/review/{{reviewId}}
+
+POST {{base_url}}/coupon
+GET {{base_url}}/coupon
+GET {{base_url}}/coupon/{{couponId}}
+PUT {{base_url}}/coupon/{{couponId}}
+DELETE {{base_url}}/coupon/{{couponId}}
+
+POST {{base_url}}/inventory
+GET {{base_url}}/inventory
+GET {{base_url}}/inventory/{{inventoryId}}
+PUT {{base_url}}/inventory/{{inventoryId}}
+DELETE {{base_url}}/inventory/{{inventoryId}}
+
+POST {{base_url}}/information
+GET {{base_url}}/information
+GET {{base_url}}/information/{{informationId}}
+PUT {{base_url}}/information/{{informationId}}
+DELETE {{base_url}}/information/{{informationId}}

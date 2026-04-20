@@ -1,0 +1,141 @@
+﻿Coupon: {
+			type: 'object',
+			properties: {
+				_id: { $ref: '#/components/schemas/MongoId' },
+				code: { type: 'string' },
+				discount_type: { type: 'string', enum: ['percentage', 'amount'] },
+				discount_value: { type: 'number' },
+				max_uses: { type: 'number' },
+				max_uses_per_user: { type: 'number' },
+				expiration_date: { type: 'string', format: 'date-time' },
+				min_order_amount: { type: 'number' },
+				restaurant_ids: {
+					type: 'array',
+					items: { $ref: '#/components/schemas/MongoId' },
+				},
+				active: { type: 'boolean', default: true },
+				current_uses: { type: 'number', default: 0 },
+			},
+		},
+		CouponCreateInput: {
+			type: 'object',
+			required: ['code', 'discount_type', 'discount_value', 'max_uses', 'max_uses_per_user', 'expiration_date'],
+			properties: {
+				code: { type: 'string' },
+				discount_type: { type: 'string', enum: ['percentage', 'amount'] },
+				discount_value: { type: 'number' },
+				max_uses: { type: 'number' },
+				max_uses_per_user: { type: 'number' },
+				expiration_date: { type: 'string', format: 'date-time' },
+				min_order_amount: { type: 'number' },
+				restaurant_ids: {
+					type: 'array',
+					items: { $ref: '#/components/schemas/MongoId' },
+				},
+			},
+		},
+		CouponUpdateInput: {
+			type: 'object',
+			minProperties: 1,
+			properties: {
+				code: { type: 'string' },
+				discount_type: { type: 'string', enum: ['percentage', 'amount'] },
+				discount_value: { type: 'number' },
+				max_uses: { type: 'number' },
+				max_uses_per_user: { type: 'number' },
+				expiration_date: { type: 'string', format: 'date-time' },
+				min_order_amount: { type: 'number' },
+				restaurant_ids: {
+					type: 'array',
+					items: { $ref: '#/components/schemas/MongoId' },
+				},
+				active: { type: 'boolean' },
+			},
+		},
+		CouponMutationResponse: {
+			type: 'object',
+			properties: {
+				success: { type: 'boolean', example: true },
+				message: { type: 'string', example: 'Cup├│n creado' },
+				data: { $ref: '#/components/schemas/Coupon' },
+			},
+		},
+		CouponGetResponse: {
+			type: 'object',
+			properties: {
+				success: { type: 'boolean', example: true },
+				data: { $ref: '#/components/schemas/Coupon' },
+			},
+		},
+		CouponListResponse: {
+			type: 'object',
+			properties: {
+				success: { type: 'boolean', example: true },
+				data: {
+					type: 'array',
+					items: { $ref: '#/components/schemas/Coupon' },
+				},
+			},
+		},
+		Information: {
+			type: 'object',
+			properties: {
+				_id: { $ref: '#/components/schemas/MongoId' },
+				information: { type: 'string' },
+				title: { type: 'string' },
+				type: { type: 'string' },
+				statistics: { type: 'object' },
+				restaurantId: { $ref: '#/components/schemas/MongoId' },
+				estado: { type: 'boolean', default: true },
+				usuario: { $ref: '#/components/schemas/MongoId' },
+				createdAt: { type: 'string', format: 'date-time' },
+				updatedAt: { type: 'string', format: 'date-time' },
+			},
+		},
+		InformationCreateInput: {
+			type: 'object',
+			required: ['information', 'title', 'restaurantId', 'usuario'],
+			properties: {
+				information: { type: 'string' },
+				title: { type: 'string' },
+				type: { type: 'string' },
+				statistics: { type: 'object' },
+				restaurantId: { $ref: '#/components/schemas/MongoId' },
+				usuario: { $ref: '#/components/schemas/MongoId' },
+			},
+		},
+		InformationUpdateInput: {
+			type: 'object',
+			minProperties: 1,
+			properties: {
+				information: { type: 'string' },
+				title: { type: 'string' },
+				type: { type: 'string' },
+				statistics: { type: 'object' },
+				estado: { type: 'boolean' },
+			},
+		},
+		InformationMutationResponse: {
+			type: 'object',
+			properties: {
+				success: { type: 'boolean', example: true },
+				message: { type: 'string', example: 'Informaci├│n creada' },
+				information: { $ref: '#/components/schemas/Information' },
+			},
+		},
+		InformationGetResponse: {
+			type: 'object',
+			properties: {
+				success: { type: 'boolean', example: true },
+				information: { $ref: '#/components/schemas/Information' },
+			},
+		},
+		InformationListResponse: {
+			type: 'object',
+			properties: {
+				success: { type: 'boolean', example: true },
+				total: { type: 'integer', example: 2 },
+				informations: {
+					type: 'array',
+					items: { $ref: '#/components/schemas/Information' },
+				},

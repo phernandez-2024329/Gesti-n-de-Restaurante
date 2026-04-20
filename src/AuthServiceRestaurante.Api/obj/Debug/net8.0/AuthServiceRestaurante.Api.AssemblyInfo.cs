@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AuthServiceRestaurante.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0f132ddc9d50982e183309aeeed7fc0af26ed967")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c7b10dedd529058a183ae55a8d1c10735a7e92fd")]
 [assembly: System.Reflection.AssemblyProductAttribute("AuthServiceRestaurante.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AuthServiceRestaurante.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

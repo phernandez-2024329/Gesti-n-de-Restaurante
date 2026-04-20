@@ -41,6 +41,22 @@ const TAGS = [
     name: 'Informacion',
     description: 'Gestion de informacion relevante del restaurante',
   },
+  {
+    name: 'Reservacion',
+    description: 'Gestion de reservaciones del restaurante',
+  },
+  {
+    name: 'Inventario',
+    description: 'Gestion de inventario del restaurante',
+  },
+  {
+    name: 'Restaurante',
+    description: 'Gestion de restaurantes',
+  },
+  {
+    name: 'Contacto',
+    description: 'Gestion de contactos',
+  },
 ];
 
 const AUTH_SECURITY = [{ bearerAuth: [] }, { xTokenAuth: [] }];
@@ -1678,6 +1694,654 @@ const INFORMATION_PATHS = {
 	},
 };
 
+const RESERVATION_PATHS = {
+  [`${BASE_PATH}/reservation`]: {
+    post: {
+      tags: ['Reservacion'],
+      operationId: 'createReservation',
+      summary: 'Crear reservacion',
+      description: 'Crea una reservacion. Requiere rol ADMIN o GERENTE.',
+      security: AUTH_SECURITY,
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/ReservationCreateInput' },
+            examples: {
+              ejemplo: {
+                value: {
+                  restaurant_id: '67f6f2cf2a1e6b17f34ef001',
+                  table_id: '67f6f2cf2a1e6b17f34ef111',
+                  reservation_type: 'mesa',
+                  reservation_date: '2026-04-30T00:00:00.000Z',
+                  reservation_time: '19:30',
+                  reservation_price: 150,
+                  reservation_surcharge: 10,
+                  reservation_history: 'Reservacion aniversario',
+                  user_id: '67f6f2cf2a1e6b17f34ef301',
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        201: {
+          description: 'Reservacion creada',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ReservationMutationResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/BadRequest' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        403: { $ref: '#/components/responses/Forbidden' },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+    get: {
+      tags: ['Reservacion'],
+      operationId: 'listReservations',
+      summary: 'Listar reservaciones',
+      description: 'Lista reservaciones activas. Permite filtrar por restaurant_id y user_id.',
+      security: AUTH_SECURITY,
+      parameters: [
+        {
+          in: 'query',
+          name: 'restaurant_id',
+          required: false,
+          schema: { $ref: '#/components/schemas/MongoId' },
+        },
+        {
+          in: 'query',
+          name: 'user_id',
+          required: false,
+          schema: { $ref: '#/components/schemas/MongoId' },
+        },
+      ],
+      responses: {
+        200: {
+          description: 'Reservaciones obtenidas',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ReservationListResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/BadRequest' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+  },
+  [`${BASE_PATH}/reservation/{id}`]: {
+    get: {
+      tags: ['Reservacion'],
+      operationId: 'getReservationById',
+      summary: 'Obtener reservacion por ID',
+      security: AUTH_SECURITY,
+      parameters: [{ $ref: '#/components/parameters/IdPathParam' }],
+      responses: {
+        200: {
+          description: 'Reservacion encontrada',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ReservationGetResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/InvalidId' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        404: {
+          description: 'Reservacion no encontrada',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
+            },
+          },
+        },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+    put: {
+      tags: ['Reservacion'],
+      operationId: 'updateReservationById',
+      summary: 'Actualizar reservacion por ID',
+      description: 'Actualiza una reservacion. Requiere rol ADMIN o GERENTE.',
+      security: AUTH_SECURITY,
+      parameters: [{ $ref: '#/components/parameters/IdPathParam' }],
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/ReservationUpdateInput' },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: 'Reservacion actualizada',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ReservationMutationResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/BadRequest' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        403: { $ref: '#/components/responses/Forbidden' },
+        404: {
+          description: 'Reservacion no encontrada',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
+            },
+          },
+        },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+    delete: {
+      tags: ['Reservacion'],
+      operationId: 'deleteReservationById',
+      summary: 'Eliminar reservacion',
+      description: 'Elimina una reservacion (borrado logico). Requiere rol ADMIN.',
+      security: AUTH_SECURITY,
+      parameters: [{ $ref: '#/components/parameters/IdPathParam' }],
+      responses: {
+        200: {
+          description: 'Reservacion eliminada',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ReservationMutationResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/InvalidId' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        403: { $ref: '#/components/responses/Forbidden' },
+        404: {
+          description: 'Reservacion no encontrada',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
+            },
+          },
+        },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+  },
+};
+
+const INVENTORY_PATHS = {
+  [`${BASE_PATH}/inventory`]: {
+    post: {
+      tags: ['Inventario'],
+      operationId: 'createInventory',
+      summary: 'Crear articulo de inventario',
+      description: 'Crea un articulo de inventario. Requiere rol ADMIN.',
+      security: AUTH_SECURITY,
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/InventoryCreateInput' },
+            examples: {
+              ejemplo: {
+                value: {
+                  item_name: 'Queso Mozzarella',
+                  category: 'Lacteos',
+                  quantity: 20,
+                  unit: 'kg',
+                  price: 6.5,
+                  provider: 'Proveedor Central',
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        201: {
+          description: 'Articulo creado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/InventoryMutationResponse' },
+            },
+          },
+        },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        403: { $ref: '#/components/responses/Forbidden' },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+    get: {
+      tags: ['Inventario'],
+      operationId: 'listInventory',
+      summary: 'Listar inventario',
+      description: 'Obtiene los articulos activos del inventario.',
+      security: AUTH_SECURITY,
+      responses: {
+        200: {
+          description: 'Inventario obtenido',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/InventoryListResponse' },
+            },
+          },
+        },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+  },
+  [`${BASE_PATH}/inventory/{id}`]: {
+    get: {
+      tags: ['Inventario'],
+      operationId: 'getInventoryById',
+      summary: 'Obtener articulo por ID',
+      security: AUTH_SECURITY,
+      parameters: [{ $ref: '#/components/parameters/IdPathParam' }],
+      responses: {
+        200: {
+          description: 'Articulo obtenido',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/InventoryGetResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/InvalidId' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        404: {
+          description: 'Articulo no encontrado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
+            },
+          },
+        },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+    put: {
+      tags: ['Inventario'],
+      operationId: 'updateInventoryById',
+      summary: 'Actualizar articulo por ID',
+      description: 'Actualiza un articulo de inventario. Requiere rol ADMIN.',
+      security: AUTH_SECURITY,
+      parameters: [{ $ref: '#/components/parameters/IdPathParam' }],
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/InventoryUpdateInput' },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: 'Articulo actualizado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/InventoryMutationResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/InvalidId' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        403: { $ref: '#/components/responses/Forbidden' },
+        404: {
+          description: 'Articulo no encontrado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
+            },
+          },
+        },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+    delete: {
+      tags: ['Inventario'],
+      operationId: 'deleteInventoryById',
+      summary: 'Eliminar articulo',
+      description: 'Elimina un articulo de inventario (borrado logico). Requiere rol ADMIN.',
+      security: AUTH_SECURITY,
+      parameters: [{ $ref: '#/components/parameters/IdPathParam' }],
+      responses: {
+        200: {
+          description: 'Articulo eliminado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/InventoryMutationResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/InvalidId' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        403: { $ref: '#/components/responses/Forbidden' },
+        404: {
+          description: 'Articulo no encontrado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
+            },
+          },
+        },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+  },
+};
+
+const RESTAURANT_PATHS = {
+  [`${BASE_PATH}/restaurant`]: {
+    post: {
+      tags: ['Restaurante'],
+      operationId: 'createRestaurant',
+      summary: 'Crear restaurante',
+      description: 'Crea un restaurante. Requiere rol ADMIN o GERENTE.',
+      security: AUTH_SECURITY,
+      requestBody: {
+        required: true,
+        content: {
+          'multipart/form-data': {
+            schema: { $ref: '#/components/schemas/RestaurantCreateInput' },
+          },
+          'application/json': {
+            schema: { $ref: '#/components/schemas/RestaurantCreateInput' },
+          },
+        },
+      },
+      responses: {
+        201: {
+          description: 'Restaurante creado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/RestaurantMutationResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/BadRequest' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        403: { $ref: '#/components/responses/Forbidden' },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+    get: {
+      tags: ['Restaurante'],
+      operationId: 'listRestaurants',
+      summary: 'Listar restaurantes',
+      description: 'Obtiene restaurantes activos.',
+      security: AUTH_SECURITY,
+      responses: {
+        200: {
+          description: 'Restaurantes obtenidos',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/RestaurantListResponse' },
+            },
+          },
+        },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+  },
+  [`${BASE_PATH}/restaurant/{id}`]: {
+    get: {
+      tags: ['Restaurante'],
+      operationId: 'getRestaurantById',
+      summary: 'Obtener restaurante por ID',
+      security: AUTH_SECURITY,
+      parameters: [{ $ref: '#/components/parameters/IdPathParam' }],
+      responses: {
+        200: {
+          description: 'Restaurante encontrado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/RestaurantGetResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/InvalidId' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        404: {
+          description: 'Restaurante no encontrado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
+            },
+          },
+        },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+    put: {
+      tags: ['Restaurante'],
+      operationId: 'updateRestaurantById',
+      summary: 'Actualizar restaurante',
+      description: 'Actualiza un restaurante. Requiere rol ADMIN o GERENTE.',
+      security: AUTH_SECURITY,
+      parameters: [{ $ref: '#/components/parameters/IdPathParam' }],
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/RestaurantUpdateInput' },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: 'Restaurante actualizado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/RestaurantMutationResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/BadRequest' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        403: { $ref: '#/components/responses/Forbidden' },
+        404: {
+          description: 'Restaurante no encontrado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
+            },
+          },
+        },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+    delete: {
+      tags: ['Restaurante'],
+      operationId: 'deleteRestaurantById',
+      summary: 'Eliminar restaurante',
+      description: 'Elimina un restaurante (borrado logico). Requiere rol ADMIN.',
+      security: AUTH_SECURITY,
+      parameters: [{ $ref: '#/components/parameters/IdPathParam' }],
+      responses: {
+        200: {
+          description: 'Restaurante eliminado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/RestaurantMutationResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/InvalidId' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        403: { $ref: '#/components/responses/Forbidden' },
+        404: {
+          description: 'Restaurante no encontrado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
+            },
+          },
+        },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+  },
+};
+
+const CONTACT_PATHS = {
+  [`${BASE_PATH}/contact`]: {
+    post: {
+      tags: ['Contacto'],
+      operationId: 'createContact',
+      summary: 'Crear contacto',
+      description: 'Crea un contacto. Requiere rol ADMIN o GERENTE.',
+      security: AUTH_SECURITY,
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/ContactCreateInput' },
+          },
+        },
+      },
+      responses: {
+        201: {
+          description: 'Contacto creado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ContactMutationResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/BadRequest' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        403: { $ref: '#/components/responses/Forbidden' },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+    get: {
+      tags: ['Contacto'],
+      operationId: 'listContacts',
+      summary: 'Listar contactos',
+      description: 'Obtiene contactos activos.',
+      security: AUTH_SECURITY,
+      responses: {
+        200: {
+          description: 'Contactos obtenidos',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ContactListResponse' },
+            },
+          },
+        },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+  },
+  [`${BASE_PATH}/contact/{id}`]: {
+    get: {
+      tags: ['Contacto'],
+      operationId: 'getContactById',
+      summary: 'Obtener contacto por ID',
+      security: AUTH_SECURITY,
+      parameters: [{ $ref: '#/components/parameters/IdPathParam' }],
+      responses: {
+        200: {
+          description: 'Contacto encontrado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ContactGetResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/InvalidId' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        404: {
+          description: 'Contacto no encontrado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
+            },
+          },
+        },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+    put: {
+      tags: ['Contacto'],
+      operationId: 'updateContactById',
+      summary: 'Actualizar contacto',
+      description: 'Actualiza un contacto. Requiere rol ADMIN o GERENTE.',
+      security: AUTH_SECURITY,
+      parameters: [{ $ref: '#/components/parameters/IdPathParam' }],
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/ContactUpdateInput' },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: 'Contacto actualizado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ContactMutationResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/BadRequest' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        403: { $ref: '#/components/responses/Forbidden' },
+        404: {
+          description: 'Contacto no encontrado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
+            },
+          },
+        },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+    delete: {
+      tags: ['Contacto'],
+      operationId: 'deleteContactById',
+      summary: 'Eliminar contacto',
+      description: 'Elimina un contacto (borrado logico). Requiere rol ADMIN.',
+      security: AUTH_SECURITY,
+      parameters: [{ $ref: '#/components/parameters/IdPathParam' }],
+      responses: {
+        200: {
+          description: 'Contacto eliminado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ContactMutationResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/InvalidId' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        403: { $ref: '#/components/responses/Forbidden' },
+        404: {
+          description: 'Contacto no encontrado',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ErrorResponse' },
+            },
+          },
+        },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+  },
+};
+
 const COMPONENTS = {
   securitySchemes: {
     bearerAuth: {
@@ -2679,6 +3343,315 @@ const COMPONENTS = {
       },
     },
 
+    Reservation: {
+      type: 'object',
+      properties: {
+        _id: { $ref: '#/components/schemas/MongoId' },
+        restaurant_id: { $ref: '#/components/schemas/MongoId' },
+        table_id: {
+          oneOf: [{ $ref: '#/components/schemas/MongoId' }, { type: 'null' }],
+          nullable: true,
+        },
+        reservation_type: { type: 'string', enum: ['mesa', 'domicilio', 'para_llevar'] },
+        reservation_date: { type: 'string', format: 'date-time' },
+        reservation_time: { type: 'string', example: '19:30' },
+        reservation_price: { type: 'number', minimum: 0 },
+        reservation_state: { type: 'string', enum: ['pendiente', 'confirmada', 'cancelada', 'completada'] },
+        reservation_surcharge: { type: 'number', minimum: 0 },
+        reservation_history: { type: 'string' },
+        user_id: { $ref: '#/components/schemas/MongoId' },
+        estado: { type: 'boolean', default: true },
+        createdAt: { type: 'string', format: 'date-time' },
+        updatedAt: { type: 'string', format: 'date-time' },
+      },
+    },
+    ReservationCreateInput: {
+      type: 'object',
+      required: ['restaurant_id', 'reservation_type', 'reservation_date', 'reservation_time', 'reservation_price', 'user_id'],
+      properties: {
+        restaurant_id: { $ref: '#/components/schemas/MongoId' },
+        table_id: { $ref: '#/components/schemas/MongoId' },
+        reservation_type: { type: 'string', enum: ['mesa', 'domicilio', 'para_llevar'] },
+        reservation_date: { type: 'string', format: 'date-time' },
+        reservation_time: { type: 'string', example: '19:30' },
+        reservation_price: { type: 'number', minimum: 0 },
+        reservation_surcharge: { type: 'number', minimum: 0 },
+        reservation_history: { type: 'string' },
+        user_id: { $ref: '#/components/schemas/MongoId' },
+      },
+    },
+    ReservationUpdateInput: {
+      type: 'object',
+      minProperties: 1,
+      properties: {
+        restaurant_id: { $ref: '#/components/schemas/MongoId' },
+        table_id: {
+          oneOf: [{ $ref: '#/components/schemas/MongoId' }, { type: 'null' }],
+        },
+        reservation_type: { type: 'string', enum: ['mesa', 'domicilio', 'para_llevar'] },
+        reservation_date: { type: 'string', format: 'date-time' },
+        reservation_time: { type: 'string' },
+        reservation_price: { type: 'number', minimum: 0 },
+        reservation_state: { type: 'string', enum: ['pendiente', 'confirmada', 'cancelada', 'completada'] },
+        reservation_surcharge: { type: 'number', minimum: 0 },
+        reservation_history: { type: 'string' },
+        user_id: { $ref: '#/components/schemas/MongoId' },
+      },
+    },
+    ReservationMutationResponse: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+        message: { type: 'string', example: 'Reservacion creada' },
+        reservation: { $ref: '#/components/schemas/Reservation' },
+      },
+    },
+    ReservationGetResponse: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+        reservation: { $ref: '#/components/schemas/Reservation' },
+      },
+    },
+    ReservationListResponse: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+        total: { type: 'integer', example: 1 },
+        reservations: {
+          type: 'array',
+          items: { $ref: '#/components/schemas/Reservation' },
+        },
+      },
+    },
+
+    Inventory: {
+      type: 'object',
+      properties: {
+        _id: { $ref: '#/components/schemas/MongoId' },
+        item_name: { type: 'string' },
+        category: { type: 'string' },
+        quantity: { type: 'number' },
+        unit: { type: 'string' },
+        price: { type: 'number' },
+        provider: { type: 'string' },
+        estado: { type: 'boolean', default: true },
+      },
+    },
+    InventoryCreateInput: {
+      type: 'object',
+      required: ['item_name', 'category', 'quantity', 'unit', 'price', 'provider'],
+      properties: {
+        item_name: { type: 'string' },
+        category: { type: 'string' },
+        quantity: { type: 'number' },
+        unit: { type: 'string' },
+        price: { type: 'number' },
+        provider: { type: 'string' },
+      },
+    },
+    InventoryUpdateInput: {
+      type: 'object',
+      minProperties: 1,
+      properties: {
+        item_name: { type: 'string' },
+        category: { type: 'string' },
+        quantity: { type: 'number' },
+        unit: { type: 'string' },
+        price: { type: 'number' },
+        provider: { type: 'string' },
+        estado: { type: 'boolean' },
+      },
+    },
+    InventoryMutationResponse: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+        message: { type: 'string', example: 'Articulo de inventario creado' },
+        data: { $ref: '#/components/schemas/Inventory' },
+      },
+    },
+    InventoryGetResponse: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+        message: { type: 'string', example: 'Articulo obtenido' },
+        data: { $ref: '#/components/schemas/Inventory' },
+      },
+    },
+    InventoryListResponse: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+        message: { type: 'string', example: 'Inventario obtenido' },
+        data: {
+          type: 'array',
+          items: { $ref: '#/components/schemas/Inventory' },
+        },
+      },
+    },
+
+    Contact: {
+      type: 'object',
+      properties: {
+        _id: { $ref: '#/components/schemas/MongoId' },
+        contact_type: { type: 'string' },
+        contact_name: { type: 'string' },
+        contact_position: { type: 'string' },
+        contact_phone_number: { type: 'string' },
+        contact_email: { type: 'string', format: 'email' },
+        estado: { type: 'boolean', default: true },
+        createdAt: { type: 'string', format: 'date-time' },
+        updatedAt: { type: 'string', format: 'date-time' },
+      },
+    },
+    ContactCreateInput: {
+      type: 'object',
+      required: ['contact_type', 'contact_name', 'contact_position', 'contact_phone_number', 'contact_email'],
+      properties: {
+        contact_type: { type: 'string' },
+        contact_name: { type: 'string' },
+        contact_position: { type: 'string' },
+        contact_phone_number: { type: 'string' },
+        contact_email: { type: 'string', format: 'email' },
+      },
+    },
+    ContactUpdateInput: {
+      type: 'object',
+      minProperties: 1,
+      properties: {
+        contact_type: { type: 'string' },
+        contact_name: { type: 'string' },
+        contact_position: { type: 'string' },
+        contact_phone_number: { type: 'string' },
+        contact_email: { type: 'string', format: 'email' },
+        estado: { type: 'boolean' },
+      },
+    },
+    ContactMutationResponse: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+        message: { type: 'string', example: 'Contacto creado' },
+        contact: { $ref: '#/components/schemas/Contact' },
+      },
+    },
+    ContactGetResponse: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+        contact: { $ref: '#/components/schemas/Contact' },
+      },
+    },
+    ContactListResponse: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+        total: { type: 'integer', example: 1 },
+        contacts: {
+          type: 'array',
+          items: { $ref: '#/components/schemas/Contact' },
+        },
+      },
+    },
+
+    Restaurant: {
+      type: 'object',
+      properties: {
+        _id: { $ref: '#/components/schemas/MongoId' },
+        restaurant_name: { type: 'string' },
+        restaurant_type: { type: 'string' },
+        restaurant_type_gastronomic: { type: 'string' },
+        restaurant_direction: { type: 'string' },
+        restaurant_time_start: { type: 'string', example: '10:00' },
+        restaurant_time_close: { type: 'string', example: '22:00' },
+        restaurant_mean_price: { type: 'number', minimum: 0 },
+        restaurant_images: { type: 'array', items: { type: 'string' } },
+        contact_id: {
+          oneOf: [
+            { $ref: '#/components/schemas/MongoId' },
+            { $ref: '#/components/schemas/Contact' },
+          ],
+        },
+        table_id: {
+          oneOf: [
+            { $ref: '#/components/schemas/MongoId' },
+            { type: 'object' },
+          ],
+        },
+        estado: { type: 'boolean', default: true },
+        createdAt: { type: 'string', format: 'date-time' },
+        updatedAt: { type: 'string', format: 'date-time' },
+      },
+    },
+    RestaurantCreateInput: {
+      type: 'object',
+      required: [
+        'restaurant_name',
+        'restaurant_type',
+        'restaurant_type_gastronomic',
+        'restaurant_direction',
+        'restaurant_time_start',
+        'restaurant_time_close',
+        'restaurant_mean_price',
+      ],
+      properties: {
+        restaurant_name: { type: 'string' },
+        restaurant_type: { type: 'string' },
+        restaurant_type_gastronomic: { type: 'string' },
+        restaurant_direction: { type: 'string' },
+        restaurant_time_start: { type: 'string' },
+        restaurant_time_close: { type: 'string' },
+        restaurant_mean_price: { type: 'number', minimum: 0 },
+        restaurant_images: { type: 'string', format: 'binary' },
+        contact_id: { $ref: '#/components/schemas/MongoId' },
+        table_id: { $ref: '#/components/schemas/MongoId' },
+      },
+    },
+    RestaurantUpdateInput: {
+      type: 'object',
+      minProperties: 1,
+      properties: {
+        restaurant_name: { type: 'string' },
+        restaurant_type: { type: 'string' },
+        restaurant_type_gastronomic: { type: 'string' },
+        restaurant_direction: { type: 'string' },
+        restaurant_time_start: { type: 'string' },
+        restaurant_time_close: { type: 'string' },
+        restaurant_mean_price: { type: 'number', minimum: 0 },
+        restaurant_images: { type: 'array', items: { type: 'string' } },
+        contact_id: { $ref: '#/components/schemas/MongoId' },
+        table_id: { $ref: '#/components/schemas/MongoId' },
+        estado: { type: 'boolean' },
+      },
+    },
+    RestaurantMutationResponse: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+        message: { type: 'string', example: 'Restaurante creado con imagen' },
+        restaurant: { $ref: '#/components/schemas/Restaurant' },
+      },
+    },
+    RestaurantGetResponse: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+        restaurant: { $ref: '#/components/schemas/Restaurant' },
+      },
+    },
+    RestaurantListResponse: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+        total: { type: 'integer', example: 1 },
+        restaurants: {
+          type: 'array',
+          items: { $ref: '#/components/schemas/Restaurant' },
+        },
+      },
+    },
+
     
   },
 
@@ -2687,8 +3660,8 @@ const COMPONENTS = {
 const swaggerSpec = {
   openapi: '3.0.3',
   info: {
-    title: 'GestorRestaurante API - Mesa, Menu, Resena, Reporte, Eventos, Pedidos y DetallePedido',
-    description: 'Documentacion de Mesa, Menu, Resena, Reporte, Eventos, Pedidos y DetallePedido.',
+    title: 'GestorRestaurante API - Mesa, Menu, Resena, Reporte, Eventos, Pedidos, DetallePedido, Cupon, Informacion, Reservacion, Inventario, Restaurante y Contacto',
+    description: 'Documentacion de Mesa, Menu, Resena, Reporte, Eventos, Pedidos, DetallePedido, Cupon, Informacion, Reservacion, Inventario, Restaurante y Contacto.',
     version: '1.0.0',
   },
   servers: [{ url: 'http://localhost:3000', description: 'Local' }],
@@ -2703,6 +3676,10 @@ const swaggerSpec = {
     ...DETALLE_PEDIDO_PATHS,
     ...COUPON_PATHS,
     ...INFORMATION_PATHS,
+    ...RESERVATION_PATHS,
+    ...INVENTORY_PATHS,
+    ...RESTAURANT_PATHS,
+    ...CONTACT_PATHS,
   },
   components: COMPONENTS,
 };
