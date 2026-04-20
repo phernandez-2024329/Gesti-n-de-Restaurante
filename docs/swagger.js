@@ -1,4 +1,4 @@
-﻿'use strict';
+'use strict';
 
 import swaggerUi from 'swagger-ui-express';
 
@@ -32,6 +32,14 @@ const TAGS = [
   {
     name: 'DetallePedido',
     description: 'Lineas de detalle de pedido (endpoint real: /detalle-pedido)',
+  },
+  {
+    name: 'Cupon',
+    description: 'Gestion de cupones de descuento',
+  },
+  {
+    name: 'Informacion',
+    description: 'Gestion de informacion relevante del restaurante',
   },
 ];
 
@@ -1372,6 +1380,304 @@ const DETALLE_PEDIDO_PATHS = {
 };
 
 
+const COUPON_PATHS = {
+	[`${BASE_PATH}/coupon`]: {
+		post: {
+			tags: ['Cupâ”œâ”‚n'],
+			operationId: 'createCoupon',
+			summary: 'Crear cupâ”œâ”‚n',
+			description: 'Crea un cupâ”œâ”‚n de descuento.',
+			security: AUTH_SECURITY,
+			requestBody: {
+				required: true,
+				content: {
+					'application/json': {
+						schema: { $ref: '#/components/schemas/CouponCreateInput' },
+					},
+				},
+			},
+			responses: {
+				201: {
+					description: 'Cupâ”œâ”‚n creado',
+					content: {
+						'application/json': {
+							schema: { $ref: '#/components/schemas/CouponMutationResponse' },
+						},
+					},
+				},
+				400: { $ref: '#/components/responses/BadRequest' },
+				401: { $ref: '#/components/responses/Unauthorized' },
+				500: { $ref: '#/components/responses/InternalServerError' },
+			},
+		},
+		get: {
+			tags: ['Cupâ”œâ”‚n'],
+			operationId: 'listCoupons',
+			summary: 'Listar cupones',
+			description: 'Lista cupones activos.',
+			security: AUTH_SECURITY,
+			responses: {
+				200: {
+					description: 'Cupones obtenidos',
+					content: {
+						'application/json': {
+							schema: { $ref: '#/components/schemas/CouponListResponse' },
+						},
+					},
+				},
+				401: { $ref: '#/components/responses/Unauthorized' },
+				500: { $ref: '#/components/responses/InternalServerError' },
+			},
+		},
+	},
+	[`${BASE_PATH}/coupon/{id}`]: {
+		get: {
+			tags: ['Cupâ”œâ”‚n'],
+			operationId: 'getCouponById',
+			summary: 'Obtener cupâ”œâ”‚n por ID',
+			description: 'Obtiene un cupâ”œâ”‚n activo por su ID.',
+			security: AUTH_SECURITY,
+			parameters: [{ $ref: '#/components/parameters/IdPathParam' }],
+			responses: {
+				200: {
+					description: 'Cupâ”œâ”‚n encontrado',
+					content: {
+						'application/json': {
+							schema: { $ref: '#/components/schemas/CouponGetResponse' },
+						},
+					},
+				},
+				400: { $ref: '#/components/responses/InvalidId' },
+				401: { $ref: '#/components/responses/Unauthorized' },
+				404: {
+					description: 'Cupâ”œâ”‚n no encontrado',
+					content: {
+						'application/json': {
+							schema: { $ref: '#/components/schemas/ErrorResponse' },
+						},
+					},
+				},
+				500: { $ref: '#/components/responses/InternalServerError' },
+			},
+		},
+		put: {
+			tags: ['Cupâ”œâ”‚n'],
+			operationId: 'updateCouponById',
+			summary: 'Actualizar cupâ”œâ”‚n por ID',
+			description: 'Actualiza uno o varios campos de un cupâ”œâ”‚n.',
+			security: AUTH_SECURITY,
+			parameters: [{ $ref: '#/components/parameters/IdPathParam' }],
+			requestBody: {
+				required: true,
+				content: {
+					'application/json': {
+						schema: { $ref: '#/components/schemas/CouponUpdateInput' },
+					},
+				},
+			},
+			responses: {
+				200: {
+					description: 'Cupâ”œâ”‚n actualizado',
+					content: {
+						'application/json': {
+							schema: { $ref: '#/components/schemas/CouponMutationResponse' },
+						},
+					},
+				},
+				400: { $ref: '#/components/responses/InvalidId' },
+				401: { $ref: '#/components/responses/Unauthorized' },
+				404: {
+					description: 'Cupâ”œâ”‚n no encontrado',
+					content: {
+						'application/json': {
+							schema: { $ref: '#/components/schemas/ErrorResponse' },
+						},
+					},
+				},
+				500: { $ref: '#/components/responses/InternalServerError' },
+			},
+		},
+		delete: {
+			tags: ['Cupâ”œâ”‚n'],
+			operationId: 'deleteCouponById',
+			summary: 'Eliminar cupâ”œâ”‚n',
+			description: 'Elimina un cupâ”œâ”‚n (borrado lâ”œâ”‚gico).',
+			security: AUTH_SECURITY,
+			parameters: [{ $ref: '#/components/parameters/IdPathParam' }],
+			responses: {
+				200: {
+					description: 'Cupâ”œâ”‚n eliminado',
+					content: {
+						'application/json': {
+							schema: { $ref: '#/components/schemas/CouponMutationResponse' },
+						},
+					},
+				},
+				400: { $ref: '#/components/responses/InvalidId' },
+				401: { $ref: '#/components/responses/Unauthorized' },
+				404: {
+					description: 'Cupâ”œâ”‚n no encontrado',
+					content: {
+						'application/json': {
+							schema: { $ref: '#/components/schemas/ErrorResponse' },
+						},
+					},
+				},
+				500: { $ref: '#/components/responses/InternalServerError' },
+			},
+		},
+	},
+};
+
+const INFORMATION_PATHS = {
+	[`${BASE_PATH}/information`]: {
+		post: {
+			tags: ['Informaciâ”œâ”‚n'],
+			operationId: 'createInformation',
+			summary: 'Crear informaciâ”œâ”‚n',
+			description: 'Crea una informaciâ”œâ”‚n relevante para el restaurante.',
+			security: AUTH_SECURITY,
+			requestBody: {
+				required: true,
+				content: {
+					'application/json': {
+						schema: { $ref: '#/components/schemas/InformationCreateInput' },
+					},
+				},
+			},
+			responses: {
+				201: {
+					description: 'Informaciâ”œâ”‚n creada',
+					content: {
+						'application/json': {
+							schema: { $ref: '#/components/schemas/InformationMutationResponse' },
+						},
+					},
+				},
+				400: { $ref: '#/components/responses/BadRequest' },
+				401: { $ref: '#/components/responses/Unauthorized' },
+				500: { $ref: '#/components/responses/InternalServerError' },
+			},
+		},
+		get: {
+			tags: ['Informaciâ”œâ”‚n'],
+			operationId: 'listInformations',
+			summary: 'Listar informaciones',
+			description: 'Lista informaciones activas.',
+			security: AUTH_SECURITY,
+			responses: {
+				200: {
+					description: 'Informaciones obtenidas',
+					content: {
+						'application/json': {
+							schema: { $ref: '#/components/schemas/InformationListResponse' },
+						},
+					},
+				},
+				401: { $ref: '#/components/responses/Unauthorized' },
+				500: { $ref: '#/components/responses/InternalServerError' },
+			},
+		},
+	},
+	[`${BASE_PATH}/information/{id}`]: {
+		get: {
+			tags: ['Informaciâ”œâ”‚n'],
+			operationId: 'getInformationById',
+			summary: 'Obtener informaciâ”œâ”‚n por ID',
+			description: 'Obtiene una informaciâ”œâ”‚n activa por su ID.',
+			security: AUTH_SECURITY,
+			parameters: [{ $ref: '#/components/parameters/IdPathParam' }],
+			responses: {
+				200: {
+					description: 'Informaciâ”œâ”‚n encontrada',
+					content: {
+						'application/json': {
+							schema: { $ref: '#/components/schemas/InformationGetResponse' },
+						},
+					},
+				},
+				400: { $ref: '#/components/responses/InvalidId' },
+				401: { $ref: '#/components/responses/Unauthorized' },
+				404: {
+					description: 'Informaciâ”œâ”‚n no encontrada',
+					content: {
+						'application/json': {
+							schema: { $ref: '#/components/schemas/ErrorResponse' },
+						},
+					},
+				},
+				500: { $ref: '#/components/responses/InternalServerError' },
+			},
+		},
+		put: {
+			tags: ['Informaciâ”œâ”‚n'],
+			operationId: 'updateInformationById',
+			summary: 'Actualizar informaciâ”œâ”‚n por ID',
+			description: 'Actualiza uno o varios campos de una informaciâ”œâ”‚n.',
+			security: AUTH_SECURITY,
+			parameters: [{ $ref: '#/components/parameters/IdPathParam' }],
+			requestBody: {
+				required: true,
+				content: {
+					'application/json': {
+						schema: { $ref: '#/components/schemas/InformationUpdateInput' },
+					},
+				},
+			},
+			responses: {
+				200: {
+					description: 'Informaciâ”œâ”‚n actualizada',
+					content: {
+						'application/json': {
+							schema: { $ref: '#/components/schemas/InformationMutationResponse' },
+						},
+					},
+				},
+				400: { $ref: '#/components/responses/InvalidId' },
+				401: { $ref: '#/components/responses/Unauthorized' },
+				404: {
+					description: 'Informaciâ”œâ”‚n no encontrada',
+					content: {
+						'application/json': {
+							schema: { $ref: '#/components/schemas/ErrorResponse' },
+						},
+					},
+				},
+				500: { $ref: '#/components/responses/InternalServerError' },
+			},
+		},
+		delete: {
+			tags: ['Informaciâ”œâ”‚n'],
+			operationId: 'deleteInformationById',
+			summary: 'Eliminar informaciâ”œâ”‚n',
+			description: 'Elimina una informaciâ”œâ”‚n (borrado lâ”œâ”‚gico).',
+			security: AUTH_SECURITY,
+			parameters: [{ $ref: '#/components/parameters/IdPathParam' }],
+			responses: {
+				200: {
+					description: 'Informaciâ”œâ”‚n eliminada',
+					content: {
+						'application/json': {
+							schema: { $ref: '#/components/schemas/InformationMutationResponse' },
+						},
+					},
+				},
+				400: { $ref: '#/components/responses/InvalidId' },
+				401: { $ref: '#/components/responses/Unauthorized' },
+				404: {
+					description: 'Informaciâ”œâ”‚n no encontrada',
+					content: {
+						'application/json': {
+							schema: { $ref: '#/components/schemas/ErrorResponse' },
+						},
+					},
+				},
+				500: { $ref: '#/components/responses/InternalServerError' },
+			},
+		},
+	},
+};
+
 const COMPONENTS = {
   securitySchemes: {
     bearerAuth: {
@@ -2228,6 +2534,152 @@ const COMPONENTS = {
         message: { type: 'string', example: 'Detalle de pedido eliminado correctamente' },
       },
     },
+
+    Coupon: {
+      type: 'object',
+      properties: {
+        _id: { $ref: '#/components/schemas/MongoId' },
+        code: { type: 'string' },
+        discount_type: { type: 'string', enum: ['percentage', 'amount'] },
+        discount_value: { type: 'number' },
+        max_uses: { type: 'number' },
+        max_uses_per_user: { type: 'number' },
+        expiration_date: { type: 'string', format: 'date-time' },
+        min_order_amount: { type: 'number' },
+        restaurant_ids: {
+          type: 'array',
+          items: { $ref: '#/components/schemas/MongoId' },
+        },
+        active: { type: 'boolean', default: true },
+        current_uses: { type: 'number', default: 0 },
+      },
+    },
+    CouponCreateInput: {
+      type: 'object',
+      required: ['code', 'discount_type', 'discount_value', 'max_uses', 'max_uses_per_user', 'expiration_date'],
+      properties: {
+        code: { type: 'string' },
+        discount_type: { type: 'string', enum: ['percentage', 'amount'] },
+        discount_value: { type: 'number' },
+        max_uses: { type: 'number' },
+        max_uses_per_user: { type: 'number' },
+        expiration_date: { type: 'string', format: 'date-time' },
+        min_order_amount: { type: 'number' },
+        restaurant_ids: {
+          type: 'array',
+          items: { $ref: '#/components/schemas/MongoId' },
+        },
+      },
+    },
+    CouponUpdateInput: {
+      type: 'object',
+      minProperties: 1,
+      properties: {
+        code: { type: 'string' },
+        discount_type: { type: 'string', enum: ['percentage', 'amount'] },
+        discount_value: { type: 'number' },
+        max_uses: { type: 'number' },
+        max_uses_per_user: { type: 'number' },
+        expiration_date: { type: 'string', format: 'date-time' },
+        min_order_amount: { type: 'number' },
+        restaurant_ids: {
+          type: 'array',
+          items: { $ref: '#/components/schemas/MongoId' },
+        },
+        active: { type: 'boolean' },
+      },
+    },
+    CouponMutationResponse: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+        message: { type: 'string', example: 'Cupon creado' },
+        data: { $ref: '#/components/schemas/Coupon' },
+      },
+    },
+    CouponGetResponse: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+        data: { $ref: '#/components/schemas/Coupon' },
+      },
+    },
+    CouponListResponse: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+        data: {
+          type: 'array',
+          items: { $ref: '#/components/schemas/Coupon' },
+        },
+      },
+    },
+    Information: {
+      type: 'object',
+      properties: {
+        _id: { $ref: '#/components/schemas/MongoId' },
+        information: { type: 'string' },
+        title: { type: 'string' },
+        type: { type: 'string' },
+        statistics: { type: 'object' },
+        restaurantId: { $ref: '#/components/schemas/MongoId' },
+        estado: { type: 'boolean', default: true },
+        usuario: { $ref: '#/components/schemas/MongoId' },
+        createdAt: { type: 'string', format: 'date-time' },
+        updatedAt: { type: 'string', format: 'date-time' },
+      },
+    },
+    InformationCreateInput: {
+      type: 'object',
+      required: ['information', 'title', 'restaurantId', 'usuario'],
+      properties: {
+        information: { type: 'string' },
+        title: { type: 'string' },
+        type: { type: 'string' },
+        statistics: { type: 'object' },
+        restaurantId: { $ref: '#/components/schemas/MongoId' },
+        usuario: { $ref: '#/components/schemas/MongoId' },
+      },
+    },
+    InformationUpdateInput: {
+      type: 'object',
+      minProperties: 1,
+      properties: {
+        information: { type: 'string' },
+        title: { type: 'string' },
+        type: { type: 'string' },
+        statistics: { type: 'object' },
+        estado: { type: 'boolean' },
+      },
+    },
+    InformationMutationResponse: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+        message: { type: 'string', example: 'Informacion creada' },
+        information: { $ref: '#/components/schemas/Information' },
+      },
+    },
+    InformationGetResponse: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+        information: { $ref: '#/components/schemas/Information' },
+      },
+    },
+    InformationListResponse: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+        total: { type: 'integer', example: 2 },
+        informations: {
+          type: 'array',
+          items: { $ref: '#/components/schemas/Information' },
+        },
+      },
+    },
+
+    
   },
 
 };
@@ -2249,6 +2701,8 @@ const swaggerSpec = {
     ...EVENTS_PATHS,
     ...ORDER_PATHS,
     ...DETALLE_PEDIDO_PATHS,
+    ...COUPON_PATHS,
+    ...INFORMATION_PATHS,
   },
   components: COMPONENTS,
 };
