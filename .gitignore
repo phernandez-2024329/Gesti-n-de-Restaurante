@@ -1,6 +1,12 @@
+# Carpetas de salida
+[Bb]in/
+[Ob]j/
 node_modules/
-bin/
-obj/
+
+# Archivos específicos
 *.dll
 *.exe
 *.pdb
+*.user
+*.suo
+.vs/
