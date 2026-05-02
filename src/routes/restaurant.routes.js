@@ -34,7 +34,7 @@ router.get('/', validateJWT, getRestaurants);
 router.get('/:id', validateJWT, getRestaurantById);
 
 // Actualizar (ADMIN o GERENTE)
-router.put('/:id', validateJWT, validateRole(Roles.ADMIN, Roles.GERENTE), validateUpdateRestaurant, updateRestaurant);
+router.put('/:id', upload.single('restaurant_images'), validateJWT, validateRole(Roles.ADMIN, Roles.GERENTE), validateUpdateRestaurant, updateRestaurant);
 
 // Eliminar (ADMIN)
 router.delete('/:id', validateJWT, validateRole(Roles.ADMIN), deleteRestaurant);

@@ -4,9 +4,18 @@ import { Roles } from '../constants/roles.js';
 
 export const createInformation = async (req, res) => {
     try {
-        const { information, title, type, statistics, restaurantId } = req.body;
+        const {
+            information,
+            title,
+            type,
+            statistics,
+            restaurantId,
+            restaurant_id
+        } = req.body;
 
-        const restaurante = await Restaurante.findById(restaurantId);
+        const finalRestaurantId = restaurantId || restaurant_id;
+
+        const restaurante = await Restaurante.findById(finalRestaurantId);
         if (!restaurante || !restaurante.estado) {
             return res.status(404).json({ success: false, message: 'Restaurante no encontrado' });
         }
@@ -16,7 +25,7 @@ export const createInformation = async (req, res) => {
             title,
             type,
             statistics: statistics || {},
-            restaurantId,
+            restaurantId: finalRestaurantId,
             usuario: req.user.id
         });
 
@@ -77,8 +86,27 @@ export const getInformationById = async (req, res) => {
 export const updateInformation = async (req, res) => {
     try {
         const { id } = req.params;
+        const fallbackId = req.body?._id || req.body?.id;
+        const informationId = id && id !== 'undefined' ? id : fallbackId;
 
-        const updated = await Information.findByIdAndUpdate(id, req.body, { new: true });
+        if (!informationId) {
+            return res.status(400).json({
+                success: false,
+                message: 'ID de información requerido',
+                error: 'MISSING_ID'
+            });
+        }
+
+        const updateData = { ...req.body };
+        delete updateData._id;
+        delete updateData.id;
+
+        if (updateData.restaurant_id && !updateData.restaurantId) {
+            updateData.restaurantId = updateData.restaurant_id;
+        }
+        delete updateData.restaurant_id;
+
+        const updated = await Information.findByIdAndUpdate(informationId, updateData, { new: true });
         if (!updated) return res.status(404).json({ success: false, message: 'Informacion no encontrada' });
 
         res.status(200).json({ success: true, message: 'Informacion actualizada', information: updated });

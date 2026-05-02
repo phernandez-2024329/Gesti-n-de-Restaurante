@@ -16,6 +16,7 @@ router.post('/register', validateRegister, registerUser);
 router.post('/login',    authLimit, validateLogin, loginUser);
 
 // Rutas protegidas
+router.get('/me',           validateJWT, getProfile);
 router.get('/profile',      validateJWT, getProfile);
 router.get('/users',        validateJWT, validateRole(Roles.ADMIN), getUsers);
 router.put('/users/:id',    validateJWT, validateUpdateUser, updateUser);

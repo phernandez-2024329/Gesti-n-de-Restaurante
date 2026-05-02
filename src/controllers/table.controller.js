@@ -11,7 +11,8 @@ export const createTable = async (req, res) => {
       table_time_available,
       table_state,
       restaurant_id,
-      reserva_id
+      reserva_id,
+      floor_plan
     } = req.body;
 
     const restaurante = await Restaurant.findById(restaurant_id);
@@ -30,7 +31,8 @@ export const createTable = async (req, res) => {
       table_time_available,
       table_state,
       restaurant_id,
-      reserva_id
+      reserva_id,
+      floor_plan
     });
 
     await table.save();
@@ -207,6 +209,108 @@ export const deleteTable = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error al eliminar mesa',
+      error: error.message
+    });
+  }
+};
+
+export const getRestaurantLayout = async (req, res) => {
+  try {
+    const { restaurantId } = req.params;
+
+    const tables = await Table.find({
+      restaurant_id: restaurantId,
+      estado: true
+    }).select('_id floor_plan updatedAt');
+
+    const layout = tables.reduce((acc, table) => {
+      acc[table._id] = {
+        x: table.floor_plan?.x ?? 0,
+        y: table.floor_plan?.y ?? 0,
+        width: table.floor_plan?.width ?? null,
+        height: table.floor_plan?.height ?? null,
+        updatedAt: table.updatedAt
+      };
+      return acc;
+    }, {});
+
+    return res.status(200).json({
+      success: true,
+      restaurant_id: restaurantId,
+      layout
+    });
+  } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de restaurante no válido',
+        error: 'INVALID_ID'
+      });
+    }
+
+    return res.status(500).json({
+      success: false,
+      message: 'Error al obtener el layout de mesas',
+      error: error.message
+    });
+  }
+};
+
+export const saveRestaurantLayout = async (req, res) => {
+  try {
+    const { restaurantId } = req.params;
+    const { layouts } = req.body;
+
+    const tableIds = layouts.map((item) => item.table_id);
+
+    const existingTables = await Table.find({
+      _id: { $in: tableIds },
+      restaurant_id: restaurantId,
+      estado: true
+    }).select('_id');
+
+    if (existingTables.length !== tableIds.length) {
+      return res.status(404).json({
+        success: false,
+        message: 'Una o más mesas no existen para este restaurante'
+      });
+    }
+
+    const operations = layouts.map((item) => ({
+      updateOne: {
+        filter: { _id: item.table_id, restaurant_id: restaurantId, estado: true },
+        update: {
+          $set: {
+            floor_plan: {
+              x: item.x,
+              y: item.y,
+              width: item.width ?? null,
+              height: item.height ?? null
+            }
+          }
+        }
+      }
+    }));
+
+    await Table.bulkWrite(operations);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Layout de mesas actualizado',
+      updated: operations.length
+    });
+  } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de restaurante o mesa no válido',
+        error: 'INVALID_ID'
+      });
+    }
+
+    return res.status(500).json({
+      success: false,
+      message: 'Error al guardar el layout de mesas',
       error: error.message
     });
   }

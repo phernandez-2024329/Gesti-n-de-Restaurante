@@ -95,6 +95,22 @@ export const validateCreateTable = [
         .toInt(),
     body('restaurant_id').notEmpty().withMessage('restaurant_id es obligatorio').isMongoId().withMessage('restaurant_id inválido'),
     body('table_state').optional().isIn(['Disponible', 'Ocupada', 'Reservada']).withMessage('table_state inválido'),
+    body('floor_plan').optional().isObject().withMessage('floor_plan debe ser un objeto'),
+    body('floor_plan.x').optional().isFloat({ min: 0 }).withMessage('floor_plan.x debe ser >= 0').toFloat(),
+    body('floor_plan.y').optional().isFloat({ min: 0 }).withMessage('floor_plan.y debe ser >= 0').toFloat(),
+    body('floor_plan.width').optional({ values: 'null' }).isFloat({ gt: 0 }).withMessage('floor_plan.width debe ser > 0').toFloat(),
+    body('floor_plan.height').optional({ values: 'null' }).isFloat({ gt: 0 }).withMessage('floor_plan.height debe ser > 0').toFloat(),
+    checkValidators
+];
+
+export const validateSaveRestaurantLayout = [
+    param('restaurantId').isMongoId().withMessage('restaurantId inválido'),
+    body('layouts').isArray({ min: 1 }).withMessage('layouts debe ser un arreglo con al menos un elemento'),
+    body('layouts.*.table_id').isMongoId().withMessage('table_id inválido'),
+    body('layouts.*.x').isFloat({ min: 0 }).withMessage('x debe ser >= 0').toFloat(),
+    body('layouts.*.y').isFloat({ min: 0 }).withMessage('y debe ser >= 0').toFloat(),
+    body('layouts.*.width').optional({ values: 'null' }).isFloat({ gt: 0 }).withMessage('width debe ser > 0').toFloat(),
+    body('layouts.*.height').optional({ values: 'null' }).isFloat({ gt: 0 }).withMessage('height debe ser > 0').toFloat(),
     checkValidators
 ];
 

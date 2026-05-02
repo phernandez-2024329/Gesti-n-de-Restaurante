@@ -52,7 +52,7 @@ export const createRestaurant = async (req, res) => {
     await restaurant.save();
 
     // Crear mesas por defecto automáticamente
-    const defaultTables = [
+   /* const defaultTables = [
       {
         table_name: 'Mesa 1',
         table_number: 1,
@@ -82,7 +82,7 @@ export const createRestaurant = async (req, res) => {
       }
     ];
 
-    await Table.insertMany(defaultTables);
+    await Table.insertMany(defaultTables);*/
 
     res.status(201).json({
       success: true,
@@ -102,20 +102,17 @@ export const createRestaurant = async (req, res) => {
 
 export const getRestaurants = async (req, res) => {
   try {
-    const filter = { estado: true };
-
-    const restaurants = await Restaurant.find(filter)
+    const restaurants = await Restaurant.find({ estado: true })
       .populate('contact_id')
       .populate('table_id');
 
     res.status(200).json({
       success: true,
-      total: restaurants.length,
       restaurants
     });
 
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Error al obtener restaurantes',
       error: error.message
@@ -162,8 +159,15 @@ export const getRestaurantById = async (req, res) => {
 export const updateRestaurant = async (req, res) => {
   try {
     const { id } = req.params;
+    let updateData = {...req.body}; 
+    
+    if (req.file) {
+      const result = await uploadToCloudinary(req.file.path);
+      updateData.restaurant_images = [result.secure_url];
+      fs.unlinkSync(req.file.path); 
+    }
 
-    const updated = await Restaurant.findByIdAndUpdate(id, req.body, { new: true });
+    const updated = await Restaurant.findByIdAndUpdate(id, updateData, { new: true });
 
     if (!updated) {
       return res.status(404).json({
@@ -217,18 +221,18 @@ export const deleteRestaurant = async (req, res) => {
       restaurant
     });
 
-  } catch (error) {
-    if (error.name === 'CastError') {
-      return res.status(400).json({
+    } catch (error) {
+      if (error.name === 'CastError') {
+        return res.status(400).json({
+          success: false,
+          message: 'ID de restaurante no válido',
+          error: 'INVALID_ID'
+        });
+      }
+      res.status(500).json({
         success: false,
-        message: 'ID de restaurante no válido',
-        error: 'INVALID_ID'
+        message: 'Error al eliminar restaurante',
+        error: error.message
       });
     }
-    res.status(500).json({
-      success: false,
-      message: 'Error al eliminar restaurante',
-      error: error.message
-    });
-  }
 };
