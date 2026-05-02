@@ -4,12 +4,14 @@ import {
   getTables,
   getTableById,
   updateTable,
-  deleteTable
+  deleteTable,
+  getRestaurantLayout,
+  saveRestaurantLayout
 } from '../controllers/table.controller.js';
 
 import { validateJWT } from '../../middlewares/validate-JWT.js';
 import { validateRole } from '../../middlewares/validate-role.js';
-import { validateCreateTable } from '../../middlewares/route-validators.js';
+import { validateCreateTable, validateSaveRestaurantLayout } from '../../middlewares/route-validators.js';
 import { Roles } from '../constants/roles.js';
 
 const router = Router();
@@ -19,6 +21,18 @@ router.post('/', validateJWT, validateRole(Roles.ADMIN, Roles.GERENTE), ...valid
 
 // Listar mesas (?restaurant_id=...)
 router.get('/', validateJWT, getTables);
+
+// Obtener layout de mesas por restaurante
+router.get('/layout/:restaurantId', validateJWT, getRestaurantLayout);
+
+// Guardar layout completo de mesas por restaurante
+router.put(
+  '/layout/:restaurantId',
+  validateJWT,
+  validateRole(Roles.ADMIN, Roles.GERENTE),
+  ...validateSaveRestaurantLayout,
+  saveRestaurantLayout
+);
 
 // Obtener por id
 router.get('/:id', validateJWT, getTableById);

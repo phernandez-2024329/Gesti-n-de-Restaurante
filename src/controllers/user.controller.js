@@ -99,7 +99,6 @@ export const loginUser = async (req, res) => {
         if (!usuario.estado) {
             return res.status(423).json({ success: false, message: 'Cuenta desactivada. Contacta al administrador.', error: 'ACCOUNT_DISABLED' });
         }
-
         const passwordValida = await usuario.comparePassword(password);
         if (!passwordValida) {
             return res.status(401).json({ success: false, message: 'Credenciales inválidas' });

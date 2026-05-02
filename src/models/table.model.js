@@ -40,6 +40,28 @@ const tableSchema = new Schema(
       ref: 'Reservation',
       default: null
     },
+    floor_plan: {
+      x: {
+        type: Number,
+        min: 0,
+        default: 0
+      },
+      y: {
+        type: Number,
+        min: 0,
+        default: 0
+      },
+      width: {
+        type: Number,
+        min: 1,
+        default: null
+      },
+      height: {
+        type: Number,
+        min: 1,
+        default: null
+      }
+    },
     estado: {
       type: Boolean,
       default: true
