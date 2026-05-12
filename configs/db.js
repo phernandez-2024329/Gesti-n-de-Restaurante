@@ -1,6 +1,19 @@
 'use strict';
 
 import mongoose from 'mongoose';
+import Menu from '../src/models/menu.model.js';
+
+const cleanupLegacyMenuIndexes = async () => {
+    try {
+        await Menu.collection.dropIndex('Menu_id_1');
+        console.log('MongoDB | índice heredado Menu_id_1 eliminado de menus');
+    } catch (error) {
+        if (error.code === 26 || error.code === 27 || /index not found|ns not found/i.test(error.message)) {
+            return;
+        }
+        throw error;
+    }
+};
 
 export const dbConnection = async () => {
     try {
@@ -25,6 +38,8 @@ export const dbConnection = async () => {
             serverSelectionTimeoutMS: 5000,
             maxPoolSize: 10
         });
+
+        await cleanupLegacyMenuIndexes();
 
     } catch (error) {
         console.error(`Error al conectar la base de datos: ${error}`);

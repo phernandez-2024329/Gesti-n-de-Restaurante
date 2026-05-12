@@ -59,6 +59,11 @@ const Orders = new Schema({
         required: [true, 'El ID del usuario es obligatorio']
     },
 
+    detallePedidos: [{
+        type: Schema.Types.ObjectId,
+        ref: 'DetallePedido'
+    }],
+
     estado: {
         type: Boolean,
         default: true

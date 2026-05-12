@@ -1,5 +1,6 @@
 import Orders from '../models/orders.model.js';
 import crypto from 'crypto';
+import { isValidObjectId } from 'mongoose';
 
 export const createOrdersService = async (data) => {
     const {
@@ -31,17 +32,58 @@ export const createOrdersService = async (data) => {
         Orders_facture_descripcion: Orders_facture_descripcion,
         Restaurant_id: Restaurant_id,
         Menu_id: Menu_id,
-        User_id: User_id
+        User_id: User_id,
+        detallePedidos: []
     });
     return await newOrder.save();
 };
 
 export const getOrdersService = () => {
-    return Orders.find({ estado: true });
+    return Orders.find({ estado: true })
+        .populate('Restaurant_id')
+        .populate('User_id')
+        .populate({
+            path: 'detallePedidos',
+            populate: [
+                { path: 'producto' },
+                { path: 'recipe_id' }
+            ]
+        });
 };
 
 export const getOrderByIdService = async (id) => {
+    if (!isValidObjectId(id)) {
+        const err = new Error('ID no válido');
+        err.code = 'INVALID_ID';
+        throw err;
+    }
+
     const order = await Orders.findById(id);
+
+    if (!order || !order.estado) {
+        return null;
+    }
+
+    return order;
+};
+
+export const getOrderByIdWithDetailsService = async (id) => {
+    if (!isValidObjectId(id)) {
+        const err = new Error('ID no válido');
+        err.code = 'INVALID_ID';
+        throw err;
+    }
+
+    const order = await Orders.findById(id)
+        .populate('Restaurant_id')
+        .populate('User_id')
+        .populate({
+            path: 'detallePedidos',
+            populate: [
+                { path: 'producto' },
+                { path: 'recipe_id' }
+            ]
+        });
 
     if (!order || !order.estado) {
         return null;
@@ -57,27 +99,27 @@ export const searchOrdersService = async (searchTerm) => {
         return await Orders.find({
             estado: true,
             Orders_number: numericTerm
-        });
+        }).populate('detallePedidos');
     }
 
     const byDomicile = await Orders.find({
         estado: true,
         Orders_domicile: searchTerm
-    });
+    }).populate('detallePedidos');
 
     if (byDomicile.length > 0) return byDomicile;
 
     const byCupon = await Orders.find({
         estado: true,
         Orders_cupon: searchTerm
-    });
+    }).populate('detallePedidos');
 
     if (byCupon.length > 0) return byCupon;
 
     return await Orders.find({
         estado: true,
         Orders_facture: searchTerm
-    });
+    }).populate('detallePedidos');
 };
 
 export const updateOrderService = async (id, data) => {
@@ -85,7 +127,7 @@ export const updateOrderService = async (id, data) => {
     { _id: id, estado: true },
     data,
     { new: true, runValidators: true }
-   );
+   ).populate('detallePedidos');
 };
 
 export const deleteOrderService = async (id) => {

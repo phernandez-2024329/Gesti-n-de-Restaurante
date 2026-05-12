@@ -24,6 +24,9 @@ import reviewRoutes from '../src/routes/review.routes.js';
 import roleRoutes from '../src/routes/role.routes.js';
 import informationRoutes from '../src/routes/information.routes.js';
 import detallePedidoRoutes from '../src/routes/detallepedido.routes.js';
+import dishRoutes from '../src/routes/dish.routes.js';
+import beverageRoutes from '../src/routes/beverage.routes.js';
+import recipeRoutes from '../src/routes/recipe.routes.js';
 import { registerSwagger } from '../docs/swagger.js';
 
 const middlewares = (app) => {
@@ -55,6 +58,9 @@ const routes = (app) => {
     app.use(`${BASE_PATH}/role`, roleRoutes);
     app.use(`${BASE_PATH}/information`, informationRoutes);
     app.use(`${BASE_PATH}/detalle-pedido`, detallePedidoRoutes);
+    app.use(`${BASE_PATH}/dish`, dishRoutes);
+    app.use(`${BASE_PATH}/beverage`, beverageRoutes);
+    app.use(`${BASE_PATH}/recipe`, recipeRoutes);
     registerSwagger(app, BASE_PATH);
 
     app.get(`${BASE_PATH}/health`, (req, res) => {

@@ -5,6 +5,7 @@ import {
 	createOrder,
 	getOrders,
 	getOrderById,
+	getOrderByIdWithDetails,
 	updateOrders,
 	deleteOrders,
 	searchOrders
@@ -32,6 +33,12 @@ route.get(
 );
 
 route.get(
+	"/:id/details",
+	auth,
+	getOrderByIdWithDetails
+);
+
+route.get(
 	"/:id",
 	auth,
 	getOrderById
@@ -50,4 +57,3 @@ route.delete(
 );
 
 export default route;
-

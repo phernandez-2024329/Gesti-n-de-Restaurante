@@ -2,15 +2,24 @@ import { Schema, model } from "mongoose";
 
 const detallePedidoSchema = new Schema(
   {
-    pedido: {
-      type: String,
-      ref: "Pedido",
-      required: [true, "El pedido es obligatorio"]
+    orders_id: {
+      type: Schema.Types.ObjectId,
+      ref: "Orders",
+      required: [true, "El ID de la orden es obligatorio"]
     },
     producto: {
+      type: Schema.Types.ObjectId,
+      required: [true, "El ID del producto es obligatorio"]
+    },
+    productType: {
       type: String,
-      ref: "Producto",
-      required: [true, "El producto es obligatorio"]
+      enum: ['dish', 'beverage'],
+      required: [true, "El tipo de producto es obligatorio"]
+    },
+    recipe_id: {
+      type: Schema.Types.ObjectId,
+      ref: "Recipe",
+      default: null
     },
     candidadproducto: {
       type: Number,
@@ -25,6 +34,11 @@ const detallePedidoSchema = new Schema(
     total: {
       type: Number,
       required: true
+    },
+    restaurant_id: {
+      type: Schema.Types.ObjectId,
+      ref: "Restaurant",
+      required: [true, "El ID del restaurante es obligatorio"]
     },
     estado: {
       type: Boolean,

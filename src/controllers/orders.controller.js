@@ -2,6 +2,7 @@ import {
     createOrdersService,
     getOrdersService,
     getOrderByIdService,
+    getOrderByIdWithDetailsService,
     searchOrdersService,
     updateOrderService,
     deleteOrderService
@@ -64,9 +65,45 @@ export const getOrderById = async (req, res) => {
             data: order
         });
     } catch (error) {
+        if (error.code === 'INVALID_ID') {
+            return res.status(400).json({
+                success: false,
+                message: "ID de orden no válido",
+                error: error.message
+            });
+        }
         res.status(500).json({
             success: false,
             message: "Error al obtener la orden",
+            error: error.message
+        });
+    }
+};
+
+export const getOrderByIdWithDetails = async (req, res) => {
+    try {
+        const order = await getOrderByIdWithDetailsService(req.params.id);
+        if (!order) {
+            return res.status(404).json({
+                success: false,
+                message: "Orden no encontrada"
+            });
+        }
+        res.status(200).json({
+            message: "Orden con detalles obtenida exitosamente",
+            data: order
+        });
+    } catch (error) {
+        if (error.code === 'INVALID_ID') {
+            return res.status(400).json({
+                success: false,
+                message: "ID de orden no válido",
+                error: error.message
+            });
+        }
+        res.status(500).json({
+            success: false,
+            message: "Error al obtener la orden con detalles",
             error: error.message
         });
     }
