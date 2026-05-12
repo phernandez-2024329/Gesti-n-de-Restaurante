@@ -7,9 +7,36 @@ import {
   searchDishesByNameService
 } from '../services/dish.service.js';
 
+const normalizeDishPayload = (body = {}) => {
+  const normalizedTypeMap = {
+    entrada: 'Entrada',
+    'plato fuerte': 'Plato_fuerte',
+    plato_fuerte: 'Plato_fuerte',
+    'plato-fuerte': 'Plato_fuerte',
+    postre: 'Postre',
+    acompañamiento: 'Acompañamiento',
+    acompanamiento: 'Acompañamiento'
+  };
+
+  const rawType = typeof body.type === 'string' ? body.type.trim() : body.type;
+  const normalizedType = typeof rawType === 'string'
+    ? (normalizedTypeMap[rawType.toLowerCase()] || rawType)
+    : rawType;
+
+  return {
+    ...body,
+    name: body.name?.trim?.() ?? body.name,
+    description: body.description?.trim?.() ?? body.description,
+    type: normalizedType,
+    price: body.price !== undefined ? Number(body.price) : body.price,
+    available: body.available === 'true' ? true : body.available === 'false' ? false : body.available,
+    restaurant_id: body.restaurant_id ?? body.restaurantId ?? body.Restaurant_id
+  };
+};
+
 export const createDish = async (req, res) => {
   try {
-    const dish = await createDishService(req.body);
+    const dish = await createDishService(normalizeDishPayload(req.body));
     res.status(201).json({
       success: true,
       message: 'Platillo creado exitosamente',
@@ -83,7 +110,7 @@ export const getDishById = async (req, res) => {
 export const updateDish = async (req, res) => {
   try {
     const { id } = req.params;
-    const dish = await updateDishService(id, req.body);
+    const dish = await updateDishService(id, normalizeDishPayload(req.body));
     if (!dish) {
       return res.status(404).json({
         success: false,
