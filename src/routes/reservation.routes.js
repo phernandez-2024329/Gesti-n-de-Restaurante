@@ -4,7 +4,8 @@ import {
   getReservations,
   getReservationById,
   updateReservation,
-  deleteReservation
+  deleteReservation,
+  debugReservation
 } from '../controllers/reservation.controller.js';
 
 import { validateJWT } from '../../middlewares/validate-JWT.js';
@@ -17,6 +18,9 @@ import {
 import { Roles } from '../constants/roles.js';
 
 const router = Router();
+
+// Debug endpoint (temporal)
+router.post('/debug', validateJWT, debugReservation);
 
 // Crear reservación (ADMIN o GERENTE)
 router.post('/', validateJWT, validateRole(Roles.ADMIN, Roles.GERENTE), ...validateCreateReservation, createReservation);

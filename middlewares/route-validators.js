@@ -48,7 +48,6 @@ export const validateCreateReservation = [
     body('reservation_date').notEmpty().withMessage('reservation_date es obligatoria').isISO8601().withMessage('reservation_date debe ser fecha válida'),
     body('reservation_time').trim().notEmpty().withMessage('reservation_time es obligatoria'),
     body('reservation_price').notEmpty().withMessage('reservation_price es obligatorio').isFloat({ min: 0 }).withMessage('reservation_price debe ser >= 0'),
-    body('user_id').notEmpty().withMessage('user_id es obligatorio').isMongoId().withMessage('user_id inválido'),
     body('table_id')
         .optional()
         .isMongoId().withMessage('table_id inválido')
@@ -73,7 +72,6 @@ export const validateUpdateReservation = [
     body('reservation_state').optional().isIn(['pendiente', 'confirmada', 'cancelada', 'completada']).withMessage('reservation_state inválido'),
     body('reservation_surcharge').optional().isFloat({ min: 0 }).withMessage('reservation_surcharge debe ser >= 0'),
     body('reservation_history').optional().trim(),
-    body('user_id').optional().isMongoId().withMessage('user_id inválido'),
     checkValidators
 ];
 

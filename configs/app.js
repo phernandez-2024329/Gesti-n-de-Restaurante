@@ -15,6 +15,7 @@ import tableRoutes from '../src/routes/table.routes.js';
 import contactRoutes from '../src/routes/contact.routes.js';
 import orderRoutes from '../src/routes/orders.routes.js';
 import reservationRoutes from '../src/routes/reservation.routes.js';
+import notificationRoutes from '../src/routes/notification.routes.js';
 
 const BASE_PATH = '/GestorRestaurante/v1';
 import reportRoutes from '../src/routes/report.routes.js';
@@ -50,6 +51,7 @@ const routes = (app) => {
     app.use(`${BASE_PATH}/contact`, contactRoutes);
     app.use(`${BASE_PATH}/order`, orderRoutes);
     app.use(`${BASE_PATH}/reservation`, reservationRoutes);
+    app.use(`${BASE_PATH}/notifications`, notificationRoutes);
     app.use(`${BASE_PATH}/reports`, reportRoutes);
     app.use(`${BASE_PATH}/inventory`, inventoryRoutes);
     app.use(`${BASE_PATH}/role`, roleRoutes);
