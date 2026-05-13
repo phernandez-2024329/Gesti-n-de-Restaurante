@@ -133,10 +133,25 @@ export const createReservation = async (req, res) => {
 
     await reservation.save();
 
+    // Poblar la reserva creada para devolver datos completos
+    const populatedReservation = await Reservation.findById(reservation._id)
+      .populate('user_id', 'nombre email')
+      .populate('restaurant_id', 'restaurant_name restaurant_direction')
+      .populate('table_id', 'table_name table_number table_capacity');
+
+    // Formatear reserva para incluir campos adicionales para el frontend
+    const obj = populatedReservation.toObject();
+    const formattedReservation = {
+      ...obj,
+      cliente: obj.user_id?.nombre || 'N/A',
+      personas: obj.table_id?.table_capacity || null,
+      estado: obj.reservation_state
+    };
+
     res.status(201).json({
       success: true,
       message: 'Reservación creada',
-      reservation
+      reservation: formattedReservation
     });
 
   } catch (error) {
@@ -169,10 +184,21 @@ export const getReservations = async (req, res) => {
       .populate('table_id', 'table_name table_number table_capacity')
       .sort({ reservation_date: 1, reservation_time: 1 });
 
+    // Formatear reservas para incluir campos adicionales para el frontend
+    const formattedReservations = reservations.map(res => {
+      const obj = res.toObject();
+      return {
+        ...obj,
+        cliente: obj.user_id?.nombre || 'N/A',
+        personas: obj.table_id?.table_capacity || null,
+        estado: obj.reservation_state
+      };
+    });
+
     res.status(200).json({
       success: true,
-      total: reservations.length,
-      reservations
+      total: formattedReservations.length,
+      reservations: formattedReservations
     });
 
   } catch (error) {
@@ -207,9 +233,18 @@ export const getReservationById = async (req, res) => {
       });
     }
 
+    // Formatear reserva para incluir campos adicionales para el frontend
+    const obj = reservation.toObject();
+    const formattedReservation = {
+      ...obj,
+      cliente: obj.user_id?.nombre || 'N/A',
+      personas: obj.table_id?.table_capacity || null,
+      estado: obj.reservation_state
+    };
+
     res.status(200).json({
       success: true,
-      reservation
+      reservation: formattedReservation
     });
 
   } catch (error) {
@@ -276,10 +311,19 @@ export const updateReservation = async (req, res) => {
       .populate('restaurant_id', 'restaurant_name restaurant_direction')
       .populate('table_id', 'table_name table_number table_capacity');
 
+    // Formatear reserva para incluir campos adicionales para el frontend
+    const obj = reservation.toObject();
+    const formattedReservation = {
+      ...obj,
+      cliente: obj.user_id?.nombre || 'N/A',
+      personas: obj.table_id?.table_capacity || null,
+      estado: obj.reservation_state
+    };
+
     res.status(200).json({
       success: true,
       message: 'Reservación actualizada',
-      reservation
+      reservation: formattedReservation
     });
 
   } catch (error) {
