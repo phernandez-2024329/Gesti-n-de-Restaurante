@@ -54,11 +54,9 @@ const RecipeSchema = new Schema({
 }, { timestamps: true });
 
 // Validación: al menos dish_id o beverage_id debe estar presente
-RecipeSchema.pre('save', function(next) {
+RecipeSchema.pre('save', function() {
   if (!this.dish_id && !this.beverage_id) {
-    next(new Error('Debe proporcionar al menos un dish_id o beverage_id'));
-  } else {
-    next();
+    throw new Error('Debe proporcionar al menos un dish_id o beverage_id');
   }
 });
 

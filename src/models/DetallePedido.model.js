@@ -26,11 +26,6 @@ const detallePedidoSchema = new Schema(
       required: [true, "La cantidad del producto es obligatoria"],
       min: [1, "La cantidad del producto debe ser mayor a 0"]
     },
-    preciounitario: {
-      type: Number,
-      required: [true, "El precio unitario es obligatorio"],
-      min: 0
-    },
     total: {
       type: Number,
       required: true

@@ -116,35 +116,32 @@ export const validateSaveRestaurantLayout = [
 
 export const validateCreateOrder = [
     body('Orders_domicile').trim().notEmpty().withMessage('La dirección de domicilio es obligatoria'),
-    body('Orders_number').trim().notEmpty().withMessage('El número de orden es obligatorio'),
-    body('Orders_facture').trim().notEmpty().withMessage('La factura es obligatoria'),
-    body('Orders_facture_descripcion').trim().notEmpty().withMessage('La descripción de la factura es obligatoria'),
     body('Restaurant_id').notEmpty().withMessage('Restaurant_id es obligatorio').isMongoId().withMessage('Restaurant_id inválido'),
     body('Menu_id').notEmpty().withMessage('Menu_id es obligatorio').isMongoId().withMessage('Menu_id inválido'),
     body('User_id').optional().isMongoId().withMessage('User_id inválido'),
+    body('Orders_cupon').optional({ checkFalsy: true }).isIn(['Cupon_30_Quetzales', 'Cupon_20%_Descuento', 'Dos_Por_Uno', 'Envio_Gratis', 'Primera_Compra', 'Descuento_10%', 'Cupon_50_Quetzales', 'Cupon_15%_Descuento']).withMessage('Orders_cupon inválido'),
     checkValidators
 ];
 
 // --- Detalle de pedido ---
 export const validateCreateDetallePedido = [
-    body('pedido').trim().notEmpty().withMessage('pedido es obligatorio'),
-    body('producto').trim().notEmpty().withMessage('producto es obligatorio'),
-    body('candidadproducto')
-        .notEmpty().withMessage('candidadproducto es obligatoria')
-        .isInt({ min: 1 }).withMessage('candidadproducto debe ser entero >= 1')
-        .toInt(),
-    body('preciounitario')
-        .notEmpty().withMessage('preciounitario es obligatorio')
-        .isFloat({ min: 0 }).withMessage('preciounitario debe ser >= 0'),
+    body('orders_id').notEmpty().withMessage('orders_id es obligatorio').isMongoId().withMessage('orders_id inválido'),
+    body('items').optional().isArray({ min: 1 }).withMessage('items debe ser un arreglo con al menos un producto'),
+    body('items.*.producto').optional().isMongoId().withMessage('items[].producto inválido'),
+    body('items.*.productType').optional().isIn(['dish', 'beverage']).withMessage('items[].productType debe ser "dish" o "beverage"'),
+    body('items.*.candidadproducto').optional().isInt({ min: 1 }).withMessage('items[].candidadproducto debe ser entero >= 1').toInt(),
+    body('producto').optional().isMongoId().withMessage('producto inválido'),
+    body('productType').optional().isIn(['dish', 'beverage']).withMessage('productType debe ser "dish" o "beverage"'),
+    body('candidadproducto').optional().isInt({ min: 1 }).withMessage('candidadproducto debe ser entero >= 1').toInt(),
     checkValidators
 ];
 
 export const validateUpdateDetallePedido = [
     param('id').isMongoId().withMessage('ID de detalle inválido'),
-    body('pedido').optional().trim().notEmpty(),
-    body('producto').optional().trim().notEmpty(),
+    body('orders_id').optional().isMongoId().withMessage('orders_id inválido'),
+    body('producto').optional().isMongoId().withMessage('producto inválido'),
+    body('productType').optional().isIn(['dish', 'beverage']).withMessage('productType debe ser "dish" o "beverage"'),
     body('candidadproducto').optional().isInt({ min: 1 }).toInt(),
-    body('preciounitario').optional().isFloat({ min: 0 }),
     checkValidators
 ];
 

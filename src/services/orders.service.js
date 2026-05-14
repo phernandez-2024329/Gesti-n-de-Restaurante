@@ -1,40 +1,51 @@
 import Orders from '../models/orders.model.js';
-import crypto from 'crypto';
+import Counter from '../models/counter.model.js';
 import { isValidObjectId } from 'mongoose';
 
 export const createOrdersService = async (data) => {
     const {
-    Orders_id,
     Orders_domicile,
-    Orders_number,
     Orders_cupon,
-    Orders_facture,
-    Orders_facture_descripcion,
     Restaurant_id,
     Menu_id,
     User_id
     } = data;
 
-    if (!Orders_domicile || !Orders_number || !Orders_facture || !Orders_facture_descripcion || !Restaurant_id || !Menu_id || !User_id) {
-        const err = new Error('Pedido incompleto: faltan campos obligatorios (dirección, número orden, factura, descripción, restaurante, menú o usuario).');
+    if (!Orders_domicile || !Restaurant_id || !Menu_id || !User_id) {
+        const err = new Error('Pedido incompleto: faltan campos obligatorios (dirección, restaurante, menú o usuario).');
         err.code = 'INCOMPLETE_ORDER';
         throw err;
     }
 
-    const finalOrderId = Orders_id || `ORD-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;
+    // Obtener número de orden desde Counter sin usar update pipeline
+    // Primer paso: asegurar que exista el contador con base 99
+    await Counter.findOneAndUpdate(
+        { _id: 'orders' },
+        { $setOnInsert: { seq: 99 } },
+        { new: true, upsert: true }
+    );
+
+    // Segundo paso: incrementar y leer el valor resultante (100, 101, 102...)
+    const counter = await Counter.findOneAndUpdate(
+        { _id: 'orders' },
+        { $inc: { seq: 1 } },
+        { new: true }
+    );
+
+    const generatedNumber = counter.seq;
+    const generatedId = String(generatedNumber);
 
     const newOrder = new Orders({
-        Orders_id: finalOrderId,
+        Orders_id: generatedId,
         Orders_domicile: Orders_domicile,
-        Orders_number: Orders_number,
+        Orders_number: generatedNumber,
         Orders_cupon: Orders_cupon || null,
-        Orders_facture: Orders_facture,
-        Orders_facture_descripcion: Orders_facture_descripcion,
         Restaurant_id: Restaurant_id,
         Menu_id: Menu_id,
         User_id: User_id,
         detallePedidos: []
     });
+
     return await newOrder.save();
 };
 
@@ -116,10 +127,8 @@ export const searchOrdersService = async (searchTerm) => {
 
     if (byCupon.length > 0) return byCupon;
 
-    return await Orders.find({
-        estado: true,
-        Orders_facture: searchTerm
-    }).populate('detallePedidos');
+    // No se encontró por número, domicilio ni cupón
+    return [];
 };
 
 export const updateOrderService = async (id, data) => {

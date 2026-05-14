@@ -10,10 +10,12 @@ import {
 export const createDetallePedido = async (req, res) => {
   try {
     const detallePedido = await createDetallePedidoService(req.body);
+    const count = Array.isArray(detallePedido) ? detallePedido.length : 1;
 
     res.status(201).json({
       success: true,
       message: "Detalle de pedido creado correctamente y inventario actualizado",
+      count,
       detallePedido
     });
   } catch (error) {
@@ -31,6 +33,24 @@ export const createDetallePedido = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: "Tipo de producto inválido",
+        error: error.message,
+        code: error.code
+      });
+    }
+
+    if (error.code === 'INVALID_ITEMS' || error.code === 'INVALID_QUANTITY' || error.code === 'PRODUCT_NOT_FOUND' || error.code === 'ORDER_NOT_FOUND') {
+      return res.status(400).json({
+        success: false,
+        message: "Error de validación en el detalle de pedido",
+        error: error.message,
+        code: error.code
+      });
+    }
+
+    if (error.code === 'RECIPE_NOT_FOUND' || error.code === 'UNIT_MISMATCH') {
+      return res.status(400).json({
+        success: false,
+        message: "No fue posible procesar inventario con la receta del producto",
         error: error.message,
         code: error.code
       });
@@ -131,6 +151,24 @@ export const updateDetallePedido = async (req, res) => {
       detallePedido
     });
   } catch (error) {
+    if (error.code === 'INVALID_ID') {
+      return res.status(400).json({
+        success: false,
+        message: "ID de detalle no válido",
+        error: error.message,
+        code: error.code
+      });
+    }
+
+    if (error.code === 'INVALID_QUANTITY' || error.code === 'PRODUCT_NOT_FOUND' || error.code === 'ORDER_NOT_FOUND' || error.code === 'RECIPE_NOT_FOUND' || error.code === 'UNIT_MISMATCH' || error.code === 'INSUFFICIENT_STOCK') {
+      return res.status(400).json({
+        success: false,
+        message: "No fue posible actualizar el detalle de pedido",
+        error: error.message,
+        code: error.code
+      });
+    }
+
     res.status(500).json({
       success: false,
       message: "Error al actualizar el detalle de pedido",
@@ -155,6 +193,24 @@ export const deleteDetallePedido = async (req, res) => {
       message: "Detalle de pedido eliminado correctamente"
     });
   } catch (error) {
+    if (error.code === 'INVALID_ID') {
+      return res.status(400).json({
+        success: false,
+        message: "ID de detalle no válido",
+        error: error.message,
+        code: error.code
+      });
+    }
+
+    if (error.code === 'RECIPE_NOT_FOUND' || error.code === 'UNIT_MISMATCH' || error.code === 'INVENTORY_NOT_FOUND') {
+      return res.status(400).json({
+        success: false,
+        message: "No fue posible restaurar inventario para eliminar el detalle",
+        error: error.message,
+        code: error.code
+      });
+    }
+
     res.status(500).json({
       success: false,
       message: "Error al eliminar el detalle de pedido",

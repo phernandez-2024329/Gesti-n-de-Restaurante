@@ -13,8 +13,9 @@ const Orders = new Schema({
     },
 
     Orders_number: {
-        type: String,
-        required: [true, 'El número de la orden es obligatorio']
+        type: Number,
+        required: [true, 'El número de la orden es obligatorio'],
+        unique: true
     },
 
     Orders_cupon: {
@@ -23,16 +24,6 @@ const Orders = new Schema({
             'Envio_Gratis', 'Primera_Compra', 'Descuento_10%', 'Cupon_50_Quetzales',
             'Cupon_15%_Descuento', null],
         default: null
-    },
-
-    Orders_facture: {
-        type: String,
-        required: [true, 'La factura es obligatoria']
-    },
-
-    Orders_facture_descripcion: {
-        type: String,
-        required: [true, 'La descripción de la factura es obligatoria']
     },
 
     Orders_status: {
