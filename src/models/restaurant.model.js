@@ -52,6 +52,19 @@ const restaurantSchema = new Schema(
     estado: {
       type: Boolean,
       default: true
+    },
+    /* Coordenadas geográficas del restaurante */
+    lat: {
+      type: Number,
+      default: null
+    },
+    lng: {
+      type: Number,
+      default: null
+    },
+    hasLocation: {
+      type: Boolean,
+      default: false
     }
   },
   { timestamps: true }
