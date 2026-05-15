@@ -46,6 +46,10 @@ const TAGS = [
     description: 'Gestion de reservaciones del restaurante',
   },
   {
+    name: 'Notificaciones',
+    description: 'Gestion de notificaciones del sistema',
+  },
+  {
     name: 'Inventario',
     description: 'Gestion de inventario del restaurante',
   },
@@ -1700,7 +1704,7 @@ const RESERVATION_PATHS = {
       tags: ['Reservacion'],
       operationId: 'createReservation',
       summary: 'Crear reservacion',
-      description: 'Crea una reservacion. Requiere rol ADMIN o GERENTE.',
+      description: 'Crea una reservacion. Requiere rol ADMIN o GERENTE. El user_id se obtiene automáticamente del token JWT.',
       security: AUTH_SECURITY,
       requestBody: {
         required: true,
@@ -1718,7 +1722,6 @@ const RESERVATION_PATHS = {
                   reservation_price: 150,
                   reservation_surcharge: 10,
                   reservation_history: 'Reservacion aniversario',
-                  user_id: '67f6f2cf2a1e6b17f34ef301',
                 },
               },
             },
@@ -2336,6 +2339,135 @@ const CONTACT_PATHS = {
             },
           },
         },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+  },
+};
+
+const NOTIFICATION_PATHS = {
+  [`${BASE_PATH}/notifications`]: {
+    post: {
+      tags: ['Notificaciones'],
+      operationId: 'createNotification',
+      summary: 'Crear notificación',
+      description: 'Crea una notificación para un usuario.',
+      security: AUTH_SECURITY,
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/NotificationCreateInput' },
+          },
+        },
+      },
+      responses: {
+        201: {
+          description: 'Notificación creada',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/NotificationMutationResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/BadRequest' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+    get: {
+      tags: ['Notificaciones'],
+      operationId: 'listNotifications',
+      summary: 'Listar notificaciones',
+      description: 'Obtiene todas las notificaciones. Opcionalmente filtra por user_id.',
+      security: AUTH_SECURITY,
+      parameters: [
+        {
+          name: 'user_id',
+          in: 'query',
+          schema: { type: 'string' },
+          description: 'ID del usuario para filtrar notificaciones',
+        },
+      ],
+      responses: {
+        200: {
+          description: 'Lista de notificaciones',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/NotificationListResponse' },
+            },
+          },
+        },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+  },
+  [`${BASE_PATH}/notifications/{notificationId}`]: {
+    put: {
+      tags: ['Notificaciones'],
+      operationId: 'updateNotification',
+      summary: 'Actualizar notificación',
+      description: 'Actualiza una notificación existente.',
+      security: AUTH_SECURITY,
+      parameters: [
+        {
+          name: 'notificationId',
+          in: 'path',
+          required: true,
+          schema: { type: 'string' },
+          description: 'ID de la notificación',
+        },
+      ],
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/NotificationUpdateInput' },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: 'Notificación actualizada',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/NotificationMutationResponse' },
+            },
+          },
+        },
+        400: { $ref: '#/components/responses/BadRequest' },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        404: { $ref: '#/components/responses/NotFound' },
+        500: { $ref: '#/components/responses/InternalServerError' },
+      },
+    },
+    delete: {
+      tags: ['Notificaciones'],
+      operationId: 'deleteNotification',
+      summary: 'Eliminar notificación',
+      description: 'Elimina una notificación (soft delete).',
+      security: AUTH_SECURITY,
+      parameters: [
+        {
+          name: 'notificationId',
+          in: 'path',
+          required: true,
+          schema: { type: 'string' },
+          description: 'ID de la notificación',
+        },
+      ],
+      responses: {
+        200: {
+          description: 'Notificación eliminada',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/SuccessResponse' },
+            },
+          },
+        },
+        401: { $ref: '#/components/responses/Unauthorized' },
+        404: { $ref: '#/components/responses/NotFound' },
         500: { $ref: '#/components/responses/InternalServerError' },
       },
     },
@@ -3367,7 +3499,7 @@ const COMPONENTS = {
     },
     ReservationCreateInput: {
       type: 'object',
-      required: ['restaurant_id', 'reservation_type', 'reservation_date', 'reservation_time', 'reservation_price', 'user_id'],
+      required: ['restaurant_id', 'reservation_type', 'reservation_date', 'reservation_time', 'reservation_price'],
       properties: {
         restaurant_id: { $ref: '#/components/schemas/MongoId' },
         table_id: { $ref: '#/components/schemas/MongoId' },
@@ -3377,7 +3509,6 @@ const COMPONENTS = {
         reservation_price: { type: 'number', minimum: 0 },
         reservation_surcharge: { type: 'number', minimum: 0 },
         reservation_history: { type: 'string' },
-        user_id: { $ref: '#/components/schemas/MongoId' },
       },
     },
     ReservationUpdateInput: {
@@ -3652,6 +3783,68 @@ const COMPONENTS = {
       },
     },
 
+    Notification: {
+      type: 'object',
+      properties: {
+        _id: { $ref: '#/components/schemas/MongoId' },
+        title: { type: 'string' },
+        message: { type: 'string' },
+        user_id: {
+          oneOf: [
+            { $ref: '#/components/schemas/MongoId' },
+            {
+              type: 'object',
+              properties: {
+                _id: { $ref: '#/components/schemas/MongoId' },
+                nombre: { type: 'string' },
+                email: { type: 'string' },
+              },
+            },
+          ],
+        },
+        isRead: { type: 'boolean', default: false },
+        estado: { type: 'boolean', default: true },
+        createdAt: { type: 'string', format: 'date-time' },
+        updatedAt: { type: 'string', format: 'date-time' },
+      },
+    },
+    NotificationCreateInput: {
+      type: 'object',
+      required: ['title', 'message', 'user_id'],
+      properties: {
+        title: { type: 'string' },
+        message: { type: 'string' },
+        user_id: { $ref: '#/components/schemas/MongoId' },
+      },
+    },
+    NotificationUpdateInput: {
+      type: 'object',
+      minProperties: 1,
+      properties: {
+        title: { type: 'string' },
+        message: { type: 'string' },
+        isRead: { type: 'boolean' },
+      },
+    },
+    NotificationMutationResponse: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+        message: { type: 'string', example: 'Notificación creada exitosamente' },
+        notification: { $ref: '#/components/schemas/Notification' },
+      },
+    },
+    NotificationListResponse: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+        notifications: {
+          type: 'array',
+          items: { $ref: '#/components/schemas/Notification' },
+        },
+      },
+    },
+
     
   },
 
@@ -3660,8 +3853,8 @@ const COMPONENTS = {
 const swaggerSpec = {
   openapi: '3.0.3',
   info: {
-    title: 'GestorRestaurante API - Mesa, Menu, Resena, Reporte, Eventos, Pedidos, DetallePedido, Cupon, Informacion, Reservacion, Inventario, Restaurante y Contacto',
-    description: 'Documentacion de Mesa, Menu, Resena, Reporte, Eventos, Pedidos, DetallePedido, Cupon, Informacion, Reservacion, Inventario, Restaurante y Contacto.',
+    title: 'GestorRestaurante API - Mesa, Menu, Resena, Reporte, Eventos, Pedidos, DetallePedido, Cupon, Informacion, Reservacion, Notificaciones, Inventario, Restaurante y Contacto',
+    description: 'Documentacion de Mesa, Menu, Resena, Reporte, Eventos, Pedidos, DetallePedido, Cupon, Informacion, Reservacion, Notificaciones, Inventario, Restaurante y Contacto.',
     version: '1.0.0',
   },
   servers: [{ url: 'http://localhost:3000', description: 'Local' }],
@@ -3677,6 +3870,7 @@ const swaggerSpec = {
     ...COUPON_PATHS,
     ...INFORMATION_PATHS,
     ...RESERVATION_PATHS,
+    ...NOTIFICATION_PATHS,
     ...INVENTORY_PATHS,
     ...RESTAURANT_PATHS,
     ...CONTACT_PATHS,

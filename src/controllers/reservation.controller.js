@@ -1,8 +1,45 @@
 import Reservation from '../models/reservation.model.js';
 
+// Endpoint temporal para debugging
+export const debugReservation = async (req, res) => {
+  try {
+    return res.status(200).json({
+      success: true,
+      message: 'Datos recibidos para debugging',
+      body: req.body,
+      headers: req.headers,
+      user: req.user,
+      contentType: req.get('Content-Type')
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error en debug',
+      error: error.message
+    });
+  }
+};
+
 export const createReservation = async (req, res) => {
   try {
+    console.log('Request body recibido:', JSON.stringify(req.body, null, 2));
+    console.log('User from token:', req.user);
+
     const {
+      restaurant_id,
+      table_id,
+      reservation_type,
+      reservation_date,
+      reservation_time,
+      reservation_price,
+      reservation_surcharge,
+      reservation_history
+    } = req.body;
+
+    // Usar el user_id del token JWT en lugar del body
+    const user_id = req.user.id;
+
+    console.log('Campos extraídos:', {
       restaurant_id,
       table_id,
       reservation_type,
@@ -12,12 +49,20 @@ export const createReservation = async (req, res) => {
       reservation_surcharge,
       reservation_history,
       user_id
-    } = req.body;
+    });
 
-    if (!restaurant_id || !reservation_type || !reservation_date || !reservation_time || !reservation_price || !user_id) {
+    const missingFields = [];
+    if (!restaurant_id) missingFields.push('restaurant_id');
+    if (!reservation_type) missingFields.push('reservation_type');
+    if (!reservation_date) missingFields.push('reservation_date');
+    if (!reservation_time) missingFields.push('reservation_time');
+    if (reservation_price === undefined || reservation_price === null || reservation_price === '') missingFields.push('reservation_price');
+
+    if (missingFields.length > 0) {
+      console.log('Campos faltantes:', missingFields);
       return res.status(400).json({
         success: false,
-        message: 'Faltan campos obligatorios: restaurant_id, reservation_type, reservation_date, reservation_time, reservation_price, user_id'
+        message: `Faltan campos obligatorios: ${missingFields.join(', ')}`
       });
     }
 
@@ -88,10 +133,25 @@ export const createReservation = async (req, res) => {
 
     await reservation.save();
 
+    // Poblar la reserva creada para devolver datos completos
+    const populatedReservation = await Reservation.findById(reservation._id)
+      .populate('user_id', 'nombre email')
+      .populate('restaurant_id', 'restaurant_name restaurant_direction')
+      .populate('table_id', 'table_name table_number table_capacity');
+
+    // Formatear reserva para incluir campos adicionales para el frontend
+    const obj = populatedReservation.toObject();
+    const formattedReservation = {
+      ...obj,
+      cliente: obj.user_id?.nombre || 'N/A',
+      personas: obj.table_id?.table_capacity || null,
+      estado: obj.reservation_state
+    };
+
     res.status(201).json({
       success: true,
       message: 'Reservación creada',
-      reservation
+      reservation: formattedReservation
     });
 
   } catch (error) {
@@ -124,10 +184,21 @@ export const getReservations = async (req, res) => {
       .populate('table_id', 'table_name table_number table_capacity')
       .sort({ reservation_date: 1, reservation_time: 1 });
 
+    // Formatear reservas para incluir campos adicionales para el frontend
+    const formattedReservations = reservations.map(res => {
+      const obj = res.toObject();
+      return {
+        ...obj,
+        cliente: obj.user_id?.nombre || 'N/A',
+        personas: obj.table_id?.table_capacity || null,
+        estado: obj.reservation_state
+      };
+    });
+
     res.status(200).json({
       success: true,
-      total: reservations.length,
-      reservations
+      total: formattedReservations.length,
+      reservations: formattedReservations
     });
 
   } catch (error) {
@@ -162,9 +233,18 @@ export const getReservationById = async (req, res) => {
       });
     }
 
+    // Formatear reserva para incluir campos adicionales para el frontend
+    const obj = reservation.toObject();
+    const formattedReservation = {
+      ...obj,
+      cliente: obj.user_id?.nombre || 'N/A',
+      personas: obj.table_id?.table_capacity || null,
+      estado: obj.reservation_state
+    };
+
     res.status(200).json({
       success: true,
-      reservation
+      reservation: formattedReservation
     });
 
   } catch (error) {
@@ -186,7 +266,7 @@ export const getReservationById = async (req, res) => {
 // Campos permitidos para actualizar (no se permite _id, estado, timestamps)
 const RESERVATION_UPDATE_FIELDS = [
   'restaurant_id', 'table_id', 'reservation_type', 'reservation_date', 'reservation_time',
-  'reservation_price', 'reservation_state', 'reservation_surcharge', 'reservation_history', 'user_id'
+  'reservation_price', 'reservation_state', 'reservation_surcharge', 'reservation_history'
 ];
 
 export const updateReservation = async (req, res) => {
@@ -231,10 +311,19 @@ export const updateReservation = async (req, res) => {
       .populate('restaurant_id', 'restaurant_name restaurant_direction')
       .populate('table_id', 'table_name table_number table_capacity');
 
+    // Formatear reserva para incluir campos adicionales para el frontend
+    const obj = reservation.toObject();
+    const formattedReservation = {
+      ...obj,
+      cliente: obj.user_id?.nombre || 'N/A',
+      personas: obj.table_id?.table_capacity || null,
+      estado: obj.reservation_state
+    };
+
     res.status(200).json({
       success: true,
       message: 'Reservación actualizada',
-      reservation
+      reservation: formattedReservation
     });
 
   } catch (error) {
