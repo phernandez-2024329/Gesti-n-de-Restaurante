@@ -22,7 +22,9 @@ export const createRestaurant = async (req, res) => {
       restaurant_time_close,
       restaurant_mean_price,
       contact_id,
-      table_id
+      table_id,
+      lat,
+      lng
     } = req.body || {};
 
     if (!restaurant_name) {
@@ -31,6 +33,11 @@ export const createRestaurant = async (req, res) => {
         message: 'El campo restaurant_name es requerido'
       });
     }
+
+    // Parsear coordenadas si vienen como string (FormData las serializa así)
+    const parsedLat = lat !== undefined && lat !== '' ? parseFloat(lat) : null;
+    const parsedLng = lng !== undefined && lng !== '' ? parseFloat(lng) : null;
+    const hasLocation = parsedLat !== null && parsedLng !== null && !isNaN(parsedLat) && !isNaN(parsedLng);
 
     // Generar IDs aleatorios si no se proporcionan
     const finalContactId = contact_id || new Types.ObjectId();
@@ -46,7 +53,10 @@ export const createRestaurant = async (req, res) => {
       restaurant_mean_price,
       restaurant_images: imageUrl ? [imageUrl] : [],
       contact_id: finalContactId,
-      table_id: finalTableId
+      table_id: finalTableId,
+      lat: parsedLat,
+      lng: parsedLng,
+      hasLocation
     });
 
     await restaurant.save();
