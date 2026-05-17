@@ -4,6 +4,26 @@ import { Types } from 'mongoose';
 import { uploadToCloudinary } from '../../helpers/cloudinary.js';
 import fs from 'fs';
 
+const hasOwn = (object, key) => Object.prototype.hasOwnProperty.call(object, key);
+
+const parseCoordinate = (value) => {
+  if (value === undefined || value === null || value === '') return null;
+
+  const parsed = parseFloat(value);
+  return Number.isFinite(parsed) ? parsed : null;
+};
+
+const resolveLocation = (payload = {}) => {
+  const parsedLat = parseCoordinate(payload.lat);
+  const parsedLng = parseCoordinate(payload.lng);
+  const hasLocation = parsedLat !== null && parsedLng !== null;
+
+  return {
+    lat: hasLocation ? parsedLat : null,
+    lng: hasLocation ? parsedLng : null,
+    hasLocation
+  };
+};
 export const createRestaurant = async (req, res) => {
   try {
     let imageUrl = '';
@@ -35,9 +55,7 @@ export const createRestaurant = async (req, res) => {
     }
 
     // Parsear coordenadas si vienen como string (FormData las serializa así)
-    const parsedLat = lat !== undefined && lat !== '' ? parseFloat(lat) : null;
-    const parsedLng = lng !== undefined && lng !== '' ? parseFloat(lng) : null;
-    const hasLocation = parsedLat !== null && parsedLng !== null && !isNaN(parsedLat) && !isNaN(parsedLng);
+    const locationData = resolveLocation({ lat, lng });
 
     // Generar IDs aleatorios si no se proporcionan
     const finalContactId = contact_id || new Types.ObjectId();
@@ -54,9 +72,9 @@ export const createRestaurant = async (req, res) => {
       restaurant_images: imageUrl ? [imageUrl] : [],
       contact_id: finalContactId,
       table_id: finalTableId,
-      lat: parsedLat,
-      lng: parsedLng,
-      hasLocation
+      lat: locationData.lat,
+      lng: locationData.lng,
+      hasLocation: locationData.hasLocation
     });
 
     await restaurant.save();
@@ -169,15 +187,31 @@ export const getRestaurantById = async (req, res) => {
 export const updateRestaurant = async (req, res) => {
   try {
     const { id } = req.params;
-    let updateData = {...req.body}; 
-    
+    const payload = { ...req.body };
+
     if (req.file) {
       const result = await uploadToCloudinary(req.file.path);
-      updateData.restaurant_images = [result.secure_url];
-      fs.unlinkSync(req.file.path); 
+      payload.restaurant_images = [result.secure_url];
+      fs.unlinkSync(req.file.path);
     }
 
-    const updated = await Restaurant.findByIdAndUpdate(id, updateData, { new: true });
+    const includeLocation = hasOwn(req.body, 'lat') || hasOwn(req.body, 'lng');
+
+    if (includeLocation) {
+      const locationData = resolveLocation({
+        lat: req.body.lat,
+        lng: req.body.lng
+      });
+
+      payload.lat = locationData.lat;
+      payload.lng = locationData.lng;
+      payload.hasLocation = locationData.hasLocation;
+    }
+
+    const updated = await Restaurant.findByIdAndUpdate(id, payload, {
+      new: true,
+      runValidators: true
+    });
 
     if (!updated) {
       return res.status(404).json({
@@ -231,18 +265,18 @@ export const deleteRestaurant = async (req, res) => {
       restaurant
     });
 
-    } catch (error) {
-      if (error.name === 'CastError') {
-        return res.status(400).json({
-          success: false,
-          message: 'ID de restaurante no válido',
-          error: 'INVALID_ID'
-        });
-      }
-      res.status(500).json({
+  } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(400).json({
         success: false,
-        message: 'Error al eliminar restaurante',
-        error: error.message
+        message: 'ID de restaurante no válido',
+        error: 'INVALID_ID'
       });
     }
+    res.status(500).json({
+      success: false,
+      message: 'Error al eliminar restaurante',
+      error: error.message
+    });
+  }
 };
