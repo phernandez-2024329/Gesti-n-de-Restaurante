@@ -26,6 +26,12 @@ export const validateCreateRestaurant = [
     body('restaurant_mean_price')
         .notEmpty().withMessage('El precio promedio es obligatorio')
         .isFloat({ min: 0 }).withMessage('El precio promedio debe ser un número mayor o igual a 0'),
+    body('lat')
+        .notEmpty().withMessage('La latitud es obligatoria')
+        .isFloat({ min: -90, max: 90 }).withMessage('Latitud inválida'),
+    body('lng')
+        .notEmpty().withMessage('La longitud es obligatoria')
+        .isFloat({ min: -180, max: 180 }).withMessage('Longitud inválida'),
     body('contact_id')
         .optional()
         .isMongoId().withMessage('contact_id inválido'),
@@ -39,6 +45,18 @@ export const validateUpdateRestaurant = [
     param('id').isMongoId().withMessage('ID de restaurante inválido'),
     body('restaurant_name').optional().trim().isLength({ min: 2 }).withMessage('Mínimo 2 caracteres'),
     body('restaurant_mean_price').optional().isFloat({ min: 0 }).withMessage('Precio debe ser >= 0'),
+    body('lat').optional().isFloat({ min: -90, max: 90 }).withMessage('Latitud inválida'),
+    body('lng').optional().isFloat({ min: -180, max: 180 }).withMessage('Longitud inválida'),
+    body().custom((value, { req }) => {
+        const hasLat = Object.prototype.hasOwnProperty.call(req.body, 'lat');
+        const hasLng = Object.prototype.hasOwnProperty.call(req.body, 'lng');
+
+        if (hasLat !== hasLng) {
+            throw new Error('lat y lng deben enviarse juntos');
+        }
+
+        return true;
+    }),
     checkValidators
 ];
 
