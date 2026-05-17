@@ -52,6 +52,34 @@ const createError = (message, code) => {
   return err;
 };
 
+const isTransactionUnsupportedError = (error) => {
+  return typeof error?.message === 'string' && error.message.includes('Transaction numbers are only allowed on a replica set member or mongos');
+};
+
+const runWithOptionalTransaction = async (work) => {
+  const session = await mongoose.startSession();
+
+  try {
+    let result;
+
+    try {
+      await session.withTransaction(async () => {
+        result = await work(session);
+      });
+
+      return result;
+    } catch (error) {
+      if (!isTransactionUnsupportedError(error)) {
+        throw error;
+      }
+
+      return await work(null);
+    }
+  } finally {
+    await session.endSession();
+  }
+};
+
 const addRequirement = (requirementsMap, inventoryId, quantity, unit) => {
   const key = String(inventoryId);
   const existing = requirementsMap.get(key);
@@ -231,12 +259,7 @@ export const createDetallePedidoService = async (data) => {
     throw createError('Debe enviar al menos un producto en items o producto/productType/candidadproducto', 'INVALID_ITEMS');
   }
 
-  const session = await mongoose.startSession();
-
-  try {
-    let result = null;
-
-    await session.withTransaction(async () => {
+  return await runWithOptionalTransaction(async (session) => {
       const orderTx = await Orders.findOne({ _id: orders_id, estado: true }).session(session);
 
       if (!orderTx) {
@@ -305,13 +328,8 @@ export const createDetallePedidoService = async (data) => {
         { new: true, session }
       );
 
-      result = createdDetails.length === 1 ? createdDetails[0] : createdDetails;
-    });
-
-    return result;
-  } finally {
-    await session.endSession();
-  }
+      return createdDetails.length === 1 ? createdDetails[0] : createdDetails;
+  });
 };
 
 export const  getDetallePedidosService = async () => {
@@ -333,17 +351,11 @@ export const updateDetallePedidoService = async (id, data) => {
     throw createError('ID de detalle no válido', 'INVALID_ID');
   }
 
-  const session = await mongoose.startSession();
-
-  try {
-    let updated = null;
-
-    await session.withTransaction(async () => {
+  return await runWithOptionalTransaction(async (session) => {
       const detalleActual = await DetallePedidoModel.findOne({ _id: id, estado: true }).session(session);
 
       if (!detalleActual) {
-        updated = null;
-        return;
+        return null;
       }
 
       const order = await Orders.findOne({ _id: detalleActual.orders_id, estado: true }).session(session);
@@ -395,17 +407,14 @@ export const updateDetallePedidoService = async (id, data) => {
         total: nextProduct.price * nextQuantity
       };
 
-      updated = await DetallePedidoModel.findOneAndUpdate(
+      const updated = await DetallePedidoModel.findOneAndUpdate(
         { _id: id, estado: true },
         updateData,
         { new: true, session }
       );
-    });
 
-    return updated;
-  } finally {
-    await session.endSession();
-  }
+      return updated;
+  });
 };
 
 export const deleteDetallePedidoService = async (id) => {
@@ -413,17 +422,11 @@ export const deleteDetallePedidoService = async (id) => {
     throw createError('ID de detalle no válido', 'INVALID_ID');
   }
 
-  const session = await mongoose.startSession();
-
-  try {
-    let deleted = null;
-
-    await session.withTransaction(async () => {
+  return await runWithOptionalTransaction(async (session) => {
       const detalle = await DetallePedidoModel.findOne({ _id: id, estado: true }).session(session);
 
       if (!detalle) {
-        deleted = null;
-        return;
+        return null;
       }
 
       const order = await Orders.findOne({ _id: detalle.orders_id, estado: true }).session(session);
@@ -440,7 +443,7 @@ export const deleteDetallePedidoService = async (id) => {
       validateRequirements(requirements, inventoryMap, false);
       await applyIncreaseRequirements(requirements, restaurantId, session);
 
-      deleted = await DetallePedidoModel.findOneAndUpdate(
+      const deleted = await DetallePedidoModel.findOneAndUpdate(
         { _id: id, estado: true },
         { estado: false },
         { new: true, session }
@@ -453,12 +456,8 @@ export const deleteDetallePedidoService = async (id) => {
           { session }
         );
       }
-    });
-
-    return deleted;
-  } finally {
-    await session.endSession();
-  }
+      return deleted;
+  });
 };
 
 export const getDetallePedidosByOrderService = async (orderId) => {

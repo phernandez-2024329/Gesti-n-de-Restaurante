@@ -1,5 +1,6 @@
 import Orders from '../models/orders.model.js';
 import Counter from '../models/counter.model.js';
+import Coupon from '../models/coupon.model.js';
 import { isValidObjectId } from 'mongoose';
 
 export const createOrdersService = async (data) => {
@@ -15,6 +16,31 @@ export const createOrdersService = async (data) => {
         const err = new Error('Pedido incompleto: faltan campos obligatorios (dirección, restaurante, menú o usuario).');
         err.code = 'INCOMPLETE_ORDER';
         throw err;
+    }
+
+    let couponDoc = null;
+    if (Orders_cupon) {
+        if (!isValidObjectId(Orders_cupon)) {
+            const err = new Error('Orders_cupon inválido');
+            err.code = 'INVALID_COUPON_ID';
+            throw err;
+        }
+        couponDoc = await Coupon.findById(Orders_cupon);
+        if (!couponDoc || couponDoc.active === false) {
+            const err = new Error('Cupón no encontrado o inactivo');
+            err.code = 'COUPON_NOT_FOUND';
+            throw err;
+        }
+        if (couponDoc.expiration_date && couponDoc.expiration_date < new Date()) {
+            const err = new Error('Cupón expirado');
+            err.code = 'COUPON_EXPIRED';
+            throw err;
+        }
+        if (typeof couponDoc.current_uses === 'number' && typeof couponDoc.max_uses === 'number' && couponDoc.current_uses >= couponDoc.max_uses) {
+            const err = new Error('Cupón ya alcanzó el número máximo de usos');
+            err.code = 'COUPON_MAX_USES';
+            throw err;
+        }
     }
 
     // Obtener número de orden desde Counter sin usar update pipeline
@@ -46,13 +72,31 @@ export const createOrdersService = async (data) => {
         detallePedidos: []
     });
 
-    return await newOrder.save();
+    const savedOrder = await newOrder.save();
+
+    // If a coupon was applied, register the redemption and increment uses
+    if (couponDoc) {
+        await Coupon.findByIdAndUpdate(couponDoc._id, {
+            $inc: { current_uses: 1 },
+            $push: {
+                redemptions: {
+                    order: savedOrder._id,
+                    user: User_id || null,
+                    amount_applied: 0,
+                    applied_at: new Date()
+                }
+            }
+        });
+    }
+
+    return savedOrder;
 };
 
 export const getOrdersService = () => {
     return Orders.find({ estado: true })
         .populate('Restaurant_id')
         .populate('User_id')
+        .populate('Orders_cupon')
         .populate({
             path: 'detallePedidos',
             populate: [
@@ -88,6 +132,7 @@ export const getOrderByIdWithDetailsService = async (id) => {
     const order = await Orders.findById(id)
         .populate('Restaurant_id')
         .populate('User_id')
+        .populate('Orders_cupon')
         .populate({
             path: 'detallePedidos',
             populate: [
@@ -120,12 +165,16 @@ export const searchOrdersService = async (searchTerm) => {
 
     if (byDomicile.length > 0) return byDomicile;
 
-    const byCupon = await Orders.find({
-        estado: true,
-        Orders_cupon: searchTerm
-    }).populate('detallePedidos');
+    // Try finding coupon by code then search orders by coupon id
+    const couponByCode = await Coupon.findOne({ code: searchTerm });
+    if (couponByCode) {
+        const byCupon = await Orders.find({
+            estado: true,
+            Orders_cupon: couponByCode._id
+        }).populate('detallePedidos');
 
-    if (byCupon.length > 0) return byCupon;
+        if (byCupon.length > 0) return byCupon;
+    }
 
     // No se encontró por número, domicilio ni cupón
     return [];

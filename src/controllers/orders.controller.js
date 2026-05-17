@@ -27,6 +27,43 @@ export const createOrder = async (req, res) => {
                 error: error.message
             });
         }
+
+        if (error.code === 'INVALID_COUPON_ID') {
+            return res.status(400).json({
+                success: false,
+                message: "Cupón inválido",
+                error: error.message,
+                code: error.code
+            });
+        }
+
+        if (error.code === 'COUPON_NOT_FOUND') {
+            return res.status(404).json({
+                success: false,
+                message: "Cupón no encontrado o inactivo",
+                error: error.message,
+                code: error.code
+            });
+        }
+
+        if (error.code === 'COUPON_EXPIRED') {
+            return res.status(400).json({
+                success: false,
+                message: "Cupón expirado",
+                error: error.message,
+                code: error.code
+            });
+        }
+
+        if (error.code === 'COUPON_MAX_USES') {
+            return res.status(400).json({
+                success: false,
+                message: "Cupón sin usos disponibles",
+                error: error.message,
+                code: error.code
+            });
+        }
+
         res.status(500).json({
             success: false,
             message: "Error al crear la orden",

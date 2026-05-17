@@ -1,15 +1,16 @@
+# Ignorar carpetas de compilación y dependencias en cualquier nivel
+**/node_modules/
+**/bin/
+**/Bin/
+**/obj/
+**/Obj/
 
-# Ignorar carpetas de compilación y dependencias
-node_modules/
-bin/
-Bin/
-obj/
-Obj/
-
-# Archivos específicos
-*.dll
-*.exe
-*.pdb
-*.user
-*.suo
+# Archivos específicos y temporales de compilación (en cualquier subcarpeta)
+**/*.dll
+**/*.exe
+**/*.pdb
+**/*.user
+**/*.suo
+**/*.lscache
+**/*.csproj.lscache
 .vs/

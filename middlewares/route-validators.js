@@ -117,7 +117,7 @@ export const validateCreateOrder = [
     body('Restaurant_id').notEmpty().withMessage('Restaurant_id es obligatorio').isMongoId().withMessage('Restaurant_id inválido'),
     body('Menu_id').notEmpty().withMessage('Menu_id es obligatorio').isMongoId().withMessage('Menu_id inválido'),
     body('User_id').optional().isMongoId().withMessage('User_id inválido'),
-    body('Orders_cupon').optional({ checkFalsy: true }).isIn(['Cupon_30_Quetzales', 'Cupon_20%_Descuento', 'Dos_Por_Uno', 'Envio_Gratis', 'Primera_Compra', 'Descuento_10%', 'Cupon_50_Quetzales', 'Cupon_15%_Descuento']).withMessage('Orders_cupon inválido'),
+    body('Orders_cupon').optional({ checkFalsy: true }).isMongoId().withMessage('Orders_cupon inválido'),
     checkValidators
 ];
 
