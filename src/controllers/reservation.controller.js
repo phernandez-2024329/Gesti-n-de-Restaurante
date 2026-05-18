@@ -272,6 +272,26 @@ const RESERVATION_UPDATE_FIELDS = [
 export const updateReservation = async (req, res) => {
   try {
     const { id } = req.params;
+    const userRole = req.user.role || req.user.rol_id;
+    const userId = req.user.id || req.user._id;
+
+    // Si es CLIENTE, verificar que solo actualice su propia reserva
+    if (userRole === 'CLIENTE') {
+      const reservation = await Reservation.findById(id);
+      if (!reservation || !reservation.estado) {
+        return res.status(404).json({
+          success: false,
+          message: 'Reservación no encontrada'
+        });
+      }
+      if (reservation.user_id.toString() !== userId.toString()) {
+        return res.status(403).json({
+          success: false,
+          message: 'No tienes permiso para actualizar esta reserva',
+          error: 'FORBIDDEN'
+        });
+      }
+    }
 
     const body = { ...req.body };
     const updateData = {};

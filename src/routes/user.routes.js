@@ -4,7 +4,6 @@ import { registerUser, loginUser, getProfile, getUsers, updateUser, deleteUser, 
 import { validateJWT } from '../../middlewares/validate-JWT.js';
 import { validateRole }       from '../../middlewares/validate-role.js';
 import { validateRegister, validateLogin, validateUpdateUser } from '../../middlewares/auth-validators.js';
-import { authLimit }          from '../../middlewares/request-limit.js';
 import { Roles } from '../constants/roles.js';
 
 const router = Router();
@@ -13,7 +12,7 @@ router.get('/verify-email', verifyEmail);
 
 // Rutas públicas
 router.post('/register', validateRegister, registerUser);
-router.post('/login',    authLimit, validateLogin, loginUser);
+router.post('/login',    validateLogin, loginUser);
 
 // Rutas protegidas
 router.get('/me',           validateJWT, getProfile);

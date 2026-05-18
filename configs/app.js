@@ -5,7 +5,6 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { dbConnection } from './db.js';
-import { requestLimit } from '../middlewares/request-limit.js';
 import { errorHandler } from '../middlewares/handle-errors.js';
 import userRoutes from '../src/routes/user.routes.js';
 import restaurantRoutes from '../src/routes/restaurant.routes.js';
@@ -40,7 +39,6 @@ const middlewares = (app) => {
         allowedHeaders: ['Content-Type', 'Authorization', 'x-token']
     }));
     app.use(helmet());
-    app.use(requestLimit);
     app.use(morgan('dev'));
 };
 

@@ -22,8 +22,8 @@ const router = Router();
 // Debug endpoint (temporal)
 router.post('/debug', validateJWT, debugReservation);
 
-// Crear reservación (ADMIN o GERENTE)
-router.post('/', validateJWT, validateRole(Roles.ADMIN, Roles.GERENTE), ...validateCreateReservation, createReservation);
+// Crear reservación (ADMIN, GERENTE o CLIENTE)
+router.post('/', validateJWT, validateRole(Roles.ADMIN, Roles.GERENTE, Roles.CLIENTE), ...validateCreateReservation, createReservation);
 
 // Listar reservaciones
 router.get('/', validateJWT, getReservations);
@@ -31,8 +31,8 @@ router.get('/', validateJWT, getReservations);
 // Obtener por id
 router.get('/:id', validateJWT, ...validateReservationIdParam, getReservationById);
 
-// Actualizar (ADMIN o GERENTE)
-router.put('/:id', validateJWT, validateRole(Roles.ADMIN, Roles.GERENTE), ...validateUpdateReservation, updateReservation);
+// Actualizar (ADMIN, GERENTE o CLIENTE)
+router.put('/:id', validateJWT, validateRole(Roles.ADMIN, Roles.GERENTE, Roles.CLIENTE), ...validateUpdateReservation, updateReservation);
 
 // Eliminar (ADMIN)
 router.delete('/:id', validateJWT, validateRole(Roles.ADMIN), ...validateReservationIdParam, deleteReservation);

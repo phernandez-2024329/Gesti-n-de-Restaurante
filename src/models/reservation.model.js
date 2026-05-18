@@ -34,7 +34,7 @@ const reservationSchema = new Schema(
     reservation_state: {
       type: String,
       enum: ['pendiente', 'confirmada', 'cancelada', 'completada'],
-      default: 'pendiente',
+      default: 'confirmada',
       trim: true
     },
     reservation_surcharge: {
