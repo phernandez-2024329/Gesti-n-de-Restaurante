@@ -2,79 +2,96 @@ import Menu from '../models/menu.model.js';
 
 export const createMenuService = async (data) => {
     const {
-    Menu_id,
-    Menu_Plate,
-    Menu_Price,
-    Menu_Drink,
-    Menu_type_plate,
-    Menu_type_drink,
-    Menu_Promotion,
-    Menu_description_plate,
-    Restaurant_id
+        name,
+        description,
+        dishes,
+        beverages,
+        promotion,
+        restaurant_id
     } = data;
 
     const menu = new Menu({
-        Menu_id,
-        Menu_Plate,
-        Menu_Price,
-        Menu_Drink,
-        Menu_type_plate,
-        Menu_type_drink,
-        Menu_Promotion,
-        Menu_description_plate,
-        Restaurant_id
+        name,
+        description,
+        dishes: dishes || [],
+        beverages: beverages || [],
+        promotion,
+        restaurant_id
     });
     return await menu.save();
 };
 
 export const getMenusService = () => {
-    return Menu.find();
+    return Menu.find({ estado: true })
+        .populate('dishes')
+        .populate('beverages');
+};
+
+export const getMenusByRestaurantService = async (restaurantId) => {
+    return await Menu.find({ restaurant_id: restaurantId, estado: true })
+        .populate('dishes')
+        .populate('beverages');
 };
 
 export const getMenuByIdService = async (id) => {
-    return await Menu.findById(id);
+    return await Menu.findOne({ _id: id, estado: true })
+        .populate('dishes')
+        .populate('beverages');
 };
 
 export const searchMenuService = async (searchTerm) => {
-    const numericTerm = Number(searchTerm);
-
-    if (!isNaN(numericTerm)) {
-        return await Menu.find({
-            Menu_Price: numericTerm
-        });
-    }
-
-    const byPlate = await Menu.find({
-        Menu_Plate: searchTerm
-    });
-
-    if (byPlate.length > 0) return byPlate;
-
-    const byDrink = await Menu.find({
-        Menu_Drink: searchTerm
-    });
-
-    if (byDrink.length > 0) return byDrink;
-
-    const byTypePlate = await Menu.find({
-        Menu_type_plate: searchTerm
-    });
-
-    if (byTypePlate.length > 0) return byTypePlate;
-
     return await Menu.find({
-        Menu_type_drink: searchTerm
-    });
+        estado: true,
+        name: { $regex: searchTerm, $options: 'i' }
+    })
+    .populate('dishes')
+    .populate('beverages');
 };
 
 export const updateMenuService = async (id, data) => {
     return await Menu.findByIdAndUpdate(
         id,
         data,
+        { new: true, runValidators: true }
+    ).populate('dishes').populate('beverages');
+};
+
+export const deleteMenuService = async (id) => {
+    return await Menu.findByIdAndUpdate(
+        id,
+        { estado: false },
         { new: true }
     );
 };
 
-export const deleteMenuService = async (id) => {
-    return await Menu.findByIdAndDelete(id);
+export const addDishToMenuService = async (menuId, dishId) => {
+    return await Menu.findByIdAndUpdate(
+        menuId,
+        { $addToSet: { dishes: dishId } },
+        { new: true }
+    ).populate('dishes').populate('beverages');
+};
+
+export const removeDishFromMenuService = async (menuId, dishId) => {
+    return await Menu.findByIdAndUpdate(
+        menuId,
+        { $pull: { dishes: dishId } },
+        { new: true }
+    ).populate('dishes').populate('beverages');
+};
+
+export const addBeverageToMenuService = async (menuId, beverageId) => {
+    return await Menu.findByIdAndUpdate(
+        menuId,
+        { $addToSet: { beverages: beverageId } },
+        { new: true }
+    ).populate('dishes').populate('beverages');
+};
+
+export const removeBeverageFromMenuService = async (menuId, beverageId) => {
+    return await Menu.findByIdAndUpdate(
+        menuId,
+        { $pull: { beverages: beverageId } },
+        { new: true }
+    ).populate('dishes').populate('beverages');
 };

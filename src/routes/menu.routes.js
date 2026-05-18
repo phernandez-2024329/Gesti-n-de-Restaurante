@@ -1,51 +1,44 @@
 import { Router } from "express";
-import { auth } from "../../middlewares/auth.js";
+import { validateJWT } from "../../middlewares/validate-JWT.js";
 
 import {
   createMenu,
   getMenus,
+  getMenusByRestaurant,
   getMenuById,
   updateMenu,
   deleteMenu,
-  searchMenu
+  searchMenu,
+  addDishToMenu,
+  removeDishFromMenu,
+  addBeverageToMenu,
+  removeBeverageFromMenu
 } from "../controllers/menu.controller.js";
 
 const route = Router();
 
-route.post(
-  "/",
-  auth,
-  createMenu
-);
+route.post("/", validateJWT, createMenu);
 
-route.get(
-  "/",
-  auth,
-  getMenus
-);
+route.get("/", validateJWT, getMenus);
 
-route.get(
-  "/search",
-  auth,
-  searchMenu
-);
+route.get("/search", validateJWT, searchMenu);
 
-route.get(
-  "/:id",
-  auth,
-  getMenuById
-);
+route.get("/restaurant/:restaurantId", getMenusByRestaurant);
 
-route.put(
-  "/:id",
-  auth,
-  updateMenu
-);
+route.get("/:id", validateJWT, getMenuById);
 
-route.delete(
-  "/:id",
-  auth,
-  deleteMenu
-);
+route.put("/:id", validateJWT, updateMenu);
+
+route.delete("/:id", validateJWT, deleteMenu);
+
+// Agregar/remover platillos del menú
+route.post("/:menuId/dishes", validateJWT, addDishToMenu);
+
+route.delete("/:menuId/dishes", validateJWT, removeDishFromMenu);
+
+// Agregar/remover bebidas del menú
+route.post("/:menuId/beverages", validateJWT, addBeverageToMenu);
+
+route.delete("/:menuId/beverages", validateJWT, removeBeverageFromMenu);
 
 export default route;

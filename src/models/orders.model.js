@@ -13,26 +13,15 @@ const Orders = new Schema({
     },
 
     Orders_number: {
-        type: String,
-        required: [true, 'El número de la orden es obligatorio']
+        type: Number,
+        required: [true, 'El número de la orden es obligatorio'],
+        unique: true
     },
 
     Orders_cupon: {
-        type: String,
-        enum: ['Cupon_30_Quetzales', 'Cupon_20%_Descuento', 'Dos_Por_Uno',
-            'Envio_Gratis', 'Primera_Compra', 'Descuento_10%', 'Cupon_50_Quetzales',
-            'Cupon_15%_Descuento', null],
+        type: Schema.Types.ObjectId,
+        ref: 'Coupon',
         default: null
-    },
-
-    Orders_facture: {
-        type: String,
-        required: [true, 'La factura es obligatoria']
-    },
-
-    Orders_facture_descripcion: {
-        type: String,
-        required: [true, 'La descripción de la factura es obligatoria']
     },
 
     Orders_status: {
@@ -58,6 +47,11 @@ const Orders = new Schema({
         ref: 'Usuario',
         required: [true, 'El ID del usuario es obligatorio']
     },
+
+    detallePedidos: [{
+        type: Schema.Types.ObjectId,
+        ref: 'DetallePedido'
+    }],
 
     estado: {
         type: Boolean,

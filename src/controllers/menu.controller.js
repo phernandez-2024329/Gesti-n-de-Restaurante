@@ -1,21 +1,33 @@
 import {
     createMenuService,
     getMenusService,
+    getMenusByRestaurantService,
     getMenuByIdService,
     searchMenuService,
     updateMenuService,
-    deleteMenuService
+    deleteMenuService,
+    addDishToMenuService,
+    removeDishFromMenuService,
+    addBeverageToMenuService,
+    removeBeverageFromMenuService
 } from '../services/menu.service.js';
 
 export const createMenu = async (req, res) => {
     try {
         const menu = await createMenuService(req.body);
         res.status(201).json({
+            success: true,
             message: "Menú creado exitosamente",
             data: menu
         });
-
     } catch (error) {
+        if (error.name === 'ValidationError') {
+            return res.status(400).json({
+                success: false,
+                message: 'Error de validación',
+                errors: Object.values(error.errors).map(e => ({ field: e.path, message: e.message }))
+            });
+        }
         res.status(500).json({
             success: false,
             message: "Error al crear el menú",
@@ -28,7 +40,26 @@ export const getMenus = async (req, res) => {
     try {
         const menus = await getMenusService();
         res.status(200).json({
+            success: true,
             message: "Menús obtenidos exitosamente",
+            data: menus
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Error al obtener los menús",
+            error: error.message
+        });
+    }
+};
+
+export const getMenusByRestaurant = async (req, res) => {
+    try {
+        const { restaurantId } = req.params;
+        const menus = await getMenusByRestaurantService(restaurantId);
+        res.status(200).json({
+            success: true,
+            message: "Menús del restaurante obtenidos exitosamente",
             data: menus
         });
     } catch (error) {
@@ -50,6 +81,7 @@ export const getMenuById = async (req, res) => {
             });
         }
         res.status(200).json({
+            success: true,
             message: "Menú obtenido exitosamente",
             data: menu
         });
@@ -86,6 +118,7 @@ export const searchMenu = async (req, res) => {
             });
         }
         return res.status(200).json({
+            success: true,
             message: "Menús encontrados exitosamente",
             count: menus.length,
             data: menus
@@ -128,6 +161,7 @@ export const updateMenu = async (req, res) => {
         }
 
         return res.status(200).json({
+            success: true,
             message: "Menú actualizado exitosamente",
             data: menu
         });
@@ -140,7 +174,13 @@ export const updateMenu = async (req, res) => {
                 error: "INVALID_ID"
             });
         }
-
+        if (error.name === 'ValidationError') {
+            return res.status(400).json({
+                success: false,
+                message: 'Error de validación',
+                errors: Object.values(error.errors).map(e => ({ field: e.path, message: e.message }))
+            });
+        }
         return res.status(500).json({
             success: false,
             message: "Error al actualizar el menú",
@@ -169,8 +209,8 @@ export const deleteMenu = async (req, res) => {
         }
 
         return res.status(200).json({
-            message: "Menú eliminado exitosamente",
-            data: menu
+            success: true,
+            message: "Menú eliminado exitosamente"
         });
 
     } catch (error) {
@@ -185,6 +225,174 @@ export const deleteMenu = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "Error al eliminar el menú",
+            error: error.message
+        });
+    }
+};
+
+export const addDishToMenu = async (req, res) => {
+    try {
+        const { menuId } = req.params;
+        const { dishId } = req.body;
+
+        if (!menuId || !dishId) {
+            return res.status(400).json({
+                success: false,
+                message: "El ID del menú y del platillo son obligatorios"
+            });
+        }
+
+        const menu = await addDishToMenuService(menuId, dishId);
+
+        if (!menu) {
+            return res.status(404).json({
+                success: false,
+                message: "Menú no encontrado"
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Platillo agregado al menú exitosamente",
+            data: menu
+        });
+    } catch (error) {
+        if (error.name === 'CastError') {
+            return res.status(400).json({
+                success: false,
+                message: "ID no válido",
+                error: "INVALID_ID"
+            });
+        }
+        return res.status(500).json({
+            success: false,
+            message: "Error al agregar platillo al menú",
+            error: error.message
+        });
+    }
+};
+
+export const removeDishFromMenu = async (req, res) => {
+    try {
+        const { menuId } = req.params;
+        const { dishId } = req.body;
+
+        if (!menuId || !dishId) {
+            return res.status(400).json({
+                success: false,
+                message: "El ID del menú y del platillo son obligatorios"
+            });
+        }
+
+        const menu = await removeDishFromMenuService(menuId, dishId);
+
+        if (!menu) {
+            return res.status(404).json({
+                success: false,
+                message: "Menú no encontrado"
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Platillo removido del menú exitosamente",
+            data: menu
+        });
+    } catch (error) {
+        if (error.name === 'CastError') {
+            return res.status(400).json({
+                success: false,
+                message: "ID no válido",
+                error: "INVALID_ID"
+            });
+        }
+        return res.status(500).json({
+            success: false,
+            message: "Error al remover platillo del menú",
+            error: error.message
+        });
+    }
+};
+
+export const addBeverageToMenu = async (req, res) => {
+    try {
+        const { menuId } = req.params;
+        const { beverageId } = req.body;
+
+        if (!menuId || !beverageId) {
+            return res.status(400).json({
+                success: false,
+                message: "El ID del menú y de la bebida son obligatorios"
+            });
+        }
+
+        const menu = await addBeverageToMenuService(menuId, beverageId);
+
+        if (!menu) {
+            return res.status(404).json({
+                success: false,
+                message: "Menú no encontrado"
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Bebida agregada al menú exitosamente",
+            data: menu
+        });
+    } catch (error) {
+        if (error.name === 'CastError') {
+            return res.status(400).json({
+                success: false,
+                message: "ID no válido",
+                error: "INVALID_ID"
+            });
+        }
+        return res.status(500).json({
+            success: false,
+            message: "Error al agregar bebida al menú",
+            error: error.message
+        });
+    }
+};
+
+export const removeBeverageFromMenu = async (req, res) => {
+    try {
+        const { menuId } = req.params;
+        const { beverageId } = req.body;
+
+        if (!menuId || !beverageId) {
+            return res.status(400).json({
+                success: false,
+                message: "El ID del menú y de la bebida son obligatorios"
+            });
+        }
+
+        const menu = await removeBeverageFromMenuService(menuId, beverageId);
+
+        if (!menu) {
+            return res.status(404).json({
+                success: false,
+                message: "Menú no encontrado"
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Bebida removida del menú exitosamente",
+            data: menu
+        });
+    } catch (error) {
+        if (error.name === 'CastError') {
+            return res.status(400).json({
+                success: false,
+                message: "ID no válido",
+                error: "INVALID_ID"
+            });
+        }
+        return res.status(500).json({
+            success: false,
+            message: "Error al remover bebida del menú",
             error: error.message
         });
     }

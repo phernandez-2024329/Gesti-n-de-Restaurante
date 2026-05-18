@@ -10,7 +10,13 @@ const couponSchema = new Schema({
   min_order_amount: { type: Number },
   restaurant_ids: [{ type: Schema.Types.ObjectId, ref: 'Restaurant' }],
   active: { type: Boolean, default: true },
-  current_uses: { type: Number, default: 0 }
+  current_uses: { type: Number, default: 0 },
+  redemptions: [{
+    order: { type: Schema.Types.ObjectId, ref: 'Orders' },
+    user: { type: Schema.Types.ObjectId, ref: 'Usuario' },
+    amount_applied: { type: Number },
+    applied_at: { type: Date, default: Date.now }
+  }]
 });
 
 export default model('Coupon', couponSchema);

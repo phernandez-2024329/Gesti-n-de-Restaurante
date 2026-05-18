@@ -2,6 +2,7 @@ import {
     createOrdersService,
     getOrdersService,
     getOrderByIdService,
+    getOrderByIdWithDetailsService,
     searchOrdersService,
     updateOrderService,
     deleteOrderService
@@ -26,6 +27,43 @@ export const createOrder = async (req, res) => {
                 error: error.message
             });
         }
+
+        if (error.code === 'INVALID_COUPON_ID') {
+            return res.status(400).json({
+                success: false,
+                message: "Cupón inválido",
+                error: error.message,
+                code: error.code
+            });
+        }
+
+        if (error.code === 'COUPON_NOT_FOUND') {
+            return res.status(404).json({
+                success: false,
+                message: "Cupón no encontrado o inactivo",
+                error: error.message,
+                code: error.code
+            });
+        }
+
+        if (error.code === 'COUPON_EXPIRED') {
+            return res.status(400).json({
+                success: false,
+                message: "Cupón expirado",
+                error: error.message,
+                code: error.code
+            });
+        }
+
+        if (error.code === 'COUPON_MAX_USES') {
+            return res.status(400).json({
+                success: false,
+                message: "Cupón sin usos disponibles",
+                error: error.message,
+                code: error.code
+            });
+        }
+
         res.status(500).json({
             success: false,
             message: "Error al crear la orden",
@@ -64,9 +102,45 @@ export const getOrderById = async (req, res) => {
             data: order
         });
     } catch (error) {
+        if (error.code === 'INVALID_ID') {
+            return res.status(400).json({
+                success: false,
+                message: "ID de orden no válido",
+                error: error.message
+            });
+        }
         res.status(500).json({
             success: false,
             message: "Error al obtener la orden",
+            error: error.message
+        });
+    }
+};
+
+export const getOrderByIdWithDetails = async (req, res) => {
+    try {
+        const order = await getOrderByIdWithDetailsService(req.params.id);
+        if (!order) {
+            return res.status(404).json({
+                success: false,
+                message: "Orden no encontrada"
+            });
+        }
+        res.status(200).json({
+            message: "Orden con detalles obtenida exitosamente",
+            data: order
+        });
+    } catch (error) {
+        if (error.code === 'INVALID_ID') {
+            return res.status(400).json({
+                success: false,
+                message: "ID de orden no válido",
+                error: error.message
+            });
+        }
+        res.status(500).json({
+            success: false,
+            message: "Error al obtener la orden con detalles",
             error: error.message
         });
     }

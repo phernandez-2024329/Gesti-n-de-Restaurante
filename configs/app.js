@@ -5,7 +5,6 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { dbConnection } from './db.js';
-import { requestLimit } from '../middlewares/request-limit.js';
 import { errorHandler } from '../middlewares/handle-errors.js';
 import userRoutes from '../src/routes/user.routes.js';
 import restaurantRoutes from '../src/routes/restaurant.routes.js';
@@ -25,6 +24,10 @@ import reviewRoutes from '../src/routes/review.routes.js';
 import roleRoutes from '../src/routes/role.routes.js';
 import informationRoutes from '../src/routes/information.routes.js';
 import detallePedidoRoutes from '../src/routes/detallepedido.routes.js';
+import dishRoutes from '../src/routes/dish.routes.js';
+import beverageRoutes from '../src/routes/beverage.routes.js';
+import recipeRoutes from '../src/routes/recipe.routes.js';
+import invoiceRoutes from '../src/routes/invoice.routes.js';
 import { registerSwagger } from '../docs/swagger.js';
 
 const middlewares = (app) => {
@@ -36,7 +39,6 @@ const middlewares = (app) => {
         allowedHeaders: ['Content-Type', 'Authorization', 'x-token']
     }));
     app.use(helmet());
-    app.use(requestLimit);
     app.use(morgan('dev'));
 };
 
@@ -56,7 +58,11 @@ const routes = (app) => {
     app.use(`${BASE_PATH}/inventory`, inventoryRoutes);
     app.use(`${BASE_PATH}/role`, roleRoutes);
     app.use(`${BASE_PATH}/information`, informationRoutes);
-    app.use(`${BASE_PATH}/detalle-pedido`, detallePedidoRoutes);
+    app.use(`${BASE_PATH}/detallepedido`, detallePedidoRoutes);
+    app.use(`${BASE_PATH}/dish`, dishRoutes);
+    app.use(`${BASE_PATH}/beverage`, beverageRoutes);
+    app.use(`${BASE_PATH}/recipe`, recipeRoutes);
+    app.use(`${BASE_PATH}/invoice`, invoiceRoutes);
     registerSwagger(app, BASE_PATH);
 
     app.get(`${BASE_PATH}/health`, (req, res) => {

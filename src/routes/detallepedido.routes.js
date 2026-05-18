@@ -10,13 +10,15 @@ import {
   getDetallePedidos,
   getDetallePedidoById,
   updateDetallePedido,
-  deleteDetallePedido
+  deleteDetallePedido,
+  getDetallePedidosByOrder
 } from '../controllers/detallepedido.controller.js';
 
 const router = Router();
 
 router.post('/', auth, ...validateCreateDetallePedido, createDetallePedido);
 router.get('/', auth, getDetallePedidos);
+router.get('/order/:orderId', auth, getDetallePedidosByOrder);
 router.get('/:id', auth, ...validateDetallePedidoIdParam, getDetallePedidoById);
 router.put('/:id', auth, ...validateUpdateDetallePedido, updateDetallePedido);
 router.delete('/:id', auth, ...validateDetallePedidoIdParam, deleteDetallePedido);
