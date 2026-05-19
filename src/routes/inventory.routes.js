@@ -17,7 +17,7 @@ import { Roles } from '../constants/roles.js';
 const router = Router();
 
 // Crear artículo de inventario
-router.post('/', validateJWT, validateRole(Roles.ADMIN), createInventory);
+router.post('/', validateJWT, validateRole(Roles.ADMIN, Roles.GERENTE), createInventory);
 
 // Obtener inventario general
 router.get('/', validateJWT, getInventory);
