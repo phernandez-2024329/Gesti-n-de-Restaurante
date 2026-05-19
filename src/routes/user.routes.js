@@ -1,7 +1,7 @@
 
 import { Router } from 'express';
 import { registerUser, loginUser, getProfile, getUsers, updateUser, deleteUser, verifyEmail } from '../controllers/user.controller.js';
-import { validateJWT } from '../../middlewares/validate-JWT.js';
+import { validateJWT, optionalValidateJWT } from '../../middlewares/validate-JWT.js';
 import { validateRole }       from '../../middlewares/validate-role.js';
 import { validateRegister, validateLogin, validateUpdateUser } from '../../middlewares/auth-validators.js';
 import { Roles } from '../constants/roles.js';
@@ -11,7 +11,7 @@ const router = Router();
 router.get('/verify-email', verifyEmail);
 
 // Rutas públicas
-router.post('/register', validateRegister, registerUser);
+router.post('/register', optionalValidateJWT, validateRegister, registerUser);
 router.post('/login',    validateLogin, loginUser);
 
 // Rutas protegidas

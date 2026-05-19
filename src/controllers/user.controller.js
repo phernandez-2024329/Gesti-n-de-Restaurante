@@ -24,16 +24,43 @@ import { generateJWT } from '../../helpers/generate-jwt.js';
 import { Roles } from '../constants/roles.js';
 import { sendMail } from '../../helpers/sendMail.js';
 import crypto from 'crypto';
+import { isValidObjectId } from 'mongoose';
 
 // Registro de usuario
 export const registerUser = async (req, res) => {
     try {
         const { nombre, username, email, password, telefono, rol, rol_id } = req.body;
+        const requestedRole = rol_id || rol;
+        const requestedRestaurant = req.body.restauranteAsignado || req.body.restaurantId || req.body.restaurant_id || null;
+        const currentRole = req.user?.role || req.user?.rol_id;
 
-        // si el administrador crea el usuario, puede asignar cualquiera de los roles permitidos
+        // si el administrador crea el usuario, puede asignar el rol y el restaurante
         let rolAsignado = Roles.CLIENTE;
-        if (req.user?.role === Roles.ADMIN) {
-            rolAsignado = rol_id || rol || Roles.CLIENTE;
+        let restauranteAsignado = null;
+
+        if (currentRole === Roles.ADMIN) {
+            rolAsignado = requestedRole || Roles.CLIENTE;
+            restauranteAsignado = requestedRestaurant;
+        }
+
+        if (rolAsignado === Roles.GERENTE) {
+            if (!restauranteAsignado) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Para crear un gerente debes asignar un restaurante',
+                    error: 'RESTAURANT_REQUIRED'
+                });
+            }
+
+            if (!isValidObjectId(restauranteAsignado)) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'El restaurante asignado no es válido',
+                    error: 'INVALID_RESTAURANT_ID'
+                });
+            }
+        } else {
+            restauranteAsignado = null;
         }
 
         // Generar token de verificación
@@ -48,6 +75,7 @@ export const registerUser = async (req, res) => {
             telefono,
             rol: rolAsignado,
             rol_id: rolAsignado,
+            restauranteAsignado,
             emailVerificationToken,
             emailVerificationExpires,
             emailVerified: false
@@ -75,7 +103,15 @@ export const registerUser = async (req, res) => {
         res.status(201).json({
             success: true,
             message: 'Usuario registrado exitosamente. Revisa tu correo para verificar tu cuenta.',
-            data: { id: usuario._id, nombre: usuario.nombre, username: usuario.username, email: usuario.email, rol: usuario.rol, rol_id: usuario.rol_id }
+            data: {
+                id: usuario._id,
+                nombre: usuario.nombre,
+                username: usuario.username,
+                email: usuario.email,
+                rol: usuario.rol,
+                rol_id: usuario.rol_id,
+                restauranteAsignado: usuario.restauranteAsignado
+            }
         });
 
     } catch (error) {
@@ -91,7 +127,8 @@ export const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        const usuario = await Usuario.findOne({ email });
+        const usuario = await Usuario.findOne({ email })
+            .populate('restauranteAsignado', 'nombre direccion');
         if (!usuario) {
             return res.status(401).json({ success: false, message: 'Credenciales inválidas' });
         }
@@ -105,7 +142,11 @@ export const loginUser = async (req, res) => {
         }
 
         // emitimos rol y rol_id en el JWT para que los middlewares puedan validarlos
-        const token = await generateJWT(usuario._id, { role: usuario.rol, rol_id: usuario.rol_id });
+        const token = await generateJWT(usuario._id, {
+            role: usuario.rol,
+            rol_id: usuario.rol_id,
+            restaurant_id: usuario.restauranteAsignado?._id || usuario.restauranteAsignado || null
+        });
         const expiresAt = new Date(Date.now() + 8 * 60 * 60 * 1000);
 
         res.status(200).json({
@@ -113,7 +154,15 @@ export const loginUser = async (req, res) => {
             message: 'Inicio de sesión exitoso',
             token,
             expiresAt,
-            data: { id: usuario._id, nombre: usuario.nombre, username: usuario.username, email: usuario.email, rol: usuario.rol, rol_id: usuario.rol_id }
+            data: {
+                id: usuario._id,
+                nombre: usuario.nombre,
+                username: usuario.username,
+                email: usuario.email,
+                rol: usuario.rol,
+                rol_id: usuario.rol_id,
+                restauranteAsignado: usuario.restauranteAsignado
+            }
         });
 
     } catch (error) {
