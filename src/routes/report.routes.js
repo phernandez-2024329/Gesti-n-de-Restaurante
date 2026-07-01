@@ -10,13 +10,6 @@ import {
   getClientesFrecuentes,
   getPedidosRecurrentes
 } from '../controllers/report.controller.js';
-import {
-  listReports,
-  getReportById,
-  createReport,
-  updateReport,
-  deleteReport
-} from '../controllers/reportCRUD.controller.js';
 import { validateJWT } from '../../middlewares/validate-JWT.js';
 import { validateRole } from '../../middlewares/validate-role.js';
 import { Roles } from '../constants/roles.js';
@@ -34,12 +27,5 @@ router.get('/desempeno-restaurante/:restaurantID', reportAuth, getDesempenoResta
 router.get('/ocupacion/:restaurantID', reportAuth, getOcupacion);
 router.get('/clientes-frecuentes/:restaurantID', reportAuth, getClientesFrecuentes);
 router.get('/pedidos-recurrentes/:restaurantID', reportAuth, getPedidosRecurrentes);
-
-// CRUD for saved reports
-router.get('/', reportAuth, listReports);
-router.post('/', reportAuth, createReport);
-router.get('/:id', reportAuth, getReportById);
-router.put('/:id', reportAuth, updateReport);
-router.delete('/:id', reportAuth, deleteReport);
 
 export default router;
