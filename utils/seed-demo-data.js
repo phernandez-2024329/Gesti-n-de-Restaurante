@@ -3,11 +3,13 @@
 import Contact from '../src/models/contact.model.js';
 import Table from '../src/models/table.model.js';
 import Restaurant from '../src/models/restaurant.model.js';
+import Dish from '../src/models/dish.model.js';
+import Beverage from '../src/models/beverage.model.js';
 import Menu from '../src/models/menu.model.js';
 
 export const createDemoData = async () => {
     try {
-        const existingMenu = await Menu.findOne({ Menu_id: 1 });
+        const existingMenu = await Menu.findOne({ name: 'Sushi Roll Especial' });
         if (existingMenu) {
             console.log(' Datos demo ya existen, omitiendo seed');
             return;
@@ -57,34 +59,60 @@ export const createDemoData = async () => {
             });
         }
 
-        await Menu.insertMany([
+        const [dishSushi, dishRamen] = await Dish.insertMany([
             {
-                Menu_id: 1,
-                Menu_Plate: 'Sushi Roll Especial',
-                Menu_Price: 85,
-                Menu_Drink: 'Agua mineral',
-                Menu_type_plate: 'Plato_fuerte',
-                Menu_type_drink: 'Bebidas_sin_alcohol',
-                Menu_description_plate: 'Roll de salmón, aguacate y queso crema',
-                Menu_ingredients: ['salmón', 'aguacate', 'arroz', 'alga nori'],
-                Menu_available: true,
-                Restaurant_id: restaurant._id,
+                name: 'Sushi Roll Especial',
+                description: 'Roll de salmón, aguacate y queso crema',
+                type: 'Plato_fuerte',
+                price: 85,
+                restaurant_id: restaurant._id,
             },
             {
-                Menu_id: 2,
-                Menu_Plate: 'Ramen Tradicional',
-                Menu_Price: 65,
-                Menu_Drink: 'Té verde',
-                Menu_type_plate: 'Plato_fuerte',
-                Menu_type_drink: 'Bebidas_calientes',
-                Menu_description_plate: 'Caldo de cerdo, fideos, huevo y chashu',
-                Menu_ingredients: ['fideos', 'cerdo', 'huevo', 'caldo'],
-                Menu_available: true,
-                Restaurant_id: restaurant._id,
+                name: 'Ramen Tradicional',
+                description: 'Caldo de cerdo, fideos, huevo y chashu',
+                type: 'Plato_fuerte',
+                price: 65,
+                restaurant_id: restaurant._id,
             },
         ]);
 
-        console.log(' Datos demo creados (restaurante + 2 menús)');
+        const [beverageWater, beverageTea] = await Beverage.insertMany([
+            {
+                name: 'Agua mineral',
+                description: 'Agua mineral natural',
+                type: 'Bebidas_sin_alcohol',
+                price: 15,
+                restaurant_id: restaurant._id,
+            },
+            {
+                name: 'Té verde',
+                description: 'Té verde tradicional japonés',
+                type: 'Bebidas_calientes',
+                price: 20,
+                restaurant_id: restaurant._id,
+            },
+        ]);
+
+        await Menu.insertMany([
+            {
+                name: 'Sushi Roll Especial',
+                description: 'Roll de salmón, aguacate y queso crema',
+                dishes: [dishSushi._id],
+                beverages: [beverageWater._id],
+                available: true,
+                restaurant_id: restaurant._id,
+            },
+            {
+                name: 'Ramen Tradicional',
+                description: 'Caldo de cerdo, fideos, huevo y chashu',
+                dishes: [dishRamen._id],
+                beverages: [beverageTea._id],
+                available: true,
+                restaurant_id: restaurant._id,
+            },
+        ]);
+
+        console.log(' Datos demo creados (restaurante + 2 platillos + 2 bebidas + 2 menús)');
     } catch (error) {
         console.error('Error creando datos demo:', error.message);
     }

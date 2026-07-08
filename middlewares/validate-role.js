@@ -1,5 +1,7 @@
 'use strict';
 
+const getRole = (req) => req.user?.role || req.user?.rol_id;
+
 export const validateRole = (...allowedRoles) => {
     return (req, res, next) => {
         if (!req.user) {
@@ -9,8 +11,7 @@ export const validateRole = (...allowedRoles) => {
             });
         }
 
-        // user may carry role in "role" or "rol_id" depending on how token was generated
-        const current = req.user.role || req.user.rol_id;
+        const current = getRole(req);
         if (!allowedRoles.includes(current)) {
             return res.status(403).json({
                 success: false,
@@ -22,3 +23,6 @@ export const validateRole = (...allowedRoles) => {
         next();
     };
 };
+
+// Alias con nombre más expresivo (estilo KinalSports)
+export const requireRole = validateRole;

@@ -20,11 +20,14 @@ export const verifyEmail = async (req, res) => {
 };
 
 import Usuario from '../models/user.model.js';
+import RefreshToken from '../models/refreshToken.model.js';
 import { generateJWT } from '../../helpers/generate-jwt.js';
+import { hashToken, saveRefreshToken } from '../../helpers/refresh-token.js';
 import { Roles } from '../constants/roles.js';
 import { sendMail } from '../../helpers/sendMail.js';
 import crypto from 'crypto';
 import { isValidObjectId } from 'mongoose';
+import ms from 'ms';
 
 // Registro de usuario
 export const registerUser = async (req, res) => {
@@ -142,31 +145,169 @@ export const loginUser = async (req, res) => {
         }
 
         // emitimos rol y rol_id en el JWT para que los middlewares puedan validarlos
-        const token = await generateJWT(usuario._id, {
+        const accessToken = await generateJWT(usuario._id, {
             role: usuario.rol,
             rol_id: usuario.rol_id,
             restaurant_id: usuario.restauranteAsignado?._id || usuario.restauranteAsignado || null
         });
-        const expiresAt = new Date(Date.now() + 8 * 60 * 60 * 1000);
+
+        // refresh token opaco (64 hex chars), SHA-256 en DB, con familyId
+        const { raw: refreshToken } = await saveRefreshToken(usuario._id);
+
+        const expiresInSec = ms(process.env.JWT_EXPIRES_IN || '30m') / 1000;
 
         res.status(200).json({
             success: true,
             message: 'Inicio de sesión exitoso',
-            token,
-            expiresAt,
-            data: {
+            accessToken,
+            refreshToken,
+            expiresIn: expiresInSec,
+            userDetails: {
                 id: usuario._id,
                 nombre: usuario.nombre,
                 username: usuario.username,
                 email: usuario.email,
                 rol: usuario.rol,
                 rol_id: usuario.rol_id,
-                restauranteAsignado: usuario.restauranteAsignado
+                restauranteAsignado: usuario.restauranteAsignado,
+                profilePicture: null,
             }
         });
 
     } catch (error) {
         res.status(500).json({ success: false, message: 'Error al iniciar sesión', error: error.message });
+    }
+};
+
+export const refreshToken = async (req, res) => {
+    try {
+        const { refreshToken } = req.body;
+        if (!refreshToken) {
+            return res.status(400).json({
+                success: false,
+                message: 'Refresh token requerido',
+                error: 'MISSING_REFRESH_TOKEN'
+            });
+        }
+
+        const tokenHash = hashToken(refreshToken);
+        const stored = await RefreshToken.findOne({ tokenHash });
+
+        if (!stored) {
+            return res.status(401).json({
+                success: false,
+                message: 'Refresh token inválido',
+                error: 'INVALID_REFRESH_TOKEN'
+            });
+        }
+
+        // REUSE DETECTION: si ya fue revocado, es un robo → revocar toda la familia
+        if (stored.revokedAt) {
+            await RefreshToken.updateMany(
+                { familyId: stored.familyId, revokedAt: null },
+                { revokedAt: new Date() }
+            );
+            return res.status(401).json({
+                success: false,
+                message: 'Sesión comprometida. Refresh token reutilizado.',
+                error: 'REUSE_DETECTED'
+            });
+        }
+
+        if (stored.expiresAt < new Date()) {
+            return res.status(401).json({
+                success: false,
+                message: 'Refresh token expirado. Inicia sesión nuevamente.',
+                error: 'TOKEN_EXPIRED'
+            });
+        }
+
+        // Revocar token actual
+        stored.revokedAt = new Date();
+        await stored.save();
+
+        // Verificar usuario
+        const usuario = await Usuario.findById(stored.userId);
+        if (!usuario || !usuario.estado) {
+            return res.status(401).json({
+                success: false,
+                message: 'Usuario no encontrado o desactivado',
+                error: 'USER_NOT_FOUND'
+            });
+        }
+
+        // Emitir nuevo access token
+        const newAccessToken = await generateJWT(usuario._id, {
+            role: usuario.rol,
+            rol_id: usuario.rol_id,
+            restaurant_id: usuario.restauranteAsignado?._id || usuario.restauranteAsignado || null
+        });
+
+        // Generar nuevo refresh token (misma familia)
+        const { raw: newRefreshToken } = await saveRefreshToken(usuario._id, stored.familyId);
+
+        const expiresInSec = ms(process.env.JWT_EXPIRES_IN || '30m') / 1000;
+
+        res.status(200).json({
+            success: true,
+            message: 'Token renovado exitosamente',
+            accessToken: newAccessToken,
+            refreshToken: newRefreshToken,
+            expiresIn: expiresInSec
+        });
+
+    } catch (error) {
+        if (error.name === 'TokenExpiredError') {
+            return res.status(401).json({
+                success: false,
+                message: 'El refresh token ha expirado. Inicia sesión nuevamente.',
+                error: 'REFRESH_TOKEN_EXPIRED'
+            });
+        }
+        if (error.name === 'JsonWebTokenError') {
+            return res.status(401).json({
+                success: false,
+                message: 'Refresh token inválido',
+                error: 'INVALID_REFRESH_TOKEN'
+            });
+        }
+        res.status(500).json({
+            success: false,
+            message: 'Error al renovar token',
+            error: error.message
+        });
+    }
+};
+
+export const logoutUser = async (req, res) => {
+    try {
+        const { refreshToken } = req.body;
+        if (!refreshToken) {
+            return res.status(400).json({
+                success: false,
+                message: 'Refresh token requerido',
+                error: 'MISSING_REFRESH_TOKEN'
+            });
+        }
+
+        const tokenHash = hashToken(refreshToken);
+        const stored = await RefreshToken.findOne({ tokenHash });
+
+        if (stored && !stored.revokedAt) {
+            stored.revokedAt = new Date();
+            await stored.save();
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Sesión cerrada exitosamente'
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Error al cerrar sesión',
+            error: error.message
+        });
     }
 };
 
