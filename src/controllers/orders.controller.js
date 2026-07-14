@@ -74,7 +74,16 @@ export const createOrder = async (req, res) => {
 
 export const getOrders = async (req, res) => {
     try {
-        const orders = await getOrdersService();
+        const userRole = req.user?.role || req.user?.rol_id;
+        let userIdFilter = null;
+
+        if (userRole === 'CLIENTE') {
+            userIdFilter = req.user.id;
+        } else if (req.query.User_id) {
+            userIdFilter = req.query.User_id;
+        }
+
+        const orders = await getOrdersService(userIdFilter);
         res.status(200).json({
             message: "Órdenes obtenidas exitosamente",
             data: orders

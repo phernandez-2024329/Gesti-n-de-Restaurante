@@ -92,8 +92,12 @@ export const createOrdersService = async (data) => {
     return savedOrder;
 };
 
-export const getOrdersService = () => {
-    return Orders.find({ estado: true })
+export const getOrdersService = (userId = null) => {
+    const filter = { estado: true };
+    if (userId) {
+        filter.User_id = userId;
+    }
+    return Orders.find(filter)
         .populate('Restaurant_id')
         .populate('User_id')
         .populate('Orders_cupon')
