@@ -1,9 +1,9 @@
 import { v2 as cloudinary } from 'cloudinary';
 
 cloudinary.config({
-  cloud_name: 'dsxadnzb5',
-  api_key: '258132534261792',
-  api_secret: 'h39jOq6yxclzsgtfAaT_9724W4g'
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
 export const uploadToCloudinary = async (filePath, folder = 'auth_service/profiles') => {

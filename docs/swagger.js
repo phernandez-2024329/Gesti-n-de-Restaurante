@@ -3857,7 +3857,9 @@ const swaggerSpec = {
     description: 'Documentacion de Mesa, Menu, Resena, Reporte, Eventos, Pedidos, DetallePedido, Cupon, Informacion, Reservacion, Notificaciones, Inventario, Restaurante y Contacto.',
     version: '1.0.0',
   },
-  servers: [{ url: 'http://localhost:3000', description: 'Local' }],
+  servers: [
+    { url: process.env.BASE_URL || 'http://localhost:3000', description: 'Servidor' }
+  ],
   tags: TAGS,
   paths: {
     ...TABLE_PATHS,

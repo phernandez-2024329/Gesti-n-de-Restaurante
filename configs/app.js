@@ -93,9 +93,10 @@ export const initServer = async () => {
         app.use(errorHandler);
 
         app.listen(PORT, () => {
+            const baseUrl = process.env.BASE_URL || `http://localhost:${PORT}`;
             console.log(`\n  Servidor corriendo en puerto ${PORT}`);
-            console.log(` Health: http://localhost:${PORT}${BASE_PATH}/health`);
-            console.log(` Auth:   http://localhost:${PORT}${BASE_PATH}/auth\n`);
+            console.log(` Health: ${baseUrl}${BASE_PATH}/health`);
+            console.log(` Auth:   ${baseUrl}${BASE_PATH}/auth\n`);
         });
 
     } catch (error) {

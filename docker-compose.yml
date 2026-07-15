@@ -1,16 +1,6 @@
 version: "3.8"
 
 services:
-  mongodb:
-    image: mongo:7
-    container_name: gestor_restaurante_mongo
-    restart: always
-    environment:
-      MONGO_INITDB_DATABASE: gestor_restaurante
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
 
   app:
     build:
@@ -20,8 +10,7 @@ services:
     restart: always
     ports:
       - "3006:3006"
-    depends_on:
-      - mongodb
+
     environment:
       PORT: 3006
       NODE_ENV: development
@@ -31,6 +20,3 @@ services:
       JWT_ISSUER: GestorRestaurante
       JWT_AUDIENCE: GestorRestauranteApp
     command: ["pnpm", "start"]
-
-volumes:
-  mongo_data:

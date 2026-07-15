@@ -84,7 +84,8 @@ export const registerUser = async (req, res) => {
 
         // Enviar correo de verificación
         try {
-            const verifyUrl = `http://localhost:3006/GestorRestaurante/v1/auth/verify-email?token=${emailVerificationToken}`;
+            const baseUrl = process.env.BASE_URL || `http://localhost:${process.env.PORT || 3006}`;
+            const verifyUrl = `${baseUrl}/GestorRestaurante/v1/auth/verify-email?token=${emailVerificationToken}`;
             await sendMail(
                 email,
                 'Verifica tu correo - Gestión de Restaurantes',
